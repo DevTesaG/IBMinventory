@@ -1,0 +1,33 @@
+
+
+<form  name="form" #f="ngForm" (ngSubmit)="f.form.valid && onContinue(true)" novalidate>
+    <div class="input-group mb-2" *ngFor="let props of formObj">
+            <div *ngFor="let prop of props" class="form-floating">                            
+                <input
+                #input = "ngModel"
+                [class]="'form-control' + prop.classlist"
+                [id]="prop.label"
+                [name]="prop.label"
+                [type]="prop.type" 
+                [placeholder]="prop.placeholder"
+                [(ngModel)]="prop.value"
+                [value] = "(prop.valueCallback ? prop.getValue() : prop.value  )"
+                [ngClass]="{ 'is-invalid': f.submitted && input.errors }"
+                [readonly] = mode
+                required
+                />
+                <div *ngIf="f.submitted && input.errors" class="invalid-feedback">
+                    <div *ngIf="input.errors['required']">{{prop.placeholder}} es obligatorio</div>
+                    <!-- <div *ngIf="input.errors['email']">Email is invalid</div> -->
+                </div>
+                <label [for]="prop.label" class="">{{prop.placeholder}}</label>
+                <div class="mb-4" *ngIf="prop.type == 'radio'"></div>
+            </div>
+    </div>
+
+    <div *ngIf="!mode" class="form-group mt-3">
+        <app-warn-modal type="submit" (continue)="onSubmit($event)" [btnMessage]="btnMes" modalMessage="¿Seguro que desea crear una nueva orden?"></app-warn-modal>
+        <button type="button" (click)="onReset(f)" class="ms-2 btn btn-outline-danger rounded-pill "> Reset </button>
+    </div>
+</form>
+        

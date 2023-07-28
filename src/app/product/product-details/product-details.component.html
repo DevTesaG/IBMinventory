@@ -1,0 +1,132 @@
+<div *ngIf="currentProduct" class="edit-form">
+<h4>Producto</h4>
+    
+<form>
+<div class="form-floating mb-2">
+    <input
+    type="text"
+    class="form-control"
+    id="name"
+    required
+    [(ngModel)]="currentProduct.name"
+    name="name"
+    placeholder="Nombre"
+    type="text"
+    />
+    <label for="name">Nombre</label>
+  </div>
+
+  <div class="form-floating mb-2">
+    <input
+    type="text"
+    class="form-control"
+    id="code"
+    required
+    [(ngModel)]="currentProduct.code"
+    name="code"
+    placeholder="Codigo"
+    type="text"
+    />
+    <label for="code">Codigo</label>
+  </div>
+  
+  <div class="form-floating mb-2">
+    <input
+    class="form-control"
+    id="description"
+    required
+    placeholder="description"
+    [(ngModel)]="currentProduct.description"
+    name="description"
+    type="text"
+    />
+    <label for="description">Descripcion</label>
+  </div>
+    
+    <div class="form-floating mb-2">
+    <input
+    class="form-control"
+      id="leadTime"
+      required
+      placeholder="description"
+      [(ngModel)]="currentProduct.leadTime"
+      name="leadTime"
+      type="number"
+      />
+      <label for="leadTime">Tiempo</label>
+    </div>
+    
+    <div class="form-floating mb-2">
+      <input
+      class="form-control"
+      id="price"
+      required
+      placeholder="description"
+      [(ngModel)]="currentProduct.price"
+      name="price"
+      type="number"
+      />
+      <label for="price">Precio</label>
+    </div>
+    
+    <div class="form-floating mb-3">
+      <input
+      class="form-control"
+      id="capacityByTurn"
+      required
+      placeholder="description"
+      [(ngModel)]="currentProduct.capacityByTurn"
+      name="capacityByTurn"
+      type="number"
+      />
+      <label for="capacityByTurn">Capacidad por turno</label>
+    </div>
+
+    <div class="form-floating mb-3">
+      <input
+      class="form-control"
+      id="income"
+      required
+      placeholder="description"
+      [(ngModel)]="income"
+      name="income"
+      type="number"
+      />
+      <label for="income">Ingreso</label>
+    </div>
+
+    <div class="form-floating mb-3">
+      <input
+      class="form-control"
+      id="stock"
+      required
+      placeholder="description"
+      [(ngModel)]="currentProduct.stock"
+      name="stock"
+      type="number"
+      readonly
+      />
+      <label for="stock">Cantidad en Inventario</label>
+    </div>
+    
+   
+</form>
+
+<button class="btn btn-danger rounded-pill" (click)="deleteProduct()">
+    Eliminar
+  </button>
+
+  <button type="submit" class="btn btn-success rounded-pill mx-2" (click)="updateProduct()">
+    Editar
+  </button>
+
+  <button  class="btn btn-secondary rounded-pill" (click)="updateProduct()" routerLink="material" [state]="currentProduct">
+    Materiales
+  </button>
+  <p>{{ message }}</p>
+</div>
+
+<div *ngIf="!currentProduct">
+  <br />
+  <p>No fue posible acceder a este producto...</p>
+</div>

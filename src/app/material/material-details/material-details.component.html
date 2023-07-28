@@ -1,0 +1,83 @@
+<div *ngIf="material" class="edit-form">
+    <h4>Material</h4>
+    <form>
+      <div class="form-floating mb-2">
+        <input
+          type="text"
+          class="form-control"
+          id="name"
+          placeholder="name"
+          [(ngModel)]="currentMaterial.name"
+          name="name"
+        />
+        <label for="name">Nombre</label>
+      </div>
+
+      <div class="input-group">
+        <div class="form-floating mb-2">
+          <input readonly type="number" class="form-control" id="available" placeholder="available" [(ngModel)]="currentMaterial.available" name="available"/>
+          <label for="available">Unidades Disponibles</label>
+        </div>
+        
+        <div class="form-floating mb-2">
+          <input readonly type="number" class="form-control" id="commited" placeholder="commited" [(ngModel)]="currentMaterial.commited" name="commited"/>
+          <label for="commited">Unidades Comprometidas</label>
+        </div>
+      </div>
+      
+      <div class="input-group">
+        <div class="form-floating mb-2">
+          <input readonly type="number" class="form-control" id="watingCommited" placeholder="watingCommited" [(ngModel)]="currentMaterial.watingCommited" name="watingCommited"/>
+          <label for="watingCommited">Unidades Esperando Comprometidas</label>
+        </div>
+        
+        <div class="form-floating mb-2">
+          <input readonly type="number" class="form-control" id="wating" placeholder="wating" [(ngModel)]="currentMaterial.wating" name="wating"/>
+          <label for="wating">Unidades Esperando</label>
+        </div>
+      </div>
+
+
+      <div class="form-floating mb-2">
+        <input
+          type="text"
+          class="form-control"
+          id="description"
+          placeholder="description"
+          [(ngModel)]="currentMaterial.description"
+          name="description"
+        />
+        <label for="description">Descripcion</label>
+      </div>
+
+      <div class="form-floating input-group mb-2">
+        <input
+          readonly
+          type="text"
+          class="form-control"
+          id="deliveryTime"
+          placeholder="deliveryTime"
+          [(ngModel)]="material.deliveryTime"
+          name="deliveryTime"
+          readonly="readonly"
+        />
+        <span class="input-group-text">Unidades</span>
+        <label for="deliveryTime" >Tiempo de Entrega en Dias</label>
+      </div>
+
+    </form>
+  
+    <button class="btn btn-danger rounded-pill mx-2 mt-2" (click)="deleteMaterial()">
+      Eliminar
+    </button>
+  
+    <button type="submit" class="btn btn-success rounded-pill mt-2" (click)="updateMaterial()">
+      Editar
+    </button>
+    <p>{{ message }}</p>
+  </div>
+  
+  <div *ngIf="!material">
+    <br />
+    <p>No fue posible acceder a este material...</p>
+  </div>

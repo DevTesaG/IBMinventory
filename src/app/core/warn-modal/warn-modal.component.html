@@ -1,0 +1,27 @@
+
+<div class="container-fluid my-3 mx-auto">
+
+    <button class="btn btn-outline-success rounded-pill" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+        {{btnMessage}}
+    </button>
+    
+        <!-- Modal -->
+        <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel">PRECAUCION</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" (click)="modalContinue(false)"></button>
+            </div>
+            <div class="modal-body">
+                {{modalMessage}}
+            </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-danger rounded-pill" data-bs-dismiss="modal" (click)="modalContinue(false)">Abortar</button>
+                    <button type="button" class="btn btn-success rounded-pill" data-bs-dismiss="modal" (click)="modalContinue(true)">Continuar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

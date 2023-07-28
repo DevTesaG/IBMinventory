@@ -1,0 +1,78 @@
+<div *ngIf="currentClient" class="edit-form">
+    <h4>Cliente</h4>
+        
+    <form>
+    <div class="form-floating mb-2">
+        <input
+        type="text"
+        class="form-control"
+        id="name"
+        required
+        [(ngModel)]="currentClient.name"
+        name="name"
+        placeholder="Nombre"
+        type="text"
+        />
+        <label for="name">Nombre</label>
+      </div>
+    
+      <div class="form-floating mb-2">
+        <input
+        type="text"
+        class="form-control"
+        id="code"
+        required
+        [(ngModel)]="currentClient.code"
+        name="code"
+        placeholder="Codigo"
+        type="text"
+        />
+        <label for="code">Numero de Cliente</label>
+      </div>
+        
+        <div class="form-floating mb-2">
+        <input
+        class="form-control"
+          id="phone"
+          required
+          placeholder="description"
+          [(ngModel)]="currentClient.phone"
+          name="phone"
+          type="tel"
+          />
+          <label for="phone">Numero de Telefono</label>
+        </div>
+        
+        <div class="form-floating mb-3">
+          <input
+          class="form-control"
+          id="address"
+          required
+          placeholder="description"
+          [(ngModel)]="currentClient.address"
+          name="address"
+          type="number"
+          />
+          <label for="address">Direccion</label>
+        </div>
+
+    </form>
+    
+    <button class="btn btn-danger rounded-pill mx-2" (click)="deleteClient()">
+        Eliminar
+      </button>
+    
+      <button type="submit" class="btn btn-success rounded-pill" (click)="updateClient()">
+        Editar
+      </button>
+
+      <button class="btn btn-success rounded-pill" >
+        Editar
+      </button>
+      <p>{{ message }}</p>
+    </div>
+    
+    <div *ngIf="!currentClient">
+      <br />
+      <p>No fue posible acceder a este cliente...</p>
+    </div>

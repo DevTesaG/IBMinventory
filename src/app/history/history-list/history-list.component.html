@@ -1,0 +1,81 @@
+
+
+<div class="container mt-5 vh-100">
+
+    <form class="d-flex" role="search">
+      <h4 class="text-muted text-nowrap my-auto">Historial Inventario</h4>
+      
+      <div class="ms-5 form-check mx-auto">
+        <label class="form-check-label" for="flexCheckDefault">
+          Mostrar Reportes PT
+        </label>
+        <input class="form-check-input" type="checkbox" [(ngModel)]="showReportFP" id="flexCheckDefault" name="codeFilter">
+      </div>
+
+      
+
+      <div class="row mx-auto w-100">
+          <div class="col-sm-6">
+              <label for="startDate" class="ms-1">Inicio</label>
+              <input id="startDate" class="form-control" name="sDate" type="date" [(ngModel)]="sDate"/>
+              <!-- <span id="startDateSelected"></span> -->
+          </div>
+          <div class="col-sm-6">
+              <label for="endDate" class="ms-1">Fin</label>
+              <input id="endDate" class="form-control" name="nDate" type="date" [(ngModel)]="nDate"/>
+              <!-- <span id="endDateSelected"></span> -->
+          </div>
+      </div>
+      <input class="form-control mx-auto w-50" type="search" placeholder="Nombre del Producto" aria-label="Search" name="query" [(ngModel)]="query">
+      <button class="btn btn-outline-success float-end ms-2" (click)="filterMaterials()" type="submit">Buscar</button>
+   
+<!--       
+      <input class="form-control ms-5 me-2 float-end" type="search" name="query" placeholder="Buscar por fecha" [(ngModel)]="query" aria-label="Search"> -->
+    </form>
+    <hr>
+
+    <nav aria-label="Page navigation" class="my-3">
+      <ul class="pagination">
+        <li class="page-item">
+          <button class="page-link" aria-label="Previous" (click)="nextPage(false)">
+            <span aria-hidden="true">&laquo;</span>
+          </button>
+        </li>
+    
+        <li class="page-item"> <span class="page-link text-black"> Anterior/Siguiente Registro</span></li>
+        <li class="page-item">
+          <button class="page-link" aria-label="Next" (click)="nextPage(true)">
+            <span aria-hidden="true">&raquo;</span>
+          </button>
+        </li>
+      </ul>
+    </nav>
+    
+    
+    <div class="list row shadow-sm">
+      <div class="col-md-12 my-3">
+        <!-- <ul class="list-group mt-3 mb-3"> -->
+          <!-- <li
+          class="list-group-item"
+          *ngFor="let report of reportsRM; let i = index"
+          [class.active]="i == currentIndex"
+          (click)="setActiveMaterial(report, i)"
+          > -->
+          <div *ngFor="let report of reportsRM; let i = index" class="card">
+            <div class="card-body"> 
+            
+              <h6 class="card-title text-muted">{{ report.process }} </h6>
+              <hr>
+              <span class="fw-bold">Operacion Ejecutada: </span> {{ report.operation }} 
+              <!-- <span class="fw-bold ms-3">Usuario: </span> {{ report.user }}   -->
+              <span class="fw-bold ms-3">Usuario: </span> {{UserName}}  
+            </div>
+            <div class="card-footer">
+              {{report.timestamp.toDate()}}
+            </div>
+          </div>
+        <!-- </li> -->
+      <!-- </ul> -->
+    </div>
+  </div>
+  
