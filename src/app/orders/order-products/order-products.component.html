@@ -1,0 +1,56 @@
+
+
+<div class="container mt-5 vh-100">
+
+    <form class="d-flex" role="search">
+      <h3 class="text-muted text-nowrap my-auto">Registrar orden</h3>
+      <input class="form-control ms-2 me-2 float-end" type="search" name="query" placeholder="Buscar por Nombre" [(ngModel)]="query" aria-label="Search">
+      <button class="btn btn-outline-success float-end" (click)="filter()" type="submit">Buscar</button>
+    </form>
+    
+    <hr>
+    
+    <div class="list row shadow-sm">
+      <div class="col-md-6">
+        <h5 class="text-muted mt-1">Productos disponibles:</h5>
+        
+        <app-pagination [path]="'/products'" [query]="q"  (selectedElement)="getSelectedElement($event)"></app-pagination>
+          
+      </div>
+
+      <div class="col-md-6">
+
+      <div class="edit-form">
+
+        <button class="mt-4 rounded-pill btn btn-outline-success" (click)="createOrder()">Continuar</button>
+
+        <p>productos de la Orden: </p>
+
+        <ul class="list-group mt-3 mb-3">
+          <li class="list-group-item" *ngFor="let product of orderProducts; let j = index">
+            <div class="d-flex flex-row justify-content-between">
+              
+              <span class="my-auto">
+                {{product.name}}
+              </span>
+              
+              <div class="input-group">
+                  <input type="number" placeholder="Unidades" name="UP" [(ngModel)]="product.quantity" class="form-control input-sm" aria-label="quantity">
+                  <span class="input-group-text">U</span>
+                  <input type="number" class="input-group-append" readonly placeholder="Disponible en PT" name="stock" [(ngModel)]="product.available" class="form-control input-sm" aria-label="stock">
+                  <span class="input-group-text">U</span>
+                  <div class="form-check input-group-append mx-2 my-auto">
+                    <label class="form-check-label" for="flexCheckDefault"> Usar PT</label>
+                    <input class="form-check-input" type="checkbox" [ngModel]="product.useFP" (change)="useFP(product.invId, j)" id="flexCheckDefault" name="codeFilter">
+                    <!-- <input class="form-check-input" readonlys type="checkbox" (change)="useFP(product.id, j)" id="flexCheckDefault" name="codeFilter"> -->
+                  </div>
+              </div>
+          
+              <button class="btn-close my-auto btn-sm rounded-pill float-end" (click)="removeProductFromOrder(j)"></button>
+            </div>
+          </li>
+        </ul>
+
+      </div>
+    </div>
+</div>

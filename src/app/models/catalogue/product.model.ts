@@ -1,5 +1,6 @@
 export class Product {
     id?: any;
+    invId?:any;
     code?: any;
     name?: string;
     description?: string;
@@ -8,7 +9,7 @@ export class Product {
     stock?: number;
     capacityByTurn?: number;
     materialWaitMaxTime?:number
-    productMaterials?:any[]
+    materials?:any[]
     timestamp?:any
     // instock?: boolean;
 }

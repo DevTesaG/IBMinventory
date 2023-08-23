@@ -11,7 +11,7 @@
         <input class="form-check-input" type="checkbox" [(ngModel)]="codeFilter" id="flexCheckDefault" name="codeFilter">
       </div>
         <input id="query" class="form-control ms-2 me-2 float-end" type="search" [(ngModel)]="query" name="query" placeholder="Buscar por Nombre o Codigo" aria-label="Search">
-      <button class="btn btn-outline-success float-end" (click)="filterProducts()" type="submit">Buscar</button>
+      <button class="btn btn-outline-success float-end" (click)="filter()" type="submit">Buscar</button>
     </form>
     <hr>
   
@@ -26,17 +26,8 @@
     
     <div class="list row shadow-sm">
       <div class="col-md-6">
-        <ul class="list-group mt-3 mb-3">
-          <li
-          class="list-group-item"
-          *ngFor="let product of Products; let i = index"
-          [class.active]="i == currentIndex"
-          (click)="setActiveProduct(product, i)"
-          >
-          {{ product.name }} - {{product.code}}
-        </li>
-      </ul>
-    </div>
+        <app-pagination [path]="'/products'" [query]="q"  (selectedElement)="getSelectedElement($event)"></app-pagination>
+      </div>
     <div class="col-md-6">
       <div *ngIf="currentProduct">
         <app-product-details
@@ -51,21 +42,4 @@
       </div>
     </div>
     </div>
-
-    <nav aria-label="Page navigation" class="mt-3">
-      <ul class="pagination">
-        <li class="page-item">
-          <button class="page-link" aria-label="Previous" (click)="nextPage(false)">
-            <span aria-hidden="true">&laquo;</span>
-          </button>
-        </li>
-
-        <li class="page-item"> <span class="page-link text-black"> Anterior/Siguiente Registro</span></li>
-        <li class="page-item">
-          <button class="page-link" aria-label="Next" (click)="nextPage(true)">
-            <span aria-hidden="true">&raquo;</span>
-          </button>
-        </li>
-      </ul>
-    </nav>
   </div>

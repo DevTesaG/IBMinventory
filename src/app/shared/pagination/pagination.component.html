@@ -1,15 +1,33 @@
-<ul class="list-group mt-3 mb-3">
-    <li class="list-group-item" *ngFor="let element of elementArray; let i = index" [class.active]="i == currentIndex" (click)="setActiveProduct(product, i)">
-      <span>
-        {{ element.name }}
-      </span>
 
-      <button class="btn btn-success btn-sm rounded-pill float-end">
-        <span>
-          <svg fill="#ffffff" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20px" height="20px" viewBox="0 0 533.973 533.973" xml:space="preserve">
-            <g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path d="M477.931,52.261c-12.821-12.821-33.605-12.821-46.427,0l-266.96,266.954l-62.075-62.069 c-12.821-12.821-33.604-12.821-46.426,0L9.616,303.572c-12.821,12.821-12.821,33.604,0,46.426l85.289,85.289l46.426,46.426 c12.821,12.821,33.611,12.821,46.426,0l46.426-46.426l290.173-290.174c12.821-12.821,12.821-33.605,0-46.426L477.931,52.261z"></path> </g> </g> </g>
-          </svg>
-        </span>
+<nav aria-label="Page navigation" class="my-3">
+  <ul class="pagination">
+    <li class="page-item">
+      <button class="page-link" aria-label="Previous" (click)="nextPage(false)">
+        <span aria-hidden="true">&laquo;</span>
       </button>
+    </li>
+
+    <li class="page-item"> <span class="page-link text-black"> Anterior/Siguiente Registro</span></li>
+    <li class="page-item">
+      <button class="page-link" aria-label="Next" (click)="nextPage(true)">
+        <span aria-hidden="true">&raquo;</span>
+      </button>
+    </li>
+  </ul>
+</nav>
+
+
+<ul *ngIf="isFetched" class="list-group mt-3 mb-3">
+    <li class="list-group-item" *ngFor="let element of elementArray; let i = index" [class.active]="i == currentIndex" (click)="setActiveProduct(element, i)">
+      <span class="d-flex">
+        <div *ngFor="let param of showParams">
+          <div class="ms-2" *ngIf="param=='orderDeadline'">
+             {{   element[param].toDate().toLocaleDateString('es-MX', dateOptions) }}            
+          </div>
+          <div *ngIf="param!='orderDeadline'">
+            {{ element[param] }}
+          </div>
+        </div>
+      </span>
     </li>
 </ul>

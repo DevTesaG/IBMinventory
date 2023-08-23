@@ -36,14 +36,16 @@
     
     <div class="list row shadow-sm">
         <div class="col-md-6">
-            <ul class="list-group mt-3 mb-3">
+          <app-pagination [path]="'/shopOrder'" [showParams]="['name', 'orderDeadline']" [query]="queryChange"  (selectedElement)="getSelectedElement($event)"></app-pagination>  
+
+            <!-- <ul class="list-group mt-3 mb-3">
                 <li class="list-group-item"
                     *ngFor="let product of shopOrders; let i = index"
                     [class.active]="i == currentIndex"
                     (click)="setActiveProduct(product, i)" >
                     {{ product.name }} - {{product.orderDeadline.toDate().toLocaleDateString('es-MX', dateOptions)}}
                 </li>
-            </ul>
+            </ul> -->
         </div>
     
 
@@ -125,10 +127,11 @@
         </div>
 
 
-            </div>
-
-            <button (click)="activateOrder()" class="btn btn-outline-success mx-auto mb-3">Activar Orden</button>
-            <button (click)="completeOrder()" class="btn btn-outline-primary ms-2 mb-3">Completar Orden</button>
+        
+        <button (click)="activateOrder()" class="btn btn-outline-success mx-auto mb-3">Activar Orden</button>
+        <!-- <button (click)="editOrder()" class="btn btn-outline-success mx-auto mb-3">Editar Orden</button> -->
+        <button (click)="completeOrder()" class="btn btn-outline-primary ms-2 mb-3">Completar Orden</button>
+      </div>
 
         </div>
     

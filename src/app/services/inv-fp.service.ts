@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
+import { AngularFirestore, AngularFirestoreCollection, } from '@angular/fire/compat/firestore';
 import { invFinishedProduct } from '../models/inventory/invFinishedProduct.model';
+import { map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -17,14 +18,34 @@ export class InvFPService {
   }
   
   getNextBatch(batch:number, last: any): AngularFirestoreCollection<invFinishedProduct>{ 
-    console.log('hi')
     if(last){
       return this.db.collection(this.dbPath, ref=> ref.orderBy('timestamp', 'desc').startAfter(last.timestamp).limit(batch))
     }
   
     return this.db.collection(this.dbPath, ref=> ref.orderBy('timestamp', 'desc').limit(batch))
   }
-  
+
+  async getStock(id?:string): Promise<invFinishedProduct>{
+    if(!id) return {}
+
+    var stock:invFinishedProduct = {};
+
+    return new Promise( async r => {
+      this.invFinishedProductsRef.doc(id).get().pipe(map((c:any) => ({id: c.id, prod: c.data()}))
+      ).subscribe((data:any) =>{
+        if(!data) return
+        stock = {
+          id:  data.id,
+          available:  data.prod.available,
+          wating:  data.prod.wating,
+          commited:  data.prod.commited
+        }
+          r(stock)
+      })
+    })
+  }
+
+
   getAll(): AngularFirestoreCollection<invFinishedProduct> {
     return this.invFinishedProductsRef;
   }
@@ -33,7 +54,7 @@ export class InvFPService {
     return this.invFinishedProductsRef.add({ ...invFinishedProduct });
   }
 
-  update(id: string, data: any): Promise<void> {
+  update(id: string, data: any,): Promise<void> {
     return this.invFinishedProductsRef.doc(id).update(data);
   }
 

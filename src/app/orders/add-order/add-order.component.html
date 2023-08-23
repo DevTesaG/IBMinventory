@@ -4,13 +4,7 @@
 
     <form class="d-flex" role="search">
       <h3 class="text-muted text-nowrap my-auto">Registrar orden</h3>
-      <div class="ms-5 form-check">
-        <label class="form-check-label" for="flexCheckDefault">
-          Lista de Clientes
-        </label>
-        <input class="form-check-input" type="checkbox" [(ngModel)]="displayClients" (change)="showClientList()" id="flexCheckDefault" name="displayClients">
-      </div>
-        <input class="form-control ms-2 me-2 float-end" type="search" name="query" placeholder="Buscar por Nombre" [(ngModel)]="query" aria-label="Search">
+        <input class="form-control ms-2 me-2 float-end" type="search" name="query" placeholder="Buscar por Nombre" [(ngModel)]="q" aria-label="Search">
       <button class="btn btn-outline-success float-end" (click)="filterProducts()" type="submit">Buscar</button>
     </form>
     
@@ -18,28 +12,13 @@
     
     <div class="list row shadow-sm">
       <div class="col-md-6">
-        <h5 class="text-muted mt-1">Productos disponibles:</h5>
-        <ul class="list-group mt-3 mb-3">
-          <li class="list-group-item" *ngFor="let product of Products; let i = index" [class.active]="i == currentIndex" (click)="setActiveProduct(product, i)">
-
-            <span>
-              {{ product.name }}
-            </span>
-
-            <button *ngIf="!displayClients" class="btn btn-success btn-sm rounded-pill float-end" (click)="addProductToOrder(product)">
-              <span>
-                <svg fill="#ffffff" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="20px" height="20px" viewBox="0 0 533.973 533.973" xml:space="preserve">
-                  <g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <g> <g> <path d="M477.931,52.261c-12.821-12.821-33.605-12.821-46.427,0l-266.96,266.954l-62.075-62.069 c-12.821-12.821-33.604-12.821-46.426,0L9.616,303.572c-12.821,12.821-12.821,33.604,0,46.426l85.289,85.289l46.426,46.426 c12.821,12.821,33.611,12.821,46.426,0l46.426-46.426l290.173-290.174c12.821-12.821,12.821-33.605,0-46.426L477.931,52.261z"></path> </g> </g> </g>
-                </svg>
-              </span>
-            </button>
-          </li>
-        </ul>
+        <h5 class="text-muted mt-1">Lista de Clientes:</h5>
+        <app-pagination [path]="'/clients'" [query]="queryChange"  (selectedElement)="getSelectedElement($event)"></app-pagination>
       </div>
 
       <div class="col-md-6">
 
-      <div *ngIf="order" class="edit-form">
+      <div *ngIf="orderProducts" class="edit-form">
         <h4>Nueva Orden</h4>
     
         <!-- <div class="form-floating mb-2">
@@ -142,45 +121,24 @@
               </span>
               
               <div class="input-group">
-                  <input type="number" placeholder="Unidades" name="UP" [(ngModel)]="product.quantity" class="form-control input-sm" aria-label="quantity">
+                  <input type="number" placeholder="Unidades" name="UP" readonly [(ngModel)]="product.quantity" class="form-control input-sm" aria-label="quantity">
                   <span class="input-group-text">U</span>
                   <input type="number" class="input-group-append" readonly placeholder="Disponible en PT" name="stock" [(ngModel)]="product.stock" class="form-control input-sm" aria-label="stock">
                   <span class="input-group-text">U</span>
                   <div class="form-check input-group-append mx-2 my-auto">
                     <label class="form-check-label" for="flexCheckDefault"> Usar PT</label>
                     <input class="form-check-input" readonlys type="checkbox" [ngModel]="product.useFP" id="flexCheckDefault" name="codeFilter">
-                    <!-- <input class="form-check-input" readonlys type="checkbox" (change)="useFP(product.id, j)" id="flexCheckDefault" name="codeFilter"> -->
                   </div>
               </div>
-          
-              <button class="btn-close my-auto btn-sm rounded-pill float-end" (click)="removeProductFromOrder(j)"></button>
             </div>
           </li>
         </ul>
 
       </div>
         
-      <div *ngIf="!order">
+      <div *ngIf="!orderProducts">
         <br />
-        <p>Seleccione un producto...</p>
+        <p>No se selecciono ningun producto...</p>
       </div>
     </div>
-
-
-    <nav aria-label="Page navigation" class="mt-3">
-      <ul class="pagination">
-        <li class="page-item">
-          <button class="page-link" aria-label="Previous" (click)="nextPage(false)">
-            <span aria-hidden="true">&laquo;</span>
-          </button>
-        </li>
-
-        <li class="page-item"> <span class="page-link text-black"> Anterior/Siguiente Registro</span></li>
-        <li class="page-item">
-          <button class="page-link" aria-label="Next" (click)="nextPage(true)">
-            <span aria-hidden="true">&raquo;</span>
-          </button>
-        </li>
-      </ul>
-    </nav>
 </div>

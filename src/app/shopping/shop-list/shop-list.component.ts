@@ -5,6 +5,7 @@ import { ShopRM } from 'src/app/models/shopping/shopRM.model';
 import { InvRMService } from 'src/app/services/inv-rm.service';
 import { ShopOrderService } from 'src/app/services/shop-order.service';
 import { Timestamp } from 'firebase/firestore'
+import { OrderService } from 'src/app/services/order.service';
 
 @Component({
   selector: 'app-shop-list',
@@ -33,7 +34,7 @@ export class ShopListComponent implements OnInit {
 
   formObj: FormProp[][];
 
-  constructor(private OrderService: ShopOrderService, private invrmService: InvRMService,) { 
+  constructor(private OrderService: ShopOrderService, private invrmService: InvRMService,private sellOrderService: OrderService) { 
     this.formObj = [
       [new FormProp('Nombre del Material' ,'name', 'text'), new FormProp('Cantidad Solicitada' ,'requiredMaterial', 'number')],
       [new FormProp('Fecha Limite del Material' ,'orderDeadline', 'date'), new FormProp('Fecha de Emision de Orden' ,'emissionDate', 'date')],
@@ -117,6 +118,21 @@ export class ShopListComponent implements OnInit {
   submit(order: any){
   }
 
+  getSelectedElement(element:any){
+    this.currentOrder = element.element;
+    this.currentIndex = element.index;
+  }
+
+  editOrder(order:any){
+  if(!(this.currentOrder && this.currentOrder.requestedAmount)) return
+  
+  if(this.currentOrder.requestedAmount > order.requestedAmount){
+    alert('No puede pedir meno material del requerido para una orden activa')
+    return
+  }
+    this.OrderService.update(this.currentOrder?.id, {requiredMaterial: this.currentOrder.requiredMaterial})
+  }
+
   completeOrder(){
     if (this.currentOrder) {
       this.OrderService.update(this.currentOrder.id, {fulfilled: true}).then(async () => {
@@ -130,7 +146,10 @@ export class ShopListComponent implements OnInit {
               waiting: stock.wating - this.currentOrder?.requestedAmount,
               watingCommited: stock.watingCommited - this.currentOrder.requiredMaterial + this.currentOrder.requestedAmount, 
               commited: stock.commited +  this.currentOrder?.requiredMaterial - this.currentOrder.requestedAmount
-            }) 
+            }).then(()=>{
+              if(this.currentOrder?.orderId)
+              this.sellOrderService.update(this.currentOrder?.orderId, {state: 'EN PRODUCCIÓN'})
+            })
           }
         }).catch(err => console.log(err));
     }
@@ -147,9 +166,9 @@ export class ShopListComponent implements OnInit {
 
   filterProducts(): void {
     this.queryChange = this.query
-    this.shopOrders = []
-    this.lastInResponses = []
-    this.nextPage(true)
+    // this.shopOrders = []
+    // this.lastInResponses = []
+    // this.nextPage(true)
   }
 
   setActiveProduct(Product: ShopRM, index: number): void {

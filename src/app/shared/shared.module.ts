@@ -21,7 +21,8 @@ import { PaginationComponent } from './pagination/pagination.component';
   exports:[
     WarnModalComponent,
     FormComponent,
-    FormsModule
+    FormsModule,
+    PaginationComponent
   ]
 })
 export class SharedModule { }

@@ -8,7 +8,4 @@ export class InvRawMaterial {
     commited?:number
     watingCommited?:number
     wating?:number
-    income?:number;
-    outcome?:number;
-    notes?:number;
 }

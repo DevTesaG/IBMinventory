@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { map } from 'rxjs';
 import { Orders } from 'src/app/models/inventory/orders.model';
+import { InvFPService } from 'src/app/services/inv-fp.service';
 import { OrderService } from 'src/app/services/order.service';
 import { ProductService } from 'src/app/services/product.service';
 
@@ -17,7 +17,7 @@ export class OrdersListComponent implements OnInit {
   currentIndex = -1;
   title = '';
   
-  query = '';
+  q = '';
   queryChange?:string = undefined;
   codeFilter = false;
     
@@ -26,118 +26,54 @@ export class OrdersListComponent implements OnInit {
   disablePrev = false;
   lastInResponses:any[] = [];
 
-  constructor(private OrderService: OrderService, private productService: ProductService) { }
+  constructor(private OrderService: OrderService, private productService: ProductService, private invFpService: InvFPService) { }
 
   ngOnInit(): void {
-    this.nextPage(true)
-  }
-
-  refreshList(): void {
-    
-    this.currentOrder = undefined;
-    this.currentIndex = -1;
-    this.lastInResponses = []
-    this.Products = []
-    this.nextPage(true)
   }
 
 
-
-
-  nextPage(direction: boolean) {
-  
-  var anchor: any;
-  
-  if(direction){
-    if(this.disableNext) return;
-    
-    if(this.Products?.length){
-      this.lastInResponses?.push(this.Products[this.Products.length - 1])
-    }  
-    anchor = this.lastInResponses?.length ? this.lastInResponses[this.lastInResponses?.length - 1]: undefined;
-  }else{
-    if(this.disablePrev) return;
-    this.lastInResponses?.pop();
-    anchor = this.lastInResponses?.pop();
+  getSelectedElement(element: any): void {
+    this.currentOrder = element.element;
+    this.currentIndex = element.index;
+  }
+ 
+  filter(){
+    this.queryChange = this.q
   }
 
-  var req;
-  if(this.queryChange){
-    if(this.codeFilter){
-      // req = this.OrderService.filterByCodeBatch(this.queryChange,this.productsPerCall, anchor)
-      req = this.OrderService.getNextBatch(this.productsPerCall, anchor)
-    }else{
-      // req = this.OrderService.filterByNameBatch(this.queryChange,this.productsPerCall, anchor)
-      req = this.OrderService.getNextBatch(this.productsPerCall, anchor)
-    }
-  } else{
-    req = this.OrderService.getNextBatch(this.productsPerCall, anchor)
-  }
 
-  req.snapshotChanges().pipe(
-      map(changes => changes.map(c => 
-          ({ id: c.payload.doc.id, ...c.payload.doc.data() })
-        )
-      )
-    ).subscribe(data => {
-      if(!data.length){
-        this.disableNext = true;
-        return;
-      }
 
-      this.Products = data;
-      this.disableNext = data.length < this.productsPerCall; //What if last batch is exactly productPerCall
-      this.disablePrev = anchor ? false: true
-    }, error => {
-      this.disableNext = false;
-  });
-  }
-
-  removeProductFromOrder(j: number){
-
-  }
 
   editProducts(){
 
   }
 
-  useFP(productId: string, index: number){
-    if(this.codeFilter){
-        this.productService.getById(productId).pipe(map(c => ({id: c.id, ...c.data()}))).subscribe(data =>  { 
-        if(this.currentOrder?.orderProducts){
-            this.currentOrder.orderProducts[index].stock = data.stock ? data.stock: 0;
-        }});
-    }else{
-      if(this.currentOrder?.orderProducts){
-        this.currentOrder.orderProducts[index].stock = ''   
+
+  setOrderReady(){
+    this.currentOrder?.orderProducts?.forEach( async prod => {
+      var stock = await this.invFpService.getStock(prod.invId)
+      if(stock.wating != undefined && stock.commited != undefined ){
+        this.invFpService.update(prod.invId, {wating: (+stock.wating) - prod.quantity, commited: (+stock.commited) + prod.quantity})        
       }
-    }
+    })
+    this.OrderService.update(this.currentOrder?.id, {state: 'TERMINADO'})
+    alert('La orden fue establecida como terminada satisfactoriamente')
+
+
   }
 
-  fullfillOrder(){
-    
-    if (this.currentOrder?.id) {
-      this.OrderService.update(this.currentOrder.id, {fulfilled: true})
-        .then(() => this.refreshList())
-        .catch(err => console.log(err));
-    }
-  }
-  
-
-  filterProducts(): void {
-    this.queryChange = this.query
-    this.Products = []
-    this.lastInResponses = []
-    this.nextPage(true)
-  }
-
-  setActiveProduct(Product: Orders, index: number): void {
-    this.currentOrder = Product;
-    this.currentIndex = index;
-  }
 
   completeOrder(){
-    this.OrderService.delete(this.currentOrder?.id).then(() => this.refreshList())
+    this.currentOrder?.orderProducts?.forEach( async prod => {
+      var stock = await this.invFpService.getStock(prod.invId)
+      if(stock.commited != undefined){
+        this.invFpService.update(prod.invId, {commited: stock.commited - prod.quantity})        
+      }
+    })
+
+    // this.OrderService.delete(this.currentOrder?.id).then(() => {
+    //   this.refreshList()
+    // })
   }
 
   readableDate(time:any) {

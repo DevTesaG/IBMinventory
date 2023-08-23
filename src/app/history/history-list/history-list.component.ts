@@ -16,7 +16,7 @@ import { AuthService } from 'src/app/services/auth.service';
 })
 export class HistoryListComponent implements OnInit {
 
-  constructor(private auditService: AuditService, private authService: AuthService) { }
+  constructor(private audit: AuditService, private authService: AuthService, private auditService:  InvRMService) { }
 
 
   

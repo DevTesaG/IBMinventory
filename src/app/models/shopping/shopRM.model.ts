@@ -1,6 +1,3 @@
-import { Product } from "../catalogue/product.model";
-import { Orders } from "../inventory/orders.model";
-
 export class ShopRM {
     id?: any;
     materialId?:string;
@@ -13,4 +10,5 @@ export class ShopRM {
     cost?:any
     fulfilled?:any   
     timestamp?:any;
+    orderId?:string
 }

@@ -5,6 +5,7 @@ import { Timestamp } from 'firebase/firestore'
 import { AuditService } from 'src/app/services/audit.service';
 import { FirestoreOperationService } from 'src/app/services/firestore-operation.service';
 import { FormProp } from 'src/app/models/form-prop.model';
+import { InvFPService } from 'src/app/services/inv-fp.service';
 
 @Component({
   selector: 'app-add-product',
@@ -19,7 +20,7 @@ export class AddProductComponent{
   submitted = false;
   
   
-  constructor(private ProductService: ProductService, private auditService: AuditService, private fos: FirestoreOperationService) { 
+  constructor(private invFpService: InvFPService, private auditService: AuditService, private fos: FirestoreOperationService) { 
 
     var cap:FormProp = new FormProp('Capacidad por turno' ,'capacityByTurn', 'number')
 
@@ -47,8 +48,11 @@ export class AddProductComponent{
   
   saveProduct(): void {
     this.product.timestamp = Timestamp.fromDate(new Date());
-    this.fos.create<Product>(this.product).then(() => {
-    //   this.auditService.create(ProductService.name, 'Crear Producto', 'Jonny123')
+    this.fos.create<Product>(this.product).then((prod:any) => {
+
+      this.invFpService.create({available: this.product.stock, commited: 0, wating: 0}).then((inv:any) => {
+        this.fos.update(prod.id, {invId: inv.id})
+      })
       this.submitted = true;
     });
   }

@@ -19,10 +19,10 @@ export class InvRMService {
   
   getNextBatch(batch:number, last: any): AngularFirestoreCollection<InvRawMaterial>{ 
     if(last){
-      return this.db.collection(this.dbPath, ref=> ref.orderBy('timestamp', 'desc').startAfter(last.timestamp).limit(batch))
+      return this.db.collection(this.dbPath, ref=> ref.orderBy('materialId', 'desc').startAfter(last.materialId).limit(batch))
     }
   
-    return this.db.collection(this.dbPath, ref=> ref.orderBy('timestamp', 'desc').limit(batch))
+    return this.db.collection(this.dbPath, ref=> ref.orderBy('materialId', 'desc').limit(batch))
   }
   
   getAll(): AngularFirestoreCollection<InvRawMaterial> {

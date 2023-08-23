@@ -2,12 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { Material } from 'src/app/models/catalogue/material.model';
 import { MaterialService } from 'src/app/services/material.service';
 import { Timestamp } from 'firebase/firestore'
-import { Departments } from 'src/app/models/enums/departments.model';
 import { AuditService } from 'src/app/services/audit.service';
 import { FirestoreOperationService } from 'src/app/services/firestore-operation.service';
 import { FormProp } from 'src/app/models/form-prop.model';
 import { InvRMService } from 'src/app/services/inv-rm.service';
 import { InvRawMaterial } from 'src/app/models/inventory/invRawMaterial.model';
+import { ProviderService } from 'src/app/services/provider.service';
+import { Provider } from 'src/app/models/catalogue/provider.model';
 
 @Component({
   selector: 'app-add-material',
@@ -19,6 +20,7 @@ export class AddMaterialComponent {
 
   material: Material = new Material();
   invMaterial: InvRawMaterial = new InvRawMaterial()
+  provider: Provider = new Provider()
 
   formObj: FormProp[][];
   submitted = false;
@@ -33,13 +35,12 @@ export class AddMaterialComponent {
     "Empaque"
   ]
 
-  constructor(private fos: FirestoreOperationService ,private auditService: AuditService, private invRMService: InvRMService) { 
+  constructor(private fos: FirestoreOperationService ,private auditService: AuditService, private invRMService: InvRMService, private providerService: ProviderService) { 
     this.formObj = [
-      [new FormProp('Nombre' ,'name', 'text'), new FormProp('Lote Minimo' ,'minBatch', 'number')],
+      [new FormProp('Nombre' ,'name', 'text'),new FormProp('Cantidad en Inventario' ,'available', 'number')],
       [new FormProp('Descripcion' ,'description', 'text')],
-      [new FormProp('Precio' ,'price', 'number')],
-      [new FormProp('Cantidad en Inventario' ,'available', 'number')],
-      [new FormProp('Tiempo de Entrega', 'deliveryTime', 'number')] ,
+      [new FormProp('Nombre del Proovedor' ,'providerName', 'text'), new FormProp('Precio' ,'price', 'number')],
+      [new FormProp('Lote Minimo' ,'minBatch', 'number'), new FormProp('Tiempo de Entrega', 'deliveryTime', 'number')],
       [new FormProp('Area', 'area', 'text'),new FormProp('Zona', 'zone', 'text'), new FormProp('Posicion', 'position', 'text') ]
     ] 
     
@@ -47,7 +48,13 @@ export class AddMaterialComponent {
 
   
   submit(material: any){
-    this.material = material;
+    this.material ={
+      name: material.name,
+      description: material.description,
+      area: material.area,
+      zone: material.zone,
+      position: material.position,
+    }
     this.invMaterial = {
       name: material.name,
       available: +material.available,
@@ -55,6 +62,13 @@ export class AddMaterialComponent {
       watingCommited: 0,
       wating: 0
     }
+    this.provider = {
+      price: material.price,
+      name: material.providerName,
+      deliveryTime: material.deliveryTime,
+      minBatch: material.minBatch
+    }
+    
     this.saveMaterial()
   }
 
@@ -65,9 +79,10 @@ export class AddMaterialComponent {
 
     this.fos.create<Material>(this.material).then((mat:any) => {
       this.invRMService.create({materialId: mat.id,...this.invMaterial})
+      this.providerService.create({materialId: mat.id, ...this.provider})
       console.log('Created new material successfully!');
         // this.auditService.create(MaterialService.name, 'Crear Orden', 'Jonny123')
-        this.submitted = true;
+      this.submitted = true;
     });
   }
 

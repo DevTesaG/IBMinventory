@@ -51,9 +51,30 @@
       </ul>
     </nav>
     
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Material</th>
+          <th scope="col">Disponible</th>
+          <th scope="col">Comprometido</th>
+          <th scope="col">En espera Comprometido</th>
+          <th scope="col">En espera</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr *ngFor="let report of reportsRM; let i = index">
+            <th scope="row">{{ report.name }}</th>
+            <td>{{ report.available }} </td>
+            <td>{{ report.commited }}</td>
+            <td>{{ report.watingCommited }}</td>
+            <td> {{ report.wating}}</td>
+          </tr>
+      </tbody>
+    </table>
     
-    <div class="list row shadow-sm">
-      <div class="col-md-12 my-3">
+    <!-- <div class="list row shadow-sm"> -->
+      <!-- <div class="col-md-12 my-3"> -->
         <!-- <ul class="list-group mt-3 mb-3"> -->
           <!-- <li
           class="list-group-item"
@@ -61,21 +82,20 @@
           [class.active]="i == currentIndex"
           (click)="setActiveMaterial(report, i)"
           > -->
-          <div *ngFor="let report of reportsRM; let i = index" class="card">
-            <div class="card-body"> 
+          <!-- <div *ngFor="let report of reportsRM; let i = index" class="card"> -->
+            <!-- <div class="card-body"> 
             
               <h6 class="card-title text-muted">{{ report.process }} </h6>
               <hr>
               <span class="fw-bold">Operacion Ejecutada: </span> {{ report.operation }} 
-              <!-- <span class="fw-bold ms-3">Usuario: </span> {{ report.user }}   -->
               <span class="fw-bold ms-3">Usuario: </span> {{UserName}}  
             </div>
             <div class="card-footer">
               {{report.timestamp.toDate()}}
-            </div>
-          </div>
+            </div> -->
+
         <!-- </li> -->
       <!-- </ul> -->
-    </div>
-  </div>
+    <!-- </div> -->
+  <!-- </div> -->
   

@@ -7,7 +7,7 @@ import { map } from 'rxjs';
 })
 export class FirestoreOperationService {
 
-  // private path = '/products';
+  // private path2 = '/products';
 
   private pagination: {
     query?: string,
@@ -45,6 +45,9 @@ export class FirestoreOperationService {
     this.objectRef = this.db.collection(this.path);
   }
 
+  pathGetter(){
+    return this.path
+  }
 
   paginationSetter(pagination: any){
     this.pagination = pagination
@@ -153,12 +156,12 @@ async nextPage<S>(direction: boolean) {
 
   
   filterByKeyBatch<S>(key:string, value: string, batch:number, last:any):  AngularFirestoreCollection<S> {
-    console.log(key, value)
+    console.log(key, value, last)
     if(last){
       console.log(last[key])
       return this.db.collection(this.path, ref => ref.where(key, '>=', value).where(key, '<=',  value+ '\uf8ff').orderBy(key, 'desc').startAfter(last[key]).limit(batch))
     }
-    return this.db.collection(this.path, ref => ref.where(key, '>=', value).where(key, '<=',  value+ '\uf8ff').orderBy(key, 'desc').limit(batch))
+      return this.db.collection(this.path, ref => ref.where(key, '>=', value).where(key, '<=',  value+ '\uf8ff').orderBy(key, 'desc').limit(batch))
   }
 }
 

@@ -40,21 +40,11 @@ export class ProductDetailsComponent {
     this.currentProduct = { ...this.product };
   }
 
-  // updateonFP(status: boolean): void {
-  //   if (this.currentProduct.id) {
-  //     this.productService.update(this.currentProduct.id, { onFP: status })
-  //     .then(() => {
-  //       this.currentProduct.onFP = status;
-  //       this.message = 'The status was updated successfully!';
-  //     })
-  //     .catch(err => console.log(err));
-  //   }
-  // }
 
   createInventoryReport(): void {
     if(!this.income) return
     const report = {
-      product_id: this.currentProduct.id,
+      productId: this.currentProduct.id,
       name: this.currentProduct.name,
       income: this.income,
       outcome: this.outflow,

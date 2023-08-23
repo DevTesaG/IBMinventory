@@ -12,7 +12,7 @@
         <input class="form-check-input" type="checkbox" [(ngModel)]="codeFilter" id="flexCheckDefault" name="codeFilter">
       </div>
 
-        <input *ngIf="!codeFilter" id="query" class="form-control mx-2 float-end" type="search" [(ngModel)]="query" name="query" placeholder="Buscar por Nombre o Codigo" aria-label="Search">
+        <input *ngIf="!codeFilter" id="query" class="form-control mx-2 float-end" type="search" [(ngModel)]="q" name="query" placeholder="Buscar por Nombre o Codigo" aria-label="Search">
 
 
         <select *ngIf="codeFilter" class="form-select mx-2" aria-label="Default select example">
@@ -22,7 +22,7 @@
           <option value="4">TERMINADA</option>
         </select>
       
-        <button class="btn btn-outline-success float-end" (click)="filterProducts()" type="submit">Buscar</button>
+        <button class="btn btn-outline-success float-end" (click)="filter()" type="submit">Buscar</button>
     </form>
     <hr>
   
@@ -37,17 +37,8 @@
     
     <div class="list row shadow-sm">
       <div class="col-md-6">
-        <ul class="list-group mt-3 mb-3">
-          <li
-          class="list-group-item"
-          *ngFor="let product of Products; let i = index"
-          [class.active]="i == currentIndex"
-          (click)="setActiveProduct(product, i)"
-          >
-          {{ product.name }} - {{product.shipDate}}
-        </li>
-      </ul>
-    </div>
+        <app-pagination [path]="'/orders'" [query]="queryChange"  (selectedElement)="getSelectedElement($event)"></app-pagination>  
+     </div>
     <div class="col-lg-6">
       <!-- <div *ngIf="currentOrder">
         <app-order-details
@@ -192,17 +183,15 @@
               </div>
               
               <div class="input-group h-25 my-auto ms-2 ">
-                  <input type="number" placeholder="Unidades" name="UP" [(ngModel)]="product.quantity" class="form-control input-sm" readonly aria-label="quantity">
+                  <input type="number" placeholder="Unidades" readonly name="UP" [(ngModel)]="product.quantity" class="form-control input-sm" readonly aria-label="quantity">
                   <span class="input-group-text">U</span>
-                  <input type="number" class="input-group-append" placeholder="Uso de PT" name="stock" [(ngModel)]="product.stock" class="form-control input-sm" readonly aria-label="stock">
-                  <span class="input-group-text">U</span>
-                  <div class="form-check input-group-append mx-2 my-auto">
+                  <!-- <input type="number" class="input-group-append" placeholder="Uso de PT" name="stock" [(ngModel)]="product.stock" class="form-control input-sm" readonly aria-label="stock">
+                  <span class="input-group-text">U</span> -->
+                  <!-- <div class="form-check input-group-append mx-2 my-auto">
                     <label class="form-check-label" for="flexCheckDefault"> Uso PT</label>
-                    <input class="form-check-input" disabled type="checkbox"  [(ngModel)]="codeFilter" id="flexCheckDefault" name="codeFilter">
-                  </div>
-              </div>
-              
-              <button class="btn-close my-auto btn-sm rounded-pill float-end" (click)="removeProductFromOrder(j)"></button>
+                    <input class="form-check-input" readonly type="checkbox"  [(ngModel)]="codeFilter" id="flexCheckDefault" name="codeFilter">
+                  </div> -->
+              </div>              
             </div>
           </li>
         </ul>
@@ -213,21 +202,4 @@
       </div>
     </div>
     </div>
-
-    <nav aria-label="Page navigation" class="mt-3">
-      <ul class="pagination">
-        <li class="page-item">
-          <button class="page-link" aria-label="Previous" (click)="nextPage(false)">
-            <span aria-hidden="true">&laquo;</span>
-          </button>
-        </li>
-
-        <li class="page-item"> <span class="page-link text-black"> Anterior/Siguiente Registro</span></li>
-        <li class="page-item">
-          <button class="page-link" aria-label="Next" (click)="nextPage(true)">
-            <span aria-hidden="true">&raquo;</span>
-          </button>
-        </li>
-      </ul>
-    </nav>
   </div>

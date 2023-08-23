@@ -24,8 +24,20 @@ export class ShopOrderService {
     return this.db.collection(this.dbPath, ref=> ref.orderBy('emissionDate', 'asc').limit(batch))
   }
 
-  create(id:string,name:string,required:number, requestedAmount: number, orderDeadline:any, stockId:any){
-    return this.InvRawMaterialsRef.add({ materialId: id, name:name, stockId: stockId ,requiredMaterial: required, requestedAmount: requestedAmount, orderDeadline: orderDeadline, emissionDate: new Date(), timestamp: new Date()});
+  create(id:string,name:string,required:number, requestedAmount: number, orderDeadline:any, stockId:any, price:number, orderId?:string){
+    var data:any = { 
+      materialId: id, 
+      price: price,
+      name:name, 
+      stockId: stockId ,
+      requiredMaterial: required, 
+      requestedAmount: requestedAmount, 
+      orderDeadline: orderDeadline, 
+      emissionDate: new Date(), 
+      timestamp: new Date(),
+    }
+    if(orderId) data.orderId = orderId
+    return this.InvRawMaterialsRef.add(data);
   }
 
   update(id: string, data: any): Promise<void> {

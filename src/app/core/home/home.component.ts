@@ -9,6 +9,9 @@ import { FormProp } from 'src/app/models/form-prop.model';
 })
 export class HomeComponent implements OnInit {
 
+  q?:string;
+
+
   constructor() { }
 
   ngOnInit(): void {
@@ -23,6 +26,15 @@ export class HomeComponent implements OnInit {
 
   submit(user: any){
     console.log(user)
+  }
+
+
+  filter(){
+    this.q = 'Esc'
+  }
+
+  getSelectedElement(element: any){
+    console.log(element)
   }
 
 }
