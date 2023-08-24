@@ -55,7 +55,9 @@
       <div *ngIf="currentOrder" class="edit-form">
         <h4>Orden</h4>
     
-        <div class="form-floating mb-2">
+        <app-form [mode]="true" [formObj]="formObj" [placeHolder]="currentOrder" (formModel)="submit($event)" btnMes="Crear Orden" modalMessage="¿Desea continuar con la creacion de la Orden?"></app-form>
+
+        <!-- <div class="form-floating mb-2">
           <input
           class="form-control"
           id="name"
@@ -67,9 +69,9 @@
           type="text"
           />
           <label for="name">Numero de Orden de Pedido</label>
-        </div>
+        </div> -->
 
-        
+<!--         
         <div class="form-floating input-group mb-2">
           <input
           class="form-control"
@@ -90,12 +92,12 @@
               </a>
             </span>
             <label for="clientName">Nombre del Cliente</label>
-          </div>
+          </div> -->
 
            
-        <div class="submit-form">
+        <!-- <div class="submit-form"> -->
 
-          <div class="input-group mb-2">
+          <!-- <div class="input-group mb-2">
             <div class="form-floating">
               <input id="shipDate" class="form-control" name="shipDate" readonly required type="date" [(ngModel)]="currentOrder.shipDate"/>
               <label for="shipDate">Fecha de Embarque</label>
@@ -105,9 +107,9 @@
               <input id="state" class="form-control" name="state" readonly required type="text" [(ngModel)]="currentOrder.state"/>
               <label for="state">Estado</label>
             </div>
-          </div>
+          </div> -->
       
-      <div class="input-group ">
+      <!-- <div class="input-group ">
         <div class="form-floating input-group mb-2">
           <input
           class="form-control"
@@ -121,9 +123,9 @@
           />
           <span class="input-group-text">dias</span>
           <label for="productionDays">Dias de Produccion</label>
-        </div>
+        </div> -->
           
-        <div class="form-floating input-group mb-2">
+        <!-- <div class="form-floating input-group mb-2">
             <input
             class="form-control"
             id="orderInput"
@@ -137,9 +139,9 @@
             <span class="input-group-text">días</span>
             <label for="orderInput">Pedido de Insumos</label>
           </div>
-        </div>
+        </div> -->
           
-          <div class="input-group">
+          <!-- <div class="input-group">
             <div class="form-floating mb-3">
               <input id="rmOrderDeadline" class="form-control" name="rmOrderDeadline" required type="date" readonly [(ngModel)]="currentOrder.rmOrderDeadline"/>
               <label for="rmOrderDeadline">Pedido Materia Prima</label>
@@ -149,14 +151,9 @@
               <input id="startProductionDeadline" class="form-control" name="startProductionDeadline" readonly required type="date" [(ngModel)]="currentOrder.startProductionDeadline"/>
               <label for="startProductionDeadline">Limite inicio de Produccion</label>
             </div>
-          </div>
-          
-          <!-- <div class="form-floating input-group mb-3">
-            <input id="startProductionDeadline" class="form-control" name="startProductionDeadline" required type="date" [(ngModel)]="order.startProductionDeadline"/>
-            <label for="startProductionDeadline">Limite inicio de Produccion</label>
           </div> -->
           
-          <div class="form-floating mb-3">
+          <!-- <div class="form-floating mb-3">
             <input
             class="form-control"
             id="notes"
@@ -168,10 +165,9 @@
             readonly
             />
             <label for="notes">notas</label>
-          </div>
+          </div> -->
           
-
-        </div>
+        <!-- </div> -->
 
         <p>productos de la Orden: </p>
 
@@ -196,7 +192,7 @@
           </li>
         </ul>
 
-        <button (click)="editProducts()" class="btn btn-outline-success mx-auto mb-3">Editar Orden</button>
+        <button (click)="setOrderReady()" class="btn btn-outline-success mx-auto mb-3">Orden Lista</button>
         <button (click)="completeOrder()" class="btn btn-outline-primary ms-2 mb-3">Completar Orden</button>
 
       </div>

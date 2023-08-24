@@ -1,24 +1,24 @@
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { AngularFirestoreCollection } from '@angular/fire/compat/firestore';
 import { map } from 'rxjs';
-import { Client } from 'src/app/models/catalogue/client.model';
-import { Product } from 'src/app/models/catalogue/product.model';
 import { FirestoreOperationService } from 'src/app/services/firestore-operation.service';
+import { InvRMService } from 'src/app/services/inv-rm.service';
 
 @Component({
   selector: 'app-pagination',
   templateUrl: './pagination.component.html',
   styleUrls: ['./pagination.component.css'],
-  providers: [FirestoreOperationService, {provide: 'path', useValue: '/products'}]
+  providers: [FirestoreOperationService, {provide: 'path', useValue: '/RMreport'}]
 })
 export class PaginationComponent implements OnInit {
 
   @Output() selectedElement: EventEmitter<any> = new EventEmitter<any>();
+  @Output() fetchedArray: EventEmitter<any> = new EventEmitter<any>();
   @Input() query?: string;
   @Input() filter:string = 'name';
   @Input() path?: string;
   @Input() showParams?: string[]= ['name'];
-  secondaryList:boolean = false
+  @Input() mode?: boolean = false;
 
   dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
 
@@ -38,11 +38,11 @@ export class PaginationComponent implements OnInit {
 
 
 
-  constructor(private fos: FirestoreOperationService) {}
+  constructor(private fos: FirestoreOperationService, private inv: InvRMService) {}
 
   ngOnInit(): void {
     if(!this.path) this.path = '/products'
-    this.fos.pathSetter(this.path)  
+    this.fos.pathSetter(this.path)
     this.nextPage(true)
     this.firstCall = false
   }
@@ -87,6 +87,9 @@ export class PaginationComponent implements OnInit {
         this.disablePrev = anchor ? false: true
         this.isFetched = true;
         
+        if(this.mode){
+          this.fetchedArray.emit(this.elementArray)
+        }
       });
   }
 
@@ -104,7 +107,14 @@ export class PaginationComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges) {
     if(this.firstCall) return
     this.isFetched = false
-    this.filterProducts(changes['query'].currentValue);
+
+    if(changes['query']){
+      this.filterProducts(changes['query'].currentValue);
+    }else if(changes['path']){
+      this.resetPagination()
+      this.fos.pathSetter(changes['path'].currentValue)  
+      this.nextPage(true)
+    }
   }
 
   filterProducts( q:any): void {

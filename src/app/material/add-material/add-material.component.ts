@@ -60,7 +60,7 @@ export class AddMaterialComponent {
       available: +material.available,
       commited: 0,
       watingCommited: 0,
-      wating: 0
+      wating: 0,
     }
     this.provider = {
       price: material.price,
@@ -76,7 +76,8 @@ export class AddMaterialComponent {
 
   saveMaterial(): void {
     this.material.timestamp = Timestamp.fromDate(new Date());
-
+    this.invMaterial.timestamp = Timestamp.fromDate(new Date());
+    
     this.fos.create<Material>(this.material).then((mat:any) => {
       this.invRMService.create({materialId: mat.id,...this.invMaterial})
       this.providerService.create({materialId: mat.id, ...this.provider})

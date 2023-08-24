@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { FormProp } from 'src/app/models/form-prop.model';
 import { Orders } from 'src/app/models/inventory/orders.model';
 import { InvFPService } from 'src/app/services/inv-fp.service';
 import { OrderService } from 'src/app/services/order.service';
-import { ProductService } from 'src/app/services/product.service';
 
 @Component({
   selector: 'app-orders-list',
@@ -14,23 +14,36 @@ export class OrdersListComponent implements OnInit {
 
   Products?: Orders[];
   currentOrder?: Orders;
+  formObj: FormProp[][];
+
   currentIndex = -1;
   title = '';
   
   q = '';
   queryChange?:string = undefined;
   codeFilter = false;
-    
-  productsPerCall = 2;
-  disableNext = false;
-  disablePrev = false;
-  lastInResponses:any[] = [];
 
-  constructor(private OrderService: OrderService, private productService: ProductService, private invFpService: InvFPService) { }
+  constructor(private OrderService: OrderService, private invFpService: InvFPService) { 
+    this.formObj = [
+      [new FormProp('Numero de Orden de Pedido' ,'name', 'text'), new FormProp('Estado' ,'state', 'text')],
+      [new FormProp('Nombre del Cliente' ,'clientName', 'text')],
+      [new FormProp('Fecha de Embarque' ,'shipDate', 'date')],
+      [new FormProp('Dias de Produccion' ,'productionDays', 'number'), new FormProp('Pedido de Insumos' ,'orderInput', 'number')],
+      [
+        new FormProp('Pedido Materia Prima' ,'rmOrderDeadline', 'date'), 
+        new FormProp('Limite inicio de Produccion' ,'startProductionDeadline', 'date')
+      ],
+      [new FormProp('Notas' ,'notes', 'text')]
+    ]
+  }
 
   ngOnInit(): void {
   }
 
+
+  submit(order:any){
+
+  }
 
   getSelectedElement(element: any): void {
     this.currentOrder = element.element;

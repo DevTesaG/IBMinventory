@@ -34,7 +34,7 @@ export class AddProviderComponent implements OnInit {
   
   saveProvider(): void {
     if(!history.state.id) return
-    this.provider.id = history.state.id
+    this.provider.materialId = history.state.id
       this.fos.create<Provider>(this.provider).then(() => {
       console.log('Created new material successfully!');
       this.submitted = true;

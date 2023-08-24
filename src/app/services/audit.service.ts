@@ -23,16 +23,20 @@ export class AuditService {
     return this.db.collection(this.dbPath, ref=> ref.orderBy('timestamp', 'desc').limit(batch))
   }
 
-  create(operation: any, process: any, user:any): any {
+  create(operation: any, process: any, user:any, posterior:any,prior?:any, itemId?:string): any {
 
-    var auditReport = {
+    var auditReport:any = {
       operation: operation, 
-      process: process, 
+      process: process,
+      posterior:posterior,
       timestamp: Timestamp.fromDate(new Date()),
       user: user
     }
-
-    console.log(auditReport)
+    
+    if(prior)
+    auditReport.prior = prior
+    if(itemId)
+    auditReport.itemId = itemId
 
     return this.objectsRef.add({ ...auditReport });
   }

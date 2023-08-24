@@ -3,6 +3,7 @@ export class FormProp {
     value: any
     label:any
     type:any
+    readonly?:boolean
     classlist: any
     placeholder: any
     ref?: any[]
@@ -13,7 +14,7 @@ export class FormProp {
         Object.assign(this, params)
     }
 
-    constructor(placeholder?:any, label?:any, type?:any, classlist?:any,valueCallback?:any ,ref?:any[], value?:any){
+    constructor(placeholder?:any, label?:any, type?:any, classlist?:any,valueCallback?:any ,ref?:any[], value?:any, readonly?:boolean){
         this.value = value
         this.label = label
         this.type = type
@@ -21,6 +22,15 @@ export class FormProp {
         this.classlist = classlist ? classlist: ' '
         this.ref = ref ? ref: undefined
         this.valueCallback = valueCallback
+        this.readonly = readonly
+    }
+
+    setReadOnly(readonly:boolean){
+        this.readonly = readonly
+    }
+
+    setValue(value:any){
+        this.value = value
     }
 
     getValue(): any {
@@ -31,4 +41,8 @@ export class FormProp {
             this.value = this.valueCallback()
         }
     };
+
+    getLabel(){
+        return this.label
+    }
 }

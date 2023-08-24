@@ -13,7 +13,7 @@
                 [(ngModel)]="prop.value"
                 [value] = "(prop.valueCallback ? prop.getValue() : prop.value  )"
                 [ngClass]="{ 'is-invalid': f.submitted && input.errors }"
-                [readonly] = mode
+                [readonly] ="mode || prop.readonly"
                 required
                 />
                 <div *ngIf="f.submitted && input.errors" class="invalid-feedback">

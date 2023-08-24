@@ -4,98 +4,81 @@
 
     <form class="d-flex" role="search">
       <h4 class="text-muted text-nowrap my-auto">Historial Inventario</h4>
-      
-      <div class="ms-5 form-check mx-auto">
-        <label class="form-check-label" for="flexCheckDefault">
-          Mostrar Reportes PT
-        </label>
-        <input class="form-check-input" type="checkbox" [(ngModel)]="showReportFP" id="flexCheckDefault" name="codeFilter">
-      </div>
 
-      
-
-      <div class="row mx-auto w-100">
-          <div class="col-sm-6">
+      <!-- <div class="row mx-auto w-100"> -->
+          <!-- <div class="col-sm-6">
               <label for="startDate" class="ms-1">Inicio</label>
               <input id="startDate" class="form-control" name="sDate" type="date" [(ngModel)]="sDate"/>
-              <!-- <span id="startDateSelected"></span> -->
           </div>
           <div class="col-sm-6">
               <label for="endDate" class="ms-1">Fin</label>
               <input id="endDate" class="form-control" name="nDate" type="date" [(ngModel)]="nDate"/>
-              <!-- <span id="endDateSelected"></span> -->
-          </div>
+          </div> -->
+
+          
+        <!-- </div> -->
+        
+        <input class="form-control ms-2 me-2 float-end" type="search" name="query" placeholder="Buscar por Nombre" aria-label="Search">
+        <div class="form-floating w-50">
+        <select class="form-select" [(ngModel)]="reportPath" name="Inventory" id="floatingSelect" aria-label="providers select">
+          <option [ngValue]="undefined" disabled>Seleccione Inventario</option>
+          <option [ngValue]="'/FPreport'">Inventario Productos</option>
+          <option [ngValue]="'/RMreport'">Inventario Materiales</option>
+          <option [ngValue]="'/audit'">Movimientos</option>
+        </select>
+        <label for="floatingSelect">Inventario</label>
       </div>
-      <input class="form-control mx-auto w-50" type="search" placeholder="Nombre del Producto" aria-label="Search" name="query" [(ngModel)]="query">
-      <button class="btn btn-outline-success float-end ms-2" (click)="filterMaterials()" type="submit">Buscar</button>
+      <button class="btn btn-outline-success float-end ms-2" (click)="filter()" type="submit">Buscar</button>
    
 <!--       
       <input class="form-control ms-5 me-2 float-end" type="search" name="query" placeholder="Buscar por fecha" [(ngModel)]="query" aria-label="Search"> -->
     </form>
     <hr>
 
-    <nav aria-label="Page navigation" class="my-3">
-      <ul class="pagination">
-        <li class="page-item">
-          <button class="page-link" aria-label="Previous" (click)="nextPage(false)">
-            <span aria-hidden="true">&laquo;</span>
-          </button>
-        </li>
-    
-        <li class="page-item"> <span class="page-link text-black"> Anterior/Siguiente Registro</span></li>
-        <li class="page-item">
-          <button class="page-link" aria-label="Next" (click)="nextPage(true)">
-            <span aria-hidden="true">&raquo;</span>
-          </button>
-        </li>
-      </ul>
-    </nav>
+    <app-pagination [path]="reportPath" [mode]="true" [query]="queryChange" (fetchedArray)="fetchedArray($event)"></app-pagination>  
     
 
-    <table class="table">
+    <table *ngIf="reportPath != '/audit'" class="table">
       <thead>
         <tr>
           <th scope="col">Material</th>
           <th scope="col">Disponible</th>
           <th scope="col">Comprometido</th>
-          <th scope="col">En espera Comprometido</th>
+          <th *ngIf="reportPath == '/RMreport'" scope="col">En espera Comprometido</th>
           <th scope="col">En espera</th>
         </tr>
       </thead>
       <tbody>
-          <tr *ngFor="let report of reportsRM; let i = index">
+          <tr *ngFor="let report of reports; let i = index">
             <th scope="row">{{ report.name }}</th>
             <td>{{ report.available }} </td>
             <td>{{ report.commited }}</td>
-            <td>{{ report.watingCommited }}</td>
+            <td *ngIf="reportPath == '/RMreport'">{{ report.watingCommited }}</td>
             <td> {{ report.wating}}</td>
           </tr>
       </tbody>
     </table>
-    
-    <!-- <div class="list row shadow-sm"> -->
-      <!-- <div class="col-md-12 my-3"> -->
-        <!-- <ul class="list-group mt-3 mb-3"> -->
-          <!-- <li
-          class="list-group-item"
-          *ngFor="let report of reportsRM; let i = index"
-          [class.active]="i == currentIndex"
-          (click)="setActiveMaterial(report, i)"
-          > -->
-          <!-- <div *ngFor="let report of reportsRM; let i = index" class="card"> -->
-            <!-- <div class="card-body"> 
-            
-              <h6 class="card-title text-muted">{{ report.process }} </h6>
-              <hr>
-              <span class="fw-bold">Operacion Ejecutada: </span> {{ report.operation }} 
-              <span class="fw-bold ms-3">Usuario: </span> {{UserName}}  
-            </div>
-            <div class="card-footer">
-              {{report.timestamp.toDate()}}
-            </div> -->
 
-        <!-- </li> -->
-      <!-- </ul> -->
-    <!-- </div> -->
-  <!-- </div> -->
+    
+    <table *ngIf="reportPath == '/audit'" class="table">
+      <thead>
+        <tr>
+          <th scope="col">Operacion</th>
+          <th scope="col">Proceso</th>
+          <th scope="col">Autoriza</th>
+          <th scope="col">Estado Previo</th>
+          <th scope="col">Estado Posterior</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr *ngFor="let report of reports; let i = index">
+            <th scope="row">{{ report.operation }}</th>
+            <td>{{ report.process }} </td>
+            <td>{{ report.user }}</td>
+            <td>{{ report.prior }}</td>
+            <td>{{ report.posterior }}</td>
+          </tr>
+      </tbody>
+    </table>
+
   

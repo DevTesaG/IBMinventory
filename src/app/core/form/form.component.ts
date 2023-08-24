@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { FormProp } from 'src/app/models/form-prop.model';
+import { Timestamp } from 'firebase/firestore'
 
 
 
@@ -13,6 +14,9 @@ import { FormProp } from 'src/app/models/form-prop.model';
 export class FormComponent implements OnInit{
 
   @Output() formModel: EventEmitter<Object> = new EventEmitter<Object>();
+  @Output() reject: EventEmitter<Object> = new EventEmitter<Object>();
+
+  @Input() placeHolder?: Object;
   @Input() mode?: boolean = false;
   @Input() btnMes?: string = 'Registrar';
   @Input() modalMessage?: string = '¿ Desea continuar con este proceso ? ';
@@ -30,12 +34,36 @@ export class FormComponent implements OnInit{
   
   
   ngOnInit(): void {
+    this.initPlaceHolder()
   }
 
   onContinue(cont:boolean){
     this.continue = cont
   }
 
+  initPlaceHolder(){
+    if(this.placeHolder){
+      this.formObj.forEach((hor)=> hor.forEach(f=> {
+        if(this.placeHolder){
+          var val:any = this.placeHolder[f.getLabel() as keyof Object] 
+          if(val instanceof Timestamp){
+            val =  this.formatDateString( val.toDate().toLocaleDateString())
+          }
+          f.setValue(val)
+        } 
+      
+      }))
+    }
+  }
+
+  ngOnChanges(): void {
+    this.initPlaceHolder()
+  }
+
+
+  formatDateString(date: string){
+    return date.split('/').reverse().join('/').replace(/\//g,'-',)
+  } 
 
   ngAfterContentChecked() {
     this.cdref.detectChanges();
@@ -52,6 +80,7 @@ export class FormComponent implements OnInit{
   onReset(form: NgForm): void {
     this.continue = false;
     form.reset();
+    this.reject.emit()
   }
 
 }

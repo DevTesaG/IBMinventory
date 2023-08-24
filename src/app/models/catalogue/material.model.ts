@@ -9,6 +9,4 @@ export class Material {
     position?: string;
     stock?: number;
     timestamp?: any;
-    // orderDays?: number
-    // totalConsumption?:number
 }

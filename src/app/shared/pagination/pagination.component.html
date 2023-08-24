@@ -17,7 +17,7 @@
 </nav>
 
 
-<ul *ngIf="isFetched" class="list-group mt-3 mb-3">
+<ul *ngIf="!mode && isFetched" class="list-group mt-3 mb-3">
     <li class="list-group-item" *ngFor="let element of elementArray; let i = index" [class.active]="i == currentIndex" (click)="setActiveProduct(element, i)">
       <span class="d-flex">
         <div *ngFor="let param of showParams">

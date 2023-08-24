@@ -4,6 +4,7 @@ import { Timestamp } from 'firebase/firestore'
 import { FormProp } from 'src/app/models/form-prop.model';
 import { Orders } from 'src/app/models/inventory/orders.model';
 import { AuditService } from 'src/app/services/audit.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { InvFPService } from 'src/app/services/inv-fp.service';
 import { InvRMService } from 'src/app/services/inv-rm.service';
 import { OrderService } from 'src/app/services/order.service';
@@ -24,16 +25,18 @@ export class AddOrderComponent{
   q = '';
   queryChange?:string = undefined;
   
-  lastInResponses:any[] = []
   clientName:string = ''
   orderProducts:any[] = []
   reqMaterials:any[] = []
   materials:any[] = []
+  username?:string;
 
-  constructor(private shopService: ShopOrderService ,  private invFP: InvFPService ,private invrmService: InvRMService ,private orderService: OrderService,private router: Router, private auditService: AuditService) { 
+  constructor(private shopService: ShopOrderService ,  private invFP: InvFPService ,private invrmService: InvRMService ,private orderService: OrderService,private router: Router, private auditService: AuditService, private auth: AuthService) { 
     this.orderProducts = history.state.order.orderProducts
     this.reqMaterials = history.state.order.reqMaterials
     this.materials = history.state.order.materials
+    this.auth.user$.subscribe((data => this.username = data?.displayName))
+
 
     var shipDate = new FormProp('Fecha de Embarque' ,'shipDate', 'date'), 
         prodDays = new FormProp('Dias de Produccion' ,'productionDays', 'number',undefined, this.getProductionDays), 
@@ -155,11 +158,11 @@ export class AddOrderComponent{
   }
 
   makeProdStockReport(id:string, name:string, oldStock: any, newStock:any){
-
+      this.auditService.create('Actualizacion', `Stock de Producto: ${name}`, this.username,JSON.stringify(newStock),JSON.stringify(oldStock) , id)
   }
 
   makeMatStockReport(id:string, name:string, oldStock: any, newStock:any){
-
+    this.auditService.create('Actualizacion', `Stock de Material: ${name}`, this.username, JSON.stringify(newStock), JSON.stringify(oldStock), id)
   }
 
   editProducts(){
@@ -172,7 +175,7 @@ export class AddOrderComponent{
     this.orderService.create({ orderProducts: products, state: state, timestamp:  Timestamp.fromDate(new Date()), ...this.order}).then((order:Orders) => {
 
       this.updateProductStock(order.id)
-      // this.auditService.create(OrderService.name, 'Crear Orden', 'Jonny123')
+      this.auditService.create('Crear',  `Orden de Compra: ${order.name}`, this.username, JSON.stringify(order))
 
     });
   }

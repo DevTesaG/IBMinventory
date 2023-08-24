@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Client } from 'src/app/models/catalogue/client.model';
-import { Material } from 'src/app/models/catalogue/material.model';
 import { FormProp } from 'src/app/models/form-prop.model';
 import { AuditService } from 'src/app/services/audit.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { ClientService } from 'src/app/services/client.service';
 import { FirestoreOperationService } from 'src/app/services/firestore-operation.service';
 
@@ -18,9 +18,10 @@ export class AddClientComponent {
   client: Client = new Client();
   formObj: FormProp[][];
   submitted = false;
+  username?:string = 'Anonimo';
+  constructor(private auth: AuthService, private auditService: AuditService, private fos: FirestoreOperationService) { 
+    this.auth.user$.subscribe((data => this.username = data?.displayName))
 
-  constructor(private ClientService: ClientService, private auditService: AuditService, private fos: FirestoreOperationService) { 
-   
     this.formObj = [
       [new FormProp('Nombre' ,'name', 'text'), new FormProp('Numero de Cliente' ,'code', 'text')],
       [new FormProp('Direccion' ,'address', 'text')],
@@ -36,9 +37,9 @@ export class AddClientComponent {
   }
 
   saveClient(): void {
-    this.fos.create<Material>(this.client).then(() => {
+    this.fos.create<Client>(this.client).then((client:Client) => {
       console.log('Created new Client successfully!');
-      this.auditService.create(ClientService.name, 'Crear Cliente', 'Jonny123')
+      this.auditService.create('Crear', `Cliente ${client.name}`, this.username, JSON.stringify(client))
       this.submitted = true;
     });
   }

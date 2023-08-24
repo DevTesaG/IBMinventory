@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { map } from 'rxjs';
 import { FormProp } from 'src/app/models/form-prop.model';
 import { ShopRM } from 'src/app/models/shopping/shopRM.model';
 import { InvRMService } from 'src/app/services/inv-rm.service';
 import { ShopOrderService } from 'src/app/services/shop-order.service';
 import { Timestamp } from 'firebase/firestore'
 import { OrderService } from 'src/app/services/order.service';
+import { AuditService } from 'src/app/services/audit.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-shop-list',
@@ -14,100 +15,39 @@ import { OrderService } from 'src/app/services/order.service';
 })
 export class ShopListComponent implements OnInit {
 
-
-
-  shopOrders?: ShopRM[];
   currentOrder?: ShopRM;
   currentIndex = -1;
+  username?:string = 'anonimo'
   title = '';
   
   query = '';
   queryChange?:string = undefined;
   codeFilter = false;
-    
-  productsPerCall = 2;
-  disableNext = false;
-  disablePrev = false;
-  lastInResponses:any[] = [];
 
   dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
 
   formObj: FormProp[][];
 
-  constructor(private OrderService: ShopOrderService, private invrmService: InvRMService,private sellOrderService: OrderService) { 
+  constructor(private OrderService: ShopOrderService, private invrmService: InvRMService,private sellOrderService: OrderService, private audit: AuditService, private auth: AuthService) { 
+    
+    this.auth.user$.subscribe((data => this.username = data?.displayName))
+
     this.formObj = [
-      [new FormProp('Nombre del Material' ,'name', 'text'), new FormProp('Cantidad Solicitada' ,'requiredMaterial', 'number')],
+      [new FormProp('Nombre del Material' ,'name', 'text')],
       [new FormProp('Fecha Limite del Material' ,'orderDeadline', 'date'), new FormProp('Fecha de Emision de Orden' ,'emissionDate', 'date')],
-      [
+      [ 
+        new FormProp('Cantidad Solicitada' ,'requiredMaterial', 'number'),
         new FormProp('Costo del Pedido' ,'cost', 'number'), 
       ],
     ]
   }
 
   ngOnInit(): void {
-    this.nextPage(true)
   }
 
   refreshList(): void {
-    
     this.currentOrder = undefined;
     this.currentIndex = -1;
-    this.lastInResponses = []
-    this.shopOrders = []
-    this.nextPage(true)
-  }
-
-
-
-
-  nextPage(direction: boolean) {
-  
-  var anchor: any;
-  
-  if(direction){
-    if(this.disableNext) return;
-    
-    if(this.shopOrders?.length){
-      this.lastInResponses?.push(this.shopOrders[this.shopOrders.length - 1])
-    }  
-    anchor = this.lastInResponses?.length ? this.lastInResponses[this.lastInResponses?.length - 1]: undefined;
-  }else{
-    if(this.disablePrev) return;
-    this.lastInResponses?.pop();
-    anchor = this.lastInResponses?.pop();
-  }
-
-  var req;
-  if(this.queryChange){
-    if(this.codeFilter){
-      // req = this.OrderService.filterByCodeBatch(this.queryChange,this.productsPerCall, anchor)
-      req = this.OrderService.getNextBatch(this.productsPerCall, anchor)
-    }else{
-      // req = this.OrderService.filterByNameBatch(this.queryChange,this.productsPerCall, anchor)
-      req = this.OrderService.getNextBatch(this.productsPerCall, anchor)
-    }
-  } else{
-    req = this.OrderService.getNextBatch(this.productsPerCall, anchor)
-  }
-
-  req.snapshotChanges().pipe(
-      map(changes => changes.map(c => 
-          ({ id: c.payload.doc.id, ...c.payload.doc.data() })
-        )
-      )
-    ).subscribe(data => {
-      if(!data.length){
-        this.disableNext = true;
-        return;
-      }
-      console.log(data)
-
-      this.shopOrders = data;
-      this.disableNext = data.length < this.productsPerCall; //What if last batch is exactly productPerCall
-      this.disablePrev = anchor ? false: true
-    }, error => {
-      this.disableNext = false;
-  });
   }
 
   removeProductFromOrder(j: number){
@@ -119,6 +59,7 @@ export class ShopListComponent implements OnInit {
   }
 
   getSelectedElement(element:any){
+    console.log(this.currentOrder)
     this.currentOrder = element.element;
     this.currentIndex = element.index;
   }
@@ -127,10 +68,11 @@ export class ShopListComponent implements OnInit {
   if(!(this.currentOrder && this.currentOrder.requestedAmount)) return
   
   if(this.currentOrder.requestedAmount > order.requestedAmount){
-    alert('No puede pedir meno material del requerido para una orden activa')
+    alert('No puede pedir menos material del requerido para una orden activa')
     return
   }
-    this.OrderService.update(this.currentOrder?.id, {requiredMaterial: this.currentOrder.requiredMaterial})
+    this.OrderService.update(this.currentOrder?.id, {requiredMaterial: order.requiredMaterial})
+    this.audit.create('Editar', `Orden de Compra ${order.name}`, this.username, JSON.stringify(order), JSON.stringify(this.currentOrder), this.currentOrder.id)
   }
 
   completeOrder(){
@@ -141,14 +83,16 @@ export class ShopListComponent implements OnInit {
           var stock = await this.invrmService.getStock(this.currentOrder?.materialId)
           
           if(this.currentOrder?.stockId &&  this.currentOrder?.requestedAmount != undefined && this.currentOrder?.requiredMaterial != undefined && stock.watingCommited !=undefined && stock.commited != undefined && stock.wating != undefined && stock.available != undefined){
-            this.invrmService.update(this.currentOrder.stockId, { 
+            var newStock = { 
               available: stock.available + this.currentOrder.requestedAmount, 
               waiting: stock.wating - this.currentOrder?.requestedAmount,
               watingCommited: stock.watingCommited - this.currentOrder.requiredMaterial + this.currentOrder.requestedAmount, 
               commited: stock.commited +  this.currentOrder?.requiredMaterial - this.currentOrder.requestedAmount
-            }).then(()=>{
+            }
+            this.invrmService.update(this.currentOrder.stockId, newStock).then(()=>{
               if(this.currentOrder?.orderId)
               this.sellOrderService.update(this.currentOrder?.orderId, {state: 'EN PRODUCCIÓN'})
+              this.audit.create('Editar', `Stock de Material: ${this.currentOrder?.name}`, this.username, JSON.stringify(newStock), JSON.stringify(stock))
             })
           }
         }).catch(err => console.log(err));
@@ -158,22 +102,16 @@ export class ShopListComponent implements OnInit {
 
   activateOrder(){
     if(this.currentOrder){
+      const prior = this.currentOrder.emissionDate  
       this.currentOrder.emissionDate =  Timestamp.fromDate( new Date())
-      this.OrderService.update(this.currentOrder.id, {emissionDate: this.currentOrder.emissionDate })
+      this.OrderService.update(this.currentOrder.id, {emissionDate: this.currentOrder.emissionDate }).then(()=>{
+        this.audit.create('Editar', `Orden de Compra: ${this.currentOrder?.name}`, this.username, this.currentOrder?.emissionDate, prior)
+      })
     }
   }
 
 
   filterProducts(): void {
     this.queryChange = this.query
-    // this.shopOrders = []
-    // this.lastInResponses = []
-    // this.nextPage(true)
-  }
-
-  setActiveProduct(Product: ShopRM, index: number): void {
-    this.currentOrder = Product;
-    this.currentIndex = index;
-
   }
 }

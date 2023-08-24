@@ -8,4 +8,5 @@ export class InvRawMaterial {
     commited?:number
     watingCommited?:number
     wating?:number
+    timestamp?:any
 }

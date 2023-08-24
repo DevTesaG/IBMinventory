@@ -20,13 +20,11 @@ export class AddShopOrderComponent {
   
   
   constructor(private auditService: AuditService, private fos: FirestoreOperationService) { 
-
-    var cap:FormProp = new FormProp('Capacidad por turno' ,'capacityByTurn', 'number')
-
     this.formObj = [
-      [new FormProp('Nombre del Material' ,'name', 'text'), new FormProp('Cantidad Solicitada' ,'requiredMaterial', 'number')],
+      [new FormProp('Nombre del Material' ,'name', 'text')],
       [new FormProp('Fecha Limite del Material' ,'orderDeadline', 'date'), new FormProp('Fecha de Emision de Orden' ,'emissionDate', 'date')],
-      [
+      [ 
+        new FormProp('Cantidad Solicitada' ,'requiredMaterial', 'number'),
         new FormProp('Costo del Pedido' ,'cost', 'number'), 
       ],
     ]

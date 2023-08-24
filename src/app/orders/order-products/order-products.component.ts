@@ -1,9 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Product } from 'src/app/models/catalogue/product.model';
-import { Orders } from 'src/app/models/inventory/orders.model';
 import { InvFPService } from 'src/app/services/inv-fp.service';
-import { InvRMService } from 'src/app/services/inv-rm.service';
 
 @Component({
   selector: 'app-order-products',
@@ -32,11 +29,8 @@ export class OrderProductsComponent implements OnInit {
 
 
   createOrder(){
-
-    // var mats = this.getTotalMaterials()
-    var mats = ['a']
+    var mats = this.getTotalMaterials()
     this.updateProductStock()
-
     this.orderProducts.forEach(e=> {delete e.materials; delete e.available})
     this.router.navigate(['orders/add/providers'], { state: {materials: mats, products: this.orderProducts} });
   }
