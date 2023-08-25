@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Product } from 'src/app/models/catalogue/product.model';
-import { ProductService } from 'src/app/services/product.service';
 import { Timestamp } from 'firebase/firestore'
 import { AuditService } from 'src/app/services/audit.service';
 import { FirestoreOperationService } from 'src/app/services/firestore-operation.service';
 import { FormProp } from 'src/app/models/form-prop.model';
 import { InvFPService } from 'src/app/services/inv-fp.service';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-add-product',
@@ -18,9 +18,10 @@ export class AddProductComponent{
   product: Product = new Product();
   formObj: FormProp[][];
   submitted = false;
+  username?:string = 'anonimo'
   
-  
-  constructor(private invFpService: InvFPService, private auditService: AuditService, private fos: FirestoreOperationService) { 
+  constructor(private invFpService: InvFPService, private auditService: AuditService, private fos: FirestoreOperationService, private auth: AuthService) { 
+    this.auth.user$.subscribe((data => this.username = data?.displayName))
 
     var cap:FormProp = new FormProp('Capacidad por turno' ,'capacityByTurn', 'number')
 
@@ -35,11 +36,6 @@ export class AddProductComponent{
   
   round = (num:number) => Math.round(num*100) /100
 
-
-
-
-
-
   submit(product: any){
     this.product = product;
     this.saveProduct()
@@ -52,6 +48,7 @@ export class AddProductComponent{
 
       this.invFpService.create({available: this.product.stock, commited: 0, wating: 0}).then((inv:any) => {
         this.fos.update(prod.id, {invId: inv.id})
+        this.auditService.create(Product.name, `Crear Producto: ${this.product.name}`, this.username, JSON.stringify(this.product))
       })
       this.submitted = true;
     });

@@ -2,6 +2,8 @@ import { Component} from '@angular/core';
 import { Router } from '@angular/router';
 import { Timestamp } from 'firebase/firestore'
 import { FormProp } from 'src/app/models/form-prop.model';
+import { invFinishedProduct } from 'src/app/models/inventory/invFinishedProduct.model';
+import { InvRawMaterial } from 'src/app/models/inventory/invRawMaterial.model';
 import { Orders } from 'src/app/models/inventory/orders.model';
 import { AuditService } from 'src/app/services/audit.service';
 import { AuthService } from 'src/app/services/auth.service';
@@ -158,11 +160,11 @@ export class AddOrderComponent{
   }
 
   makeProdStockReport(id:string, name:string, oldStock: any, newStock:any){
-      this.auditService.create('Actualizacion', `Stock de Producto: ${name}`, this.username,JSON.stringify(newStock),JSON.stringify(oldStock) , id)
+      this.auditService.create(invFinishedProduct.name, `Actualizacion Stock de Producto: ${name}`, this.username,JSON.stringify(newStock),JSON.stringify(oldStock) , id)
   }
 
   makeMatStockReport(id:string, name:string, oldStock: any, newStock:any){
-    this.auditService.create('Actualizacion', `Stock de Material: ${name}`, this.username, JSON.stringify(newStock), JSON.stringify(oldStock), id)
+    this.auditService.create(InvRawMaterial.name, `Actualizacion Stock de Material: ${name}`, this.username, JSON.stringify(newStock), JSON.stringify(oldStock), id)
   }
 
   editProducts(){
@@ -175,7 +177,7 @@ export class AddOrderComponent{
     this.orderService.create({ orderProducts: products, state: state, timestamp:  Timestamp.fromDate(new Date()), ...this.order}).then((order:Orders) => {
 
       this.updateProductStock(order.id)
-      this.auditService.create('Crear',  `Orden de Compra: ${order.name}`, this.username, JSON.stringify(order))
+      this.auditService.create(Orders.name,  `Crear Orden de Compra: ${order.name}`, this.username, JSON.stringify(order))
 
     });
   }

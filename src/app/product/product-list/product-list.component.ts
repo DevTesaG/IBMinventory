@@ -14,7 +14,7 @@ export class ProductListComponent implements OnInit {
   currentProduct?: Product;
   title = '';
   
-  q = '';
+  q:any = '';
   query = '';
   codeFilter = false;
 
@@ -29,7 +29,7 @@ export class ProductListComponent implements OnInit {
 
 
   filter(){
-    this.q = this.query
+    this.q = this.codeFilter ? {key: 'code', value: this.query}:  this.query
     this.refreshList()
   }
 

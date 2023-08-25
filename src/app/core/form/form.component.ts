@@ -79,8 +79,8 @@ export class FormComponent implements OnInit{
 
   onReset(form: NgForm): void {
     this.continue = false;
-    form.reset();
     this.reject.emit()
+    form.reset();
   }
 
 }

@@ -7,8 +7,8 @@ import { LoginComponent } from './core/login/login.component';
 const routes: Routes = [
   {path: '', redirectTo:'home',pathMatch:'full'},
   {path: 'login',  component:LoginComponent},
-  {path: 'home',  component:HomeComponent},
-  {path: 'clients',   loadChildren: () => import('./client/client.module').then(m => m.ClientModule), canActivate: [AuthGuard]},
+  {path: 'home',  component:HomeComponent, canActivate: [AuthGuard]},
+  {path: 'clients',   loadChildren: () => import('./client/client.module').then(m => m.ClientModule), },
   {path: 'materials',   loadChildren: () => import('./material/material.module').then(m => m.MaterialModule)},
   {path: 'products',   loadChildren: () => import('./product/product.module').then(m => m.ProductModule)},
   {path: 'orders',   loadChildren: () => import('./orders/orders.module').then(m => m.OrdersModule)},

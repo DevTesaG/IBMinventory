@@ -27,10 +27,12 @@ export class FormProp {
 
     setReadOnly(readonly:boolean){
         this.readonly = readonly
+        return this
     }
 
     setValue(value:any){
         this.value = value
+        return this
     }
 
     getValue(): any {

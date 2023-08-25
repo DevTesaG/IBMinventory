@@ -1,7 +1,7 @@
 
 <div class="container-fluid my-3 mx-auto">
 
-    <button class="btn btn-outline-success rounded-pill" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+    <button [ngClass]="classlist ? classlist: ['btn-outline-success', 'rounded-pill']"  class="btn" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
         {{btnMessage}}
     </button>
     

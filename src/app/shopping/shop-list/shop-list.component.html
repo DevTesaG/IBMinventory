@@ -15,12 +15,12 @@
         <input *ngIf="!codeFilter" id="query" class="form-control mx-2 float-end" type="search" [(ngModel)]="query" name="query" placeholder="Buscar por Nombre o Codigo" aria-label="Search">
 
 
-        <select *ngIf="codeFilter" class="form-select mx-2" aria-label="Default select example">
-          <option selected value="1">TODOS</option>
-          <option value="2">URGENTE</option>
+        <select *ngIf="codeFilter" class="form-select mx-2" [(ngModel)]="orderStateFilter" name="state" aria-label="Default select example">
+          <option [ngValue]="undefined">TODAS</option>
+          <option ngValue="URGENTE">URGENTE</option>
         </select>
       
-        <button class="btn btn-outline-success float-end" (click)="filterProducts()" type="submit">Buscar</button>
+        <button class="btn btn-outline-success float-end" (click)="filter()" type="submit">Buscar</button>
     </form>
 
     <hr>
@@ -49,9 +49,14 @@
             <h4>Orden de Compra</h4>    
             <app-form [formObj]="formObj" [mode]="true" [placeHolder]="currentOrder" (formModel)="submit($event)" btnMes="Registar Orden" modalMessage="¿Desea continuar con el registro de la orden?"></app-form>
             
-            <button (click)="activateOrder()" class="btn btn-outline-success mx-auto mb-3">Activar Orden</button>
+
+            <app-warn-modal type="submit" (continue)="activateOrder($event)" [classlist]="['btn-outline-success']" btnMessage="Activar Orden" modalMessage="¿Seguro que desea activar la orden como lista?"></app-warn-modal>
+            <app-warn-modal type="submit" (continue)="completeOrder($event)" [classlist]="['btn-outline-primary']" btnMessage="Completar Orden" modalMessage="¿Seguro que desea completar la orden?"></app-warn-modal>
+         
+
+            <!-- <button (click)="activateOrder()" class="btn btn-outline-success mx-auto mb-3">Activar Orden</button> -->
             <!-- <button (click)="editOrder()" disabled class="btn btn-outline-success mx-auto mb-3">Editar Orden</button> -->
-            <button (click)="completeOrder()" class="btn btn-outline-primary ms-2 mb-3">Completar Orden</button>
+            <!-- <button (click)="completeOrder()" class="btn btn-outline-primary ms-2 mb-3">Completar Orden</button> -->
           </div>
         </div>
 

@@ -9,6 +9,7 @@ import { InvRMService } from 'src/app/services/inv-rm.service';
 import { InvRawMaterial } from 'src/app/models/inventory/invRawMaterial.model';
 import { ProviderService } from 'src/app/services/provider.service';
 import { Provider } from 'src/app/models/catalogue/provider.model';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-add-material',
@@ -24,6 +25,7 @@ export class AddMaterialComponent {
 
   formObj: FormProp[][];
   submitted = false;
+  username?:string = 'anonimo'
 
   Deps = [
     'Corte y Ensamble',
@@ -35,7 +37,9 @@ export class AddMaterialComponent {
     "Empaque"
   ]
 
-  constructor(private fos: FirestoreOperationService ,private auditService: AuditService, private invRMService: InvRMService, private providerService: ProviderService) { 
+  constructor(private fos: FirestoreOperationService ,private auditService: AuditService, private invRMService: InvRMService, private providerService: ProviderService, private auth: AuthService) { 
+    this.auth.user$.subscribe((data => this.username = data?.displayName))
+
     this.formObj = [
       [new FormProp('Nombre' ,'name', 'text'),new FormProp('Cantidad en Inventario' ,'available', 'number')],
       [new FormProp('Descripcion' ,'description', 'text')],
@@ -82,7 +86,8 @@ export class AddMaterialComponent {
       this.invRMService.create({materialId: mat.id,...this.invMaterial})
       this.providerService.create({materialId: mat.id, ...this.provider})
       console.log('Created new material successfully!');
-        // this.auditService.create(MaterialService.name, 'Crear Orden', 'Jonny123')
+      this.auditService.create(MaterialService.name, `Crear Material ${this.material.name}`, this.username, JSON.stringify(this.material))
+      this.auditService.create(Provider.name, `Crear Provedor ${this.provider.name}`, this.username, JSON.stringify(this.provider))
       this.submitted = true;
     });
   }

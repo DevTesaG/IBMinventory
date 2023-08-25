@@ -39,7 +39,7 @@ export class AddClientComponent {
   saveClient(): void {
     this.fos.create<Client>(this.client).then((client:Client) => {
       console.log('Created new Client successfully!');
-      this.auditService.create('Crear', `Cliente ${client.name}`, this.username, JSON.stringify(client))
+      this.auditService.create(Client.name, `Crear Cliente ${client.name}`, this.username, JSON.stringify(client))
       this.submitted = true;
     });
   }

@@ -25,11 +25,6 @@
   <div class="col-md-6">
     <div *ngIf="currentMaterial">
       <app-form [formObj]="formObj" [mode]="true" [placeHolder]="currentMaterial" (formModel)="submit($event)" (reject)="onReject()" btnMes="Editar Material" modalMessage="¿Seguro que desea editar el material?"></app-form>
-
-      <!-- <app-material-details
-      (refreshList)="refreshList()"
-      [material]="currentMaterial"
-      ></app-material-details> -->
     </div>
     
     <div *ngIf="!currentMaterial">

@@ -17,7 +17,7 @@ export class ProductMaterialsComponent implements OnInit {
   currentIndex = -1;
   title = '';
   
-  q = '';
+  q:any = '';
   queryChange?:string = undefined;
   areaFilter= '';
   productMaterials:any[] = []
@@ -27,6 +27,8 @@ export class ProductMaterialsComponent implements OnInit {
   constructor(private productService:ProductService ,private router: Router) { }
 
   ngOnInit(): void {
+    
+    if(!history.state.id) this.router.navigate(['/products'])
     this.product = history.state
     if(this.product?.materials)
     this.productMaterials = this.product.materials
@@ -34,7 +36,13 @@ export class ProductMaterialsComponent implements OnInit {
 
 
   filter(){
-    this.queryChange = this.q
+    this.queryChange = this.areaFilter ? {key:'area', value:this.q, exact:true}: this.q
+    this.currentMaterial = undefined
+    this.currentIndex = -1
+  }
+
+  onFilterChange(){
+    this.q = undefined
   }
 
 
@@ -64,7 +72,7 @@ export class ProductMaterialsComponent implements OnInit {
 
     this.productService.update(this.product?.id, product).then(() => {
       alert('Materiales Actualizados Satisfactoriamente')
-      this.router.navigate(['products'])
+      this.router.navigate(['/products'])
     });
   }
 }

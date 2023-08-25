@@ -2,27 +2,32 @@
 
 <div class="container mt-5 vh-100">
 
-    <form class="d-flex" role="search">
-      <h4 class="text-muted text-nowrap">Lista de Ordenes</h4>
-      <div class="ms-5 form-check">
+    <form class="d-flex form-inline" role="search">
+      <h4 class="text-muted text-nowrap my-auto">Lista de Ordenes</h4>
+      <!-- <div class="ms-5 form-check">
         
         <label class="form-check-label" for="flexCheckDefault">
           Filtrar por Estado
         </label>
         <input class="form-check-input" type="checkbox" [(ngModel)]="codeFilter" id="flexCheckDefault" name="codeFilter">
-      </div>
+      </div> -->
 
-        <input *ngIf="!codeFilter" id="query" class="form-control mx-2 float-end" type="search" [(ngModel)]="q" name="query" placeholder="Buscar por Nombre o Codigo" aria-label="Search">
+        <!-- <input *ngIf="!codeFilter" id="query" class="form-control mx-2 float-end" type="search" [(ngModel)]="q" name="query" placeholder="Buscar por Nombre o Codigo" aria-label="Search"> -->
+        
 
-
-        <select *ngIf="codeFilter" class="form-select mx-2" aria-label="Default select example">
-          <option selected value="1">ESPRANDO MATERIAL</option>
-          <option value="2">INACTIVA</option>
-          <option value="3">ACTIVA</option>
-          <option value="4">TERMINADA</option>
-        </select>
-      
-        <button class="btn btn-outline-success float-end" (click)="filter()" type="submit">Buscar</button>
+        
+          <div class="form-floating flex-fill ms-5 me-2">
+            <select class="form-select" [(ngModel)]="orderStateFilter" name="state" id="floatingSelect" aria-label="providers select">
+              <option [ngValue]="undefined">TODAS</option>
+              <option ngValue="ESPERANDO MATERIAL">ESPERANDO MATERIAL</option>
+              <option ngValue="EN PRODUCCION">INACTIVA</option>
+              <option ngValue="TERMINADA">TERMINADA</option>
+            </select>
+            <label for="floatingSelect">Buscar por Estado</label>
+          </div>
+          
+          <button class="btn btn-outline-success float-end" (click)="filter()" type="submit">Buscar</button>
+        
     </form>
     <hr>
   
@@ -37,15 +42,9 @@
     
     <div class="list row shadow-sm">
       <div class="col-md-6">
-        <app-pagination [path]="'/orders'" [query]="queryChange"  (selectedElement)="getSelectedElement($event)"></app-pagination>  
+        <app-pagination [path]="'/orders'" [key]="'state'" [query]="queryChange"  (selectedElement)="getSelectedElement($event)"></app-pagination>  
      </div>
     <div class="col-lg-6">
-      <!-- <div *ngIf="currentOrder">
-        <app-order-details
-        (refreshList)="refreshList()"
-        [product]="currentOrder"
-        ></app-order-details>
-      </div> -->
       
       <div *ngIf="!currentOrder">
         <br />
@@ -56,118 +55,6 @@
         <h4>Orden</h4>
     
         <app-form [mode]="true" [formObj]="formObj" [placeHolder]="currentOrder" (formModel)="submit($event)" btnMes="Crear Orden" modalMessage="¿Desea continuar con la creacion de la Orden?"></app-form>
-
-        <!-- <div class="form-floating mb-2">
-          <input
-          class="form-control"
-          id="name"
-          required
-          placeholder="name"
-          [(ngModel)]="currentOrder.name"
-          name="name"
-          readonly
-          type="text"
-          />
-          <label for="name">Numero de Orden de Pedido</label>
-        </div> -->
-
-<!--         
-        <div class="form-floating input-group mb-2">
-          <input
-          class="form-control"
-            id="clientName"
-            required
-            placeholder="description"
-            [(ngModel)]="currentOrder.clientName"
-            name="clientName"
-            type="text"
-            readonly
-            />
-            <span class="input-group-text" >
-                <a routerLink="/clients" [state]="{id: currentOrder.clientId}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
-                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                  <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
-                </svg>
-              </a>
-            </span>
-            <label for="clientName">Nombre del Cliente</label>
-          </div> -->
-
-           
-        <!-- <div class="submit-form"> -->
-
-          <!-- <div class="input-group mb-2">
-            <div class="form-floating">
-              <input id="shipDate" class="form-control" name="shipDate" readonly required type="date" [(ngModel)]="currentOrder.shipDate"/>
-              <label for="shipDate">Fecha de Embarque</label>
-            </div>
-
-            <div class="form-floating input-group-append">
-              <input id="state" class="form-control" name="state" readonly required type="text" [(ngModel)]="currentOrder.state"/>
-              <label for="state">Estado</label>
-            </div>
-          </div> -->
-      
-      <!-- <div class="input-group ">
-        <div class="form-floating input-group mb-2">
-          <input
-          class="form-control"
-          id="productionDays"
-          required
-          placeholder="description"
-          [(ngModel)]="currentOrder.productionDays"
-          name="productionDays"
-          type="number"
-          readonly
-          />
-          <span class="input-group-text">dias</span>
-          <label for="productionDays">Dias de Produccion</label>
-        </div> -->
-          
-        <!-- <div class="form-floating input-group mb-2">
-            <input
-            class="form-control"
-            id="orderInput"
-            required
-            placeholder="Precio"
-            [(ngModel)]="currentOrder.orderInput"
-            name="orderInput"
-            type="number"
-            readonly
-            />
-            <span class="input-group-text">días</span>
-            <label for="orderInput">Pedido de Insumos</label>
-          </div>
-        </div> -->
-          
-          <!-- <div class="input-group">
-            <div class="form-floating mb-3">
-              <input id="rmOrderDeadline" class="form-control" name="rmOrderDeadline" required type="date" readonly [(ngModel)]="currentOrder.rmOrderDeadline"/>
-              <label for="rmOrderDeadline">Pedido Materia Prima</label>
-            </div>
-            
-            <div class="form-floating input-group mb-3">
-              <input id="startProductionDeadline" class="form-control" name="startProductionDeadline" readonly required type="date" [(ngModel)]="currentOrder.startProductionDeadline"/>
-              <label for="startProductionDeadline">Limite inicio de Produccion</label>
-            </div>
-          </div> -->
-          
-          <!-- <div class="form-floating mb-3">
-            <input
-            class="form-control"
-            id="notes"
-            required
-            placeholder="notes"
-            [(ngModel)]="currentOrder.notes"
-            name="notes"
-            type="text"
-            readonly
-            />
-            <label for="notes">notas</label>
-          </div> -->
-          
-        <!-- </div> -->
 
         <p>productos de la Orden: </p>
 
@@ -181,20 +68,13 @@
               <div class="input-group h-25 my-auto ms-2 ">
                   <input type="number" placeholder="Unidades" readonly name="UP" [(ngModel)]="product.quantity" class="form-control input-sm" readonly aria-label="quantity">
                   <span class="input-group-text">U</span>
-                  <!-- <input type="number" class="input-group-append" placeholder="Uso de PT" name="stock" [(ngModel)]="product.stock" class="form-control input-sm" readonly aria-label="stock">
-                  <span class="input-group-text">U</span> -->
-                  <!-- <div class="form-check input-group-append mx-2 my-auto">
-                    <label class="form-check-label" for="flexCheckDefault"> Uso PT</label>
-                    <input class="form-check-input" readonly type="checkbox"  [(ngModel)]="codeFilter" id="flexCheckDefault" name="codeFilter">
-                  </div> -->
               </div>              
             </div>
           </li>
         </ul>
-
-        <button (click)="setOrderReady()" class="btn btn-outline-success mx-auto mb-3">Orden Lista</button>
-        <button (click)="completeOrder()" class="btn btn-outline-primary ms-2 mb-3">Completar Orden</button>
-
+        
+        <app-warn-modal type="submit" (continue)="setOrderReady($event)" [classlist]="['btn-outline-success']" btnMessage="Orden Lista" modalMessage="¿Seguro que desea marcar la orden como lista?"></app-warn-modal>
+        <app-warn-modal type="submit" (continue)="completeOrder($event)" [classlist]="['btn-outline-primary']" btnMessage="Completar Orden" modalMessage="¿Seguro que desea completar la orden?"></app-warn-modal>
       </div>
     </div>
     </div>

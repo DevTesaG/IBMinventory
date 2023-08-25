@@ -8,9 +8,20 @@
         <label class="form-check-label" for="flexCheckDefault">
           Filtro por Area
         </label>
-        <input class="form-check-input" type="checkbox" [(ngModel)]="areaFilter" id="flexCheckDefault" name="areaFilter">
+        <input class="form-check-input" type="checkbox" [(ngModel)]="areaFilter" (change)="onFilterChange()" id="flexCheckDefault" name="areaFilter">
       </div>
-        <input class="form-control ms-2 me-2 float-end" type="search" name="query" placeholder="Buscar por Nombre o Area" [(ngModel)]="q" aria-label="Search">
+
+      <div *ngIf="areaFilter" class="form-floating ms-2 me-2 w-50">
+        <select class="form-select" [(ngModel)]="q" name="Inventory" id="floatingSelect" aria-label="providers select">
+          <option [ngValue]="undefined" disabled>Seleccione Inventario</option>
+          <option ngValue="Corte y Ensamble">CORTE Y ENSAMBLE</option>
+          <option ngValue="Consumible">CONSUMIBLE</option>
+          <option ngValue="Carpinteria">CARPINTERIA</option>
+        </select>
+        <label for="floatingSelect">Inventario</label>
+      </div>
+
+        <input *ngIf="!areaFilter" class="form-control ms-2 me-2 float-end" type="search" name="query" placeholder="Buscar por Nombre" [(ngModel)]="q" aria-label="Search">
       <button class="btn btn-outline-success float-end" (click)="filter()" type="submit">Buscar</button>
     </form>
     <hr>

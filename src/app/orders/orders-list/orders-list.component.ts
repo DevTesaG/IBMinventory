@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, SimpleChanges } from '@angular/core';
 import { FormProp } from 'src/app/models/form-prop.model';
 import { Orders } from 'src/app/models/inventory/orders.model';
 import { InvFPService } from 'src/app/services/inv-fp.service';
@@ -15,7 +15,7 @@ export class OrdersListComponent implements OnInit {
   Products?: Orders[];
   currentOrder?: Orders;
   formObj: FormProp[][];
-
+  orderStateFilter?:string;
   currentIndex = -1;
   title = '';
   
@@ -51,42 +51,48 @@ export class OrdersListComponent implements OnInit {
   }
  
   filter(){
-    this.queryChange = this.q
+    this.currentOrder = undefined;
+    this.queryChange = this.orderStateFilter
   }
 
+  refreshList(){
+    this.orderStateFilter = undefined
+    this.currentOrder = undefined
+  }
 
-
+  ngOnChanges(changes: SimpleChanges){
+    if(changes['orderStateFilter'])
+    this.currentOrder = undefined;
+  }
 
   editProducts(){
 
   }
 
 
-  setOrderReady(){
+  setOrderReady(cont:boolean){
+    if(!cont) return
     this.currentOrder?.orderProducts?.forEach( async prod => {
       var stock = await this.invFpService.getStock(prod.invId)
       if(stock.wating != undefined && stock.commited != undefined ){
         this.invFpService.update(prod.invId, {wating: (+stock.wating) - prod.quantity, commited: (+stock.commited) + prod.quantity})        
       }
     })
-    this.OrderService.update(this.currentOrder?.id, {state: 'TERMINADO'})
+    this.OrderService.update(this.currentOrder?.id, {state: 'TERMINADA'})
+    this.refreshList()
     alert('La orden fue establecida como terminada satisfactoriamente')
-
-
   }
 
 
-  completeOrder(){
+  completeOrder(cont:boolean){
+    if(!cont) return
     this.currentOrder?.orderProducts?.forEach( async prod => {
       var stock = await this.invFpService.getStock(prod.invId)
       if(stock.commited != undefined){
-        this.invFpService.update(prod.invId, {commited: stock.commited - prod.quantity})        
+        this.invFpService.update(prod.invId, {commited: stock.commited - prod.quantity})     
+        this.refreshList()   
       }
     })
-
-    // this.OrderService.delete(this.currentOrder?.id).then(() => {
-    //   this.refreshList()
-    // })
   }
 
   readableDate(time:any) {

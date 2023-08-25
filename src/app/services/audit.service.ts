@@ -26,7 +26,7 @@ export class AuditService {
   create(operation: any, process: any, user:any, posterior:any,prior?:any, itemId?:string): any {
 
     var auditReport:any = {
-      operation: operation, 
+      name: operation, 
       process: process,
       posterior:posterior,
       timestamp: Timestamp.fromDate(new Date()),

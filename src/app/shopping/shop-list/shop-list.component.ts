@@ -16,14 +16,14 @@ import { AuthService } from 'src/app/services/auth.service';
 export class ShopListComponent implements OnInit {
 
   currentOrder?: ShopRM;
+  orderStateFilter?:string
   currentIndex = -1;
   username?:string = 'anonimo'
-  title = '';
-  
-  query = '';
-  queryChange?:string = undefined;
-  codeFilter = false;
 
+  query = '';
+  queryChange?:any = undefined;
+  codeFilter = false;
+  filterKey:string = 'name'
   dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }
 
   formObj: FormProp[][];
@@ -75,7 +75,9 @@ export class ShopListComponent implements OnInit {
     this.audit.create('Editar', `Orden de Compra ${order.name}`, this.username, JSON.stringify(order), JSON.stringify(this.currentOrder), this.currentOrder.id)
   }
 
-  completeOrder(){
+  completeOrder(cont:boolean){
+    if(!cont) return
+
     if (this.currentOrder) {
       this.OrderService.update(this.currentOrder.id, {fulfilled: true}).then(async () => {
           
@@ -100,7 +102,9 @@ export class ShopListComponent implements OnInit {
   }
 
 
-  activateOrder(){
+  activateOrder(cont:boolean){
+    if(!cont) return
+
     if(this.currentOrder){
       const prior = this.currentOrder.emissionDate  
       this.currentOrder.emissionDate =  Timestamp.fromDate( new Date())
@@ -111,7 +115,11 @@ export class ShopListComponent implements OnInit {
   }
 
 
-  filterProducts(): void {
-    this.queryChange = this.query
+  filter(): void {
+    if(this.codeFilter && this.orderStateFilter=='URGENTE'){
+      this.queryChange = {key:'orderDeadline', value:Timestamp.fromDate(new Date())}
+    }else{
+      this.queryChange = {key:'name', value:this.query}
+    }
   }
 }
