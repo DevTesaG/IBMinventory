@@ -17,17 +17,30 @@
 
           
         <!-- </div> -->
+ 
+        <input *ngIf="reportPath != '/audit'" class="form-control ms-2 me-2 float-end" [(ngModel)]="query" type="search" name="query" placeholder="Buscar por Nombre" aria-label="Search">
         
-        <input class="form-control ms-2 me-2 float-end" [(ngModel)]="query" type="search" name="query" placeholder="Buscar por Nombre" aria-label="Search">
+      <div class="input-group ms-2">
+
+        <div *ngIf="reportPath == '/audit'" class="form-floating w-50">
+          <select class="form-select" [(ngModel)]="query" name="Inventory" id="floatingSelect" aria-label="providers select">
+            <option [ngValue]="undefined" disabled>Todos</option>
+            <option [ngValue]="'InvRawMaterial'">Materiales</option>
+            <option [ngValue]="'invFinishedProduct'">Productos</option>
+            <option [ngValue]="'Orders'">Ordenes</option>
+          </select>
+          <label for="floatingSelect">Inventario</label>
+        </div>
         <div class="form-floating w-50">
-        <select class="form-select" [(ngModel)]="reportPath" name="Inventory" id="floatingSelect" aria-label="providers select">
-          <option [ngValue]="undefined" disabled>Seleccione Inventario</option>
-          <option [ngValue]="'/FPreport'">Inventario Productos</option>
-          <option [ngValue]="'/RMreport'">Inventario Materiales</option>
-          <option [ngValue]="'/audit'">Movimientos</option>
-        </select>
-        <label for="floatingSelect">Inventario</label>
-      </div>
+          <select class="form-select" [(ngModel)]="reportPath" (change)="rootChanged($event)" name="Inventory" id="floatingSelect" aria-label="providers select">
+            <option [ngValue]="undefined" disabled>Seleccione Inventario</option>
+            <option [ngValue]="'/FPreport'">Inventario Productos</option>
+            <option [ngValue]="'/RMreport'">Inventario Materiales</option>
+            <option [ngValue]="'/audit'">Movimientos</option>
+          </select>
+          <label for="floatingSelect">Inventario</label>
+        </div>
+      </div> 
       <button class="btn btn-outline-success float-end ms-2" (click)="filter()" type="submit">Buscar</button>
    
     </form>

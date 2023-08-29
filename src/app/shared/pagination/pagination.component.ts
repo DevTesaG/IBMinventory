@@ -77,6 +77,8 @@ export class PaginationComponent implements OnInit {
       req = this.fos.getNextBatch<Object>(this.elementPerCall, anchor) 
     }
     
+    console.log(this.key, this.queryChange, this.path)
+
     req.get().pipe(map(changes => changes.docs.map(c =>  ({ id: c.id,...c.data()})))
       ).subscribe( (data:any) => {
         console.log(data)
@@ -110,7 +112,11 @@ export class PaginationComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges) {
     if(this.firstCall) return
     this.isFetched = false
-   
+    
+    if(changes['path']){
+      this.fos.pathSetter(changes['path'].currentValue)  
+    }
+
     if(changes['query']){ 
       if(changes['query'].currentValue instanceof Object){
        this.queryChange = changes['query'].currentValue.value
@@ -122,14 +128,10 @@ export class PaginationComponent implements OnInit {
         this.exact = false
       }
       console.log(this.key, this.queryChange)
-      this.filterProducts();
-    }else if(changes['path']){
-      this.resetPagination()
-      this.fos.pathSetter(changes['path'].currentValue)  
-      this.nextPage(true)
     }
+    this.filterProducts();
   }
-
+  
   filterProducts(): void {
     this.resetPagination()
     this.nextPage(true) 

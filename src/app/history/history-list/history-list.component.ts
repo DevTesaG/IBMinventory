@@ -1,4 +1,4 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit, SimpleChanges} from '@angular/core';
 
 @Component({
   selector: 'app-history-list',
@@ -11,6 +11,7 @@ export class HistoryListComponent implements OnInit {
 
   reports?: any[];
   reportPath:string = '/FPreport'
+  reportPathChange:string = '/FPreport' 
   sDate:any;
   nDate:any;
   query = undefined;
@@ -19,13 +20,16 @@ export class HistoryListComponent implements OnInit {
   ngOnInit(): void {
   }
 
-
   fetchedArray(array:any){
     this.reports = array
   }
 
+  rootChanged(e:any){
+    this.query = undefined
+    this.queryChange = undefined
+  }
 
-  filter(): void {    
+  filter(): void {
     this.queryChange = this.query
   }
 
