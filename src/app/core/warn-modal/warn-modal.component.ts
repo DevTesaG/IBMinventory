@@ -10,6 +10,7 @@ export class WarnModalComponent implements OnInit {
   @Input() btnMessage?: string = 'Continuar';
   @Input() modalMessage?: string = '¿ Desea continuar con este proceso ? ';
   @Input() classlist?: string[];
+  @Input() btnType: boolean = false;
   @Output() continue: EventEmitter<boolean> = new EventEmitter();
   
   constructor() {
@@ -20,7 +21,7 @@ export class WarnModalComponent implements OnInit {
 
 
   modalContinue(cont: boolean) {
-    this.continue.emit(cont)
+      this.continue.emit(cont)
   }
 
 

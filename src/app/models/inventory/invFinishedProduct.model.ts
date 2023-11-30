@@ -4,4 +4,5 @@ export class invFinishedProduct {
     available?:number
     commited?:number
     wating?:number
+    timestamp?:any
 }

@@ -18,102 +18,19 @@
 
       <div class="col-md-6">
 
-      <div *ngIf="orderProducts" class="edit-form">
+      <!-- <div *ngIf="orderProducts" class="edit-form"> -->
         <h4>Nueva Orden</h4>
     
-        <!-- <div class="form-floating mb-2">
-          <input
-          class="form-control"
-          id="name"
-          required
-          placeholder="name"
-          [(ngModel)]="order.name"
-          name="name"
-          type="text"
-          />
-          <label for="name">Numero de Orden de Pedido</label>
-        </div>
-
-        <div class="form-floating input-group mb-2">
-          <input
-          class="form-control"
-            id="clientName"
-            required
-            placeholder="description"
-            [(ngModel)]="order.clientName"
-            name="clientName"
-            type="text"
-            />
-            <label for="clientName">Nombre del Cliente</label>
-          </div>
-           
-        <div class="submit-form">
-          <div class="form-floating mb-2">
-          <input id="shipDate" class="form-control" name="shipDate" required type="date" [(ngModel)]="order.shipDate"/>
-        <label for="shipDate">Fecha de Embarque</label>
-      </div>
-      
-      <div class="input-group ">
-        <div class="form-floating input-group mb-2">
-          <input
-          class="form-control"
-          id="productionDays"
-          required
-          placeholder="description"
-          [(ngModel)]="order.productionDays"
-          name="productionDays"
-          type="number"
-          />
-          <span class="input-group-text">dias</span>
-          <label for="productionDays">Dias de Produccion</label>
-        </div>
-          
-        <div class="form-floating input-group mb-2">
-            <input
-            class="form-control"
-            id="orderInput"
-            required
-            placeholder="Precio"
-            [(ngModel)]="order.orderInput"
-            name="orderInput"
-            type="number"
-            />
-            <span class="input-group-text">días</span>
-            <label for="orderInput">Pedido de Insumos</label>
-          </div>
-        </div>
-          
-          <div class="input-group">
-            <div class="form-floating mb-3">
-              <input id="rmOrderDeadline" class="form-control" name="rmOrderDeadline" required type="date" [(ngModel)]="order.rmOrderDeadline"/>
-              <label for="rmOrderDeadline">Pedido Materia Prima</label>
-            </div>
-            
-            <div class="form-floating mb-3">
-              <input id="startProductionDeadline" class="form-control" name="startProductionDeadline" required type="date" [(ngModel)]="order.startProductionDeadline"/>
-              <label for="startProductionDeadline">Limite inicio de Produccion</label>
-            </div>
-          </div>
-          
-          <div class="form-floating mb-2">
-            <input
-            class="form-control"
-            id="notes"
-            required
-            placeholder="notes"
-            [(ngModel)]="order.notes"
-            name="notes"
-            type="text"
-            />
-            <label for="notes">notas</label>
-          </div> -->
-        
         <app-form [formObj]="formObj" (formModel)="submit($event)" btnMes="Crear Orden" modalMessage="¿Desea continuar con la creacion de la Orden?"></app-form>
 
+        <h4 class="text-muted">Total: </h4>
+        <h5 class="bold">{{this.order.total.mxn | currency:'MXN'}}</h5>  
+        <h5 class="bold"> {{this.order.total.usd | currency:'USD'}}</h5>
+          
         <p>productos de la Orden: </p>
 
         <ul class="list-group mt-3 mb-3">
-          <li class="list-group-item" *ngFor="let product of orderProducts; let j = index">
+          <li class="list-group-item" *ngFor="let product of orderBusiness.orderProducts; let j = index">
             <div class="d-flex flex-row justify-content-between">
               
               <span class="my-auto">
@@ -127,13 +44,14 @@
                   <span class="input-group-text">U</span>
                   <div class="form-check input-group-append mx-2 my-auto">
                     <label class="form-check-label" for="flexCheckDefault"> Usar PT</label>
-                    <input class="form-check-input" readonlys type="checkbox" [ngModel]="product.useFP" id="flexCheckDefault" name="codeFilter">
+                    <input class="form-check-input" readonly type="checkbox" [ngModel]="product.useFP" id="flexCheckDefault" name="codeFilter">
                   </div>
               </div>
             </div>
           </li>
         </ul>
 
+      <!-- </div> --> 
       </div>
         
       <div *ngIf="!orderProducts">

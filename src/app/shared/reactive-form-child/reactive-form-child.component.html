@@ -1,0 +1,22 @@
+<div class="form-group mt-2">
+    <div class="form-floating">                            
+        <ng-content ></ng-content>
+            <!-- <input
+            id="prop"
+            [name]="prop"
+            [placeholder]="prop"
+            [formControlName]="prop"
+            [ngClass]="{ 'is-invalid':  f[prop].touched && f[prop].errors }"
+            class="form-control"
+            /> -->
+        <label for="prop">{{label}}</label>
+        <div *ngIf="prop.errors" class="invalid-feedback">
+            <div *ngIf="prop.getError('email')">Email is invalid</div>
+            <div *ngIf="prop.getError('required')"> {{prop}} is required </div>
+            <div *ngIf="prop.getError('requiredTrue')"> {{prop}} must be true </div>
+            <div *ngIf="prop.getError('pattern')"> {{prop}} does not match required pattern </div>
+            <div *ngIf="prop.getError('minlength')"> {{prop}} must be at least {{prop.getError('minlength').requiredLength}} characters </div>
+            <div *ngIf="prop.getError('maxlength')"> {{prop}} must not exceed {{prop.getError('maxlength').requiredLength}}  characters </div>
+        </div>
+    </div>
+</div>

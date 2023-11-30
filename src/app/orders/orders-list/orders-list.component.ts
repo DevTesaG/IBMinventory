@@ -1,7 +1,10 @@
 import { Component, OnInit, SimpleChanges } from '@angular/core';
+import { concat, from, merge, mergeMap, switchMap, take, tap } from 'rxjs';
 import { FormProp } from 'src/app/models/form-prop.model';
 import { Orders } from 'src/app/models/inventory/orders.model';
+import { FinishedOrdersService } from 'src/app/services/finished-orders.service';
 import { InvFPService } from 'src/app/services/inv-fp.service';
+import { InvRMService } from 'src/app/services/inv-rm.service';
 import { OrderService } from 'src/app/services/order.service';
 
 @Component({
@@ -14,16 +17,19 @@ export class OrdersListComponent implements OnInit {
 
   Products?: Orders[];
   currentOrder?: Orders;
+
+  title = '';
+  currentIndex = -1;
   formObj: FormProp[][];
   orderStateFilter?:string;
-  currentIndex = -1;
-  title = '';
   
   q = '';
-  queryChange?:string = undefined;
+  queryChange?:any = undefined;
   codeFilter = false;
+  download = false;
 
-  constructor(private OrderService: OrderService, private invFpService: InvFPService) { 
+  constructor(private OrderService: OrderService, private invFpService: InvFPService, private invRmService: InvRMService, private fo: FinishedOrdersService) { 
+
     this.formObj = [
       [new FormProp('Numero de Orden de Pedido' ,'name', 'text'), new FormProp('Estado' ,'state', 'text')],
       [new FormProp('Nombre del Cliente' ,'clientName', 'text')],
@@ -51,8 +57,8 @@ export class OrdersListComponent implements OnInit {
   }
  
   filter(){
+    this.queryChange = {value: this.orderStateFilter, exact:true}
     this.currentOrder = undefined;
-    this.queryChange = this.orderStateFilter
   }
 
   refreshList(){
@@ -69,30 +75,67 @@ export class OrdersListComponent implements OnInit {
 
   }
 
+  downloadFinishedOrders(){
+    this.download = true;
+    this.fo.deleteAll().subscribe({
+      complete: ()=> {this.download =false; alert('Ordenes Terminadas Eliminadas correctamente');}, 
+      error: ()=> {this.download = false; alert('Error inesperado, porfavor intente de nuevo'); }
+    })
+  }
+
 
   setOrderReady(cont:boolean){
     if(!cont) return
-    this.currentOrder?.orderProducts?.forEach( async prod => {
-      var stock = await this.invFpService.getStock(prod.invId)
-      if(stock.wating != undefined && stock.commited != undefined ){
-        this.invFpService.update(prod.invId, {wating: (+stock.wating) - prod.quantity, commited: (+stock.commited) + prod.quantity})        
-      }
-    })
+    if(this.currentOrder?.state == 'ESPERANDO MATERIAL'){
+      alert('La orden NO puede establecerse como "LISTA" ya que está "ESPERANDO MATERIAL".')
+      return 
+    }
+
+    concat(
+      from(this.currentOrder?.orderProducts ?? []).pipe(
+      mergeMap(prod => from(this.invFpService.getStock(prod.invId)).pipe(
+        take(1),
+        switchMap(stock => this.invFpService.update(prod.invId, 
+          {wating: Math.max(0, +(stock.wating ?? 0) - prod.quantity), commited: Math.max(0, +(stock.commited ?? 0) + prod.quantity)}
+          )        
+        )
+      ))
+    ),
     this.OrderService.update(this.currentOrder?.id, {state: 'TERMINADA'})
-    this.refreshList()
-    alert('La orden fue establecida como terminada satisfactoriamente')
+    ).subscribe(
+      {error: e => alert(e), complete: () => alert('La orden fue establecida como terminada satisfactoriamente')}
+    )
   }
 
 
   completeOrder(cont:boolean){
     if(!cont) return
-    this.currentOrder?.orderProducts?.forEach( async prod => {
-      var stock = await this.invFpService.getStock(prod.invId)
-      if(stock.commited != undefined){
-        this.invFpService.update(prod.invId, {commited: stock.commited - prod.quantity})     
-        this.refreshList()   
-      }
-    })
+    if(this.currentOrder?.state == 'EN PRODUCCION'){
+      alert('La orden NO puede establecerse como "TERMINADA" ya que está "EN PRODUCCION".')
+      return 
+    }
+    
+
+    var updateProd$ = from(this.currentOrder?.orderProducts ?? []).pipe(
+      mergeMap(prod => from( this.invFpService.getStock(prod.invId)).pipe(
+        take(1),
+        switchMap(stock => this.invFpService.update(prod.invId, {commited: Math.max(0, +(stock.commited ?? 0) - prod.quantity)}))
+      )),
+    )
+
+    var updateMat$ = from(this.currentOrder?.orderMaterials ?? []).pipe(
+      mergeMap(m => this.invRmService.getStock(m.matId).pipe(
+        take(1),
+        switchMap(stock => this.invRmService.update(stock.id, {commited: Math.max(0, +(stock.commited ?? 0) - (+m.quantity))})
+        )
+      ))
+    )
+
+    concat(merge(updateProd$, updateMat$), merge(this.OrderService.delete(this.currentOrder?.id), this.fo.create({state: 'ENTREGADA',  ...this.currentOrder}))).pipe(
+      tap({complete: ()=> alert('Orden Completada')})
+    ).subscribe()
+   
+    this.refreshList()   
   }
 
   readableDate(time:any) {

@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Client } from 'src/app/models/catalogue/client.model';
+import { AuthService } from 'src/app/services/auth.service';
 import { ClientService } from 'src/app/services/client.service';
 
 @Component({
@@ -18,9 +19,11 @@ export class ClientDetailsComponent implements OnInit {
     address: '',
   };
   message = '';
-
+  userRole?:string;
   
-  constructor(private ClientService: ClientService) { }
+  constructor(private ClientService: ClientService, private auth: AuthService) { 
+    this.auth.user$.subscribe((data => this.userRole = data?.userRole))
+  }
 
   ngOnInit(): void {
     
@@ -34,9 +37,9 @@ export class ClientDetailsComponent implements OnInit {
     this.currentClient = { ...this.client };
   }
 
+
   updateClient(): void {
     const data = {
-      name: this.currentClient.name,
       code: this.currentClient.code,
       phone: this.currentClient.phone,
       address: this.currentClient.address,

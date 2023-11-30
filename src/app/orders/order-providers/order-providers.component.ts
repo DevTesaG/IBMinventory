@@ -1,10 +1,9 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, } from '@angular/core';
 import { FormProp } from 'src/app/models/form-prop.model';
-import { OrderProductsComponent } from '../order-products/order-products.component';
-import { NavigationStart, Router } from '@angular/router';
-import { filter, map } from 'rxjs';
-import { InvRMService } from 'src/app/services/inv-rm.service';
 import { ProviderService } from 'src/app/services/provider.service';
+import { OrdersBuisnessService } from 'src/app/services/orders-buisness.service';
+import { Router } from '@angular/router';
+import { Subscription} from 'rxjs';
 
 @Component({
   selector: 'app-order-providers',
@@ -13,6 +12,7 @@ import { ProviderService } from 'src/app/services/provider.service';
 })
 export class OrderProvidersComponent implements OnInit {
 
+  stock$:Subscription = new Subscription
   formObj:any
   materials:any[] = []
   reqMaterials:any[] = []
@@ -23,7 +23,7 @@ export class OrderProvidersComponent implements OnInit {
   currentIndex:any
 
 
-  constructor(private invrmService: InvRMService, private provService: ProviderService, private router: Router) {
+  constructor(public orderBusiness:OrdersBuisnessService,  private provService: ProviderService, private router: Router) {
     this.formObj = [
       [new FormProp('Nombre' ,'name', 'text'), new FormProp('Lote Minimo' ,'minBatch', 'number')],
       [new FormProp('Descripcion' ,'description', 'text')],
@@ -35,50 +35,56 @@ export class OrderProvidersComponent implements OnInit {
    }
 
   ngOnInit(): void { 
-    this.orderProducts = history.state.products
-    if(!history.state.materials) this.router.navigate(['/orders/add'])
-    this.materials = this.updateMaterialStock(history.state.materials)
-    this.reqMaterials = this.materials
-    this.reqMaterials.filter((m:any)=> m.requestMaterial==true)
-    this.materials.filter((m:any) => m.requestMaterial==false)
-  } 
+    if(this.orderBusiness.materials.length == 0 || this.orderBusiness.orderProducts.length == 0) this.router.navigate(['/orders/add'])
+
+    this.stock$ = this.orderBusiness.updateProviderMaterialStock().subscribe(data => {
+      this.reqMaterials = data.filter((m:any) => m.requestMaterial)
+      this.materials = data.filter((m:any) => !m.requestMaterial)
+    
+      console.log(this.materials)
+      console.log(this.reqMaterials)
+    })      
+  }
 
   q = '';
   query = '';
 
+  ngOnDestroy(){
+    this.stock$.unsubscribe()
+  }
 
 
-  updateMaterialStock(materials:any[]){
-    if(!materials) return []
-    var matStock:any[] = [];
-    Object.entries(materials).forEach( async (mat:any, index) => {
-      const {id, ...stock} = await this.invrmService.getStock(mat[0]) || 0
-      var stockUp:any;
-      var request = false;
-      var req = 0
+  // updateProviderMaterialStock(materials:any[]){
+  //   if(!materials) return []
+  //   var matStock:any[] = [];
+  //   Object.entries(materials).forEach( async (mat:any, index) => {
+  //     const {id, ...stock} = await this.invrmService.getStock(mat[0]) || 0
+  //     var stockUp:any;
+  //     var request = false;
+  //     var req = 0
       
-      if(!(stock.available!=undefined && stock.commited!=undefined && stock.wating!=undefined && stock.watingCommited!=undefined)) return
+  //     if(!(stock.available!=undefined && stock.commited!=undefined && stock.wating!=undefined && stock.watingCommited!=undefined)) return
 
-      if(mat[1].quantity <= stock.available){
-        stockUp = {commited: (+stock.commited) + mat[1].quantity, available: (+stock.available) - mat[1].quantity}
-      }else {
+  //     if(mat[1].quantity <= stock.available){
+  //       stockUp = {commited: (+stock.commited) + mat[1].quantity, available: (+stock.available) - mat[1].quantity}
+  //     }else {
         
-        stockUp = {watingCommited: (+stock.watingCommited) +  mat[1].quantity - (+stock.available), commited: (+stock.commited) + (+stock.available), available: 0}
+  //       stockUp = {watingCommited: (+stock.watingCommited) +  mat[1].quantity - (+stock.available), commited: (+stock.commited) + (+stock.available), available: 0}
 
-        if((mat[1].quantity - stock.available) <= stock.wating){
-            stockUp = {wating: (+stock.wating) + (+stock.available) - mat[1].quantity, ...stockUp}
-        }else{
-          req = mat[1].quantity - (+stock.available) - (+stock.wating);      
-          request = true;
-        }
-      }
+  //       if((mat[1].quantity - stock.available) <= stock.wating){
+  //           stockUp = {wating: (+stock.wating) + (+stock.available) - mat[1].quantity, ...stockUp}
+  //       }else{
+  //         req = mat[1].quantity - (+stock.available) - (+stock.wating);      
+  //         request = true;
+  //       }
+  //     }
 
-      matStock.push( {matId:mat[0], name:mat[1].name, stockId: id, oldStock: stock, newStock: stockUp, requestMaterial: request, requested: req})
-    })
+  //     matStock.push( {matId:mat[0], name:mat[1].name, quantity: mat[1].quantity,  id, oldStock: stock, newStock: stockUp, requestMaterial: request, requested: req})
+  //   })
 
-    console.log(matStock)
-    return matStock
-  } 
+  //   console.log(matStock)
+  //   return matStock
+  // } 
 
 
 
@@ -122,17 +128,23 @@ export class OrderProvidersComponent implements OnInit {
   }
 
   submit(prov:any){
-    if(!prov) return 
+    // if(!prov) return 
+    var a:any[] = this.reqMaterials.filter((v:Object) => !(v.hasOwnProperty('minBatch') ))
+    if(a.length != 0){
+      alert('Aun hay materiales sin proveedor asignador, porfavor rectifique.')
+      return
+    }
 
     this.initMaterialOrder()
     
-    const order = {
-      orderWaitMaxTime: this.getOrderWaitMaxTime(),
-      materials: this.materials,
-      reqMaterials: this.reqMaterials,
-      orderProducts: this.orderProducts
-    }
-    this.router.navigate(['orders/add/create'], { state: {order: order} });
+    
+    this.orderBusiness.order.orderWaitMaxTime = this.getOrderWaitMaxTime()
+    this.orderBusiness.order.orderProducts = this.orderProducts
+    this.orderBusiness.materials = this.materials
+    this.orderBusiness.reqMaterials = this.reqMaterials
+  
+
+    this.router.navigate(['orders/add/create']);
   }
 
 }

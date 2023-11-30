@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, } from '@angular/fire/compat/firestore';
 import { invFinishedProduct } from '../models/inventory/invFinishedProduct.model';
 import { map } from 'rxjs';
+import { Timestamp } from 'firebase/firestore'
 
 @Injectable({
   providedIn: 'root'
@@ -55,7 +56,7 @@ export class InvFPService {
   }
 
   update(id: string, data: any,): Promise<void> {
-    return this.invFinishedProductsRef.doc(id).update(data);
+    return this.invFinishedProductsRef.doc(id).update({timestamp:  Timestamp.fromDate(new Date()), ...data});
   }
 
   delete(id: string): Promise<void> {

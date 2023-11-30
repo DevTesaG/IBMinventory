@@ -12,6 +12,7 @@ import { Observable, map, of, switchMap, take, tap } from 'rxjs';
 export class AuthService {
   
   user$: Observable<User | undefined|null>;
+  username?:string = "Anonimo";
 
   constructor(private afAuth: AngularFireAuth, private afs: AngularFirestore,  private router: Router,private ngZone: NgZone) {
     this.user$ = this.afAuth.authState.pipe(
@@ -22,7 +23,8 @@ export class AuthService {
           // Logged out
           return of(null);
         }
-      })
+      }),
+      take(1)
     )
 }
 
@@ -31,10 +33,11 @@ isLoggedIn(){
   var a = false;
   this.user$.pipe(
     take(1),
+    tap(user => this.username = user?.displayName),
     map(user => !!user), // <-- map to boolean
     tap(loggedIn => {
       if (loggedIn) {
-       a = true
+       a = true;
       }
   }))
   
@@ -46,6 +49,7 @@ async googleSignin() {
   if(credential.user){
     this.router.navigate(['/home']);
   }
+  console.log('keeps executing')
   return this.updateUserData(credential.user);
 }
 
@@ -74,7 +78,7 @@ async googleSignin() {
     const data = { 
       uid: user.uid, 
       email: user.email, 
-      displayName: user.displayName, 
+      displayName: user.displayName,
     } 
 
     return userRef.set(data, { merge: true })
@@ -82,6 +86,7 @@ async googleSignin() {
   }
 
   async signOut() {
+    this.username = 'Anonimo';
     await this.afAuth.signOut();
     this.router.navigate(['/login']);
   }

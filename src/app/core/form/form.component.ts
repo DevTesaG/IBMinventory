@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { AbstractControl, NgForm, NonNullableFormBuilder } from '@angular/forms';
 import { FormProp } from 'src/app/models/form-prop.model';
 import { Timestamp } from 'firebase/firestore'
 
@@ -18,23 +18,46 @@ export class FormComponent implements OnInit{
 
   @Input() placeHolder?: Object;
   @Input() mode?: boolean = false;
+  @Input() showBtns?: boolean = true;
   @Input() btnMes?: string = 'Registrar';
   @Input() modalMessage?: string = '¿ Desea continuar con este proceso ? ';
   @Input() formObj: FormProp[][] = [
     [new FormProp('Nombre Completo' ,'fullname', 'text'), new FormProp('Nombre de Usuario' ,'username', 'text')],
     [new FormProp('Correo Electronico' ,'email', 'text')],
     [new FormProp('Password' ,'password', 'password'), new FormProp('Confirmar Password' ,'Confirm Password', 'password')],
-    [new FormProp('Aceptar los Terminos' ,'Accept Terms', 'radio', 'form-check-input', false)],
+    [new FormProp('Aceptar los Terminos' ,'Accept Terms', 'radio', [], 'form-check-input', false)],
   ]
 
-
+  _form!:any;
   continue: boolean = false;
+  submitted: boolean = false;
+  firstCall:boolean = true;
 
-  constructor(private cdref: ChangeDetectorRef){}
+  constructor(private cdref: ChangeDetectorRef, private fb: NonNullableFormBuilder){
+
+  }
   
   
   ngOnInit(): void {
-    this.initPlaceHolder()
+    var f = {}
+    f = this.formObj.flat().reduce((form:any, f:FormProp) => {
+      if(this.placeHolder){
+        var val:any = this.placeHolder[f.getLabel() as keyof Object] 
+        if(val instanceof Timestamp){
+          val =  this.formatDateString( val.toDate().toLocaleDateString())
+        }
+        f.control?.patchValue(val);
+      } 
+      if(this.mode){ f.control?.clearValidators();}
+      form[f.label] = f.control
+      return form;
+    }, f)
+
+    this._form = this.fb.group(f);
+  }
+
+  get f(): { [key: string]: AbstractControl } {
+    return this._form.controls;
   }
 
   onContinue(cont:boolean){
@@ -43,13 +66,13 @@ export class FormComponent implements OnInit{
 
   initPlaceHolder(){
     if(this.placeHolder){
-      this.formObj.forEach((hor)=> hor.forEach(f=> {
+      this.formObj.forEach((hor)=> hor.forEach(form=> {
         if(this.placeHolder){
-          var val:any = this.placeHolder[f.getLabel() as keyof Object] 
+          var val:any = this.placeHolder[form.getLabel() as keyof Object] 
           if(val instanceof Timestamp){
             val =  this.formatDateString( val.toDate().toLocaleDateString())
           }
-          f.setValue(val)
+          this.f[form.getLabel()].patchValue(val);
         } 
       
       }))
@@ -57,7 +80,10 @@ export class FormComponent implements OnInit{
   }
 
   ngOnChanges(): void {
-    this.initPlaceHolder()
+    if(!this.firstCall){
+      this.initPlaceHolder()
+    }
+    this.firstCall = false;
   }
 
 
@@ -69,18 +95,23 @@ export class FormComponent implements OnInit{
     this.cdref.detectChanges();
   }
 
-  onSubmit(cont:boolean){
-    if(!this.continue || !cont) return
-
-    var tobj: any = {}
-    this.formObj.flat(2).forEach( e => tobj[e.label as keyof typeof tobj]= e.value)
-    this.formModel.emit(tobj)
+  onSubmit(cont:any){
+    this.submitted = true
+    console.log(this.f['clientName'].errors!['required'])
+    console.log(JSON.stringify(this._form.getRawValue(), null, 2));
+    if (this._form.invalid) {
+      return;
+    }
+    // this.formModel.emit(this._form.getRawValue())
   }
 
-  onReset(form: NgForm): void {
+  onReset(): void {
+    this._form.reset();
     this.continue = false;
-    this.reject.emit()
-    form.reset();
+    this.submitted = false
+    // var labels = this.formObj;
+    // labels = labels.flat(2).filter(e=> !(e.readonly)).map( e => e.label) 
+    // labels.forEach((l:any) => form.controls[l].reset())
   }
 
 }

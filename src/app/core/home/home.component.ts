@@ -1,6 +1,19 @@
-import { Component, OnInit } from '@angular/core';
-import { FormBuilder } from '@angular/forms';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { AbstractControl, FormControl, FormGroup, NonNullableFormBuilder, } from '@angular/forms';
+import { Subscription, tap } from 'rxjs';
 import { FormProp } from 'src/app/models/form-prop.model';
+import { FormComponent } from '../form/form.component';
+import { FinishedOrdersService } from 'src/app/services/finished-orders.service';
+import { HttpClient } from '@angular/common/http';
+
+
+interface User{
+  email: string
+  password:string
+  age:number
+  doubleAge:number
+}
+
 
 @Component({
   selector: 'app-home',
@@ -10,19 +23,43 @@ import { FormProp } from 'src/app/models/form-prop.model';
 export class HomeComponent implements OnInit {
 
   q?:string;
+  form:any;
+  a:Subscription = new Subscription;
+
+  @ViewChild(FormComponent) child!:FormComponent;
+
+  ngAfterViewInit() {
+    var a = this.child.f['productionDays'].valueChanges.pipe(
+      tap(v => this.child.f['orderInput'].patchValue(2*v))
+    ).subscribe()
+  }
+
+  constructor(private fo: FinishedOrdersService) {
 
 
-  constructor() { }
+    
+    // this.fo.uploadAll().subscribe()
+
+    this.form = [
+      [new FormProp('Numero de Orden de Pedido' ,'name', 'text'), new FormProp('Estado' ,'state', 'text')],
+      [new FormProp('Nombre del Cliente' ,'clientName', 'select', [], ['Oracle', 'Microsoft', 'Sony'])],
+      [new FormProp('Fecha de Embarque' ,'shipDate', 'date')],
+      [new FormProp('Dias de Produccion' ,'productionDays', 'number', [this.custom]), new FormProp('Pedido de Insumos' ,'orderInput', 'number').setReadOnly(true)],
+      [
+        new FormProp('Pedido Materia Prima' ,'rmOrderDeadline', 'date'), 
+        new FormProp('Limite inicio de Produccion' ,'startProductionDeadline', 'date')
+      ],
+      [new FormProp('Notas' ,'notes', 'text')]
+    ]
+  }
+
+
+  custom(control: AbstractControl){ 
+    return control.value > 30 || control.value == null ? null : { 'custom': 'debe ser mayor que 30' }; 
+   }
 
   ngOnInit(): void {
   }
-
-  formObj: FormProp[][] = [
-    [new FormProp('Nombre' ,'fullname', 'text'), new FormProp('Nombre de Usuario' ,'username', 'text')],
-    [new FormProp('Correo Electronico' ,'email', 'text')],
-    [new FormProp('Password' ,'password', 'password'), new FormProp('Confirmar Password' ,'Confirm Password', 'password')],
-    // [new FormProp(false,'Aceptar los Terminos' ,'Accept Terms', 'radio', 'form-check-input')],
-  ]
 
   submit(user: any){
     console.log(user)
@@ -35,6 +72,10 @@ export class HomeComponent implements OnInit {
 
   getSelectedElement(element: any){
     console.log(element)
+  }
+
+  ngOnDestroy(){
+    this.a.unsubscribe();
   }
 
 }

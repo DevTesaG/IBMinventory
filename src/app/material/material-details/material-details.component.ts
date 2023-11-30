@@ -2,7 +2,9 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Material } from 'src/app/models/catalogue/material.model';
 import { InvRMService } from 'src/app/services/inv-rm.service';
 import { MaterialService } from 'src/app/services/material.service';
-import { Timestamp } from 'firebase/firestore'
+import { FormProp } from 'src/app/models/form-prop.model';
+import { merge } from 'rxjs';
+import { ProviderService } from 'src/app/services/provider.service';
 
 @Component({
   selector: 'app-material-details',
@@ -15,14 +17,17 @@ export class MaterialDetailsComponent implements OnInit {
   @Output() refreshList: EventEmitter<any> = new EventEmitter();
   
   currentMaterial: Material = {}
+  formObj: FormProp[][];
 
-  
-  
-  income = 0
-  outflow = 0
   message = '';
 
-  constructor(private materialService: MaterialService, private reportService: InvRMService) {}
+  constructor(private materialService: MaterialService, private provService: ProviderService) {
+    this.formObj = [
+      [new FormProp('Nombre' ,'name', 'text').setReadOnly(true)],
+      [new FormProp('Descripcion' ,'description', 'text')],
+      [new FormProp('Area', 'area', 'text'),new FormProp('Zona', 'zone', 'text'), new FormProp('Posicion', 'position', 'text') ]
+    ]
+  }
 
   ngOnInit(): void {
     this.currentMaterial = this.material
@@ -34,27 +39,30 @@ export class MaterialDetailsComponent implements OnInit {
     this.currentMaterial = { ...this.material };
   }
 
+  submit(material:Material): void {
+    this.currentMaterial = material
+    this.updateMaterial()
+  }
+
   updateMaterial(): void {
-    const data = {
-      name: this.currentMaterial.name,
-      description: this.currentMaterial.description,
-    };
+    const {name, ...data} = this.currentMaterial
 
     if (this.currentMaterial.id) {
       this.materialService.update(this.currentMaterial.id, data)
-        ?.then(() => this.message = 'The Material was updated successfully!')
+        ?.then(() => this.message = 'El material fue actualizado correctamente!')
         .catch(err => console.log(err));
     }
   }
 
   deleteMaterial(): void {
     if (this.currentMaterial.id) {
-      this.materialService.delete(this.currentMaterial.id)
-        .then(() => {
+      merge(this.materialService.delete(this.currentMaterial.id), this.provService.delete(this.currentMaterial.id)).subscribe({
+        complete: () => {
           this.refreshList.emit();
-          this.message = 'The Material was updated successfully!';
-        })
-        .catch(err => console.log(err));
+          this.message = 'El material fue eliminado correctamente!';
+        },
+        error: ()=> alert('Error inesperado; porfavor intente de nuevo')
+      })
     }
   }
 }

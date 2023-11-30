@@ -24,6 +24,10 @@ export class HistoryListComponent implements OnInit {
     this.reports = array
   }
 
+  invTotal(stock:any){
+    return stock.wating + stock.commited + stock.available + (stock.watingCommited ? stock.watingCommited : 0)
+  }
+
   rootChanged(e:any){
     this.query = undefined
     this.queryChange = undefined

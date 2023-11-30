@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
 import { InvRawMaterial } from '../models/inventory/invRawMaterial.model';
-import { map } from 'rxjs';
+import { Observable, map, of, take } from 'rxjs';
+import { Timestamp } from 'firebase/firestore'
 
 @Injectable({
   providedIn: 'root'
@@ -36,32 +37,30 @@ export class InvRMService {
   update(id: string, data: any): Promise<void> {
 
     console.log('Update',id, data)
-    return this.InvRawMaterialsRef.doc(id).update(data);
+    return this.InvRawMaterialsRef.doc(id).update({timestamp:  Timestamp.fromDate(new Date()), ...data});
   }
 
   delete(id: string): Promise<void> {
     return this.InvRawMaterialsRef.doc(id).delete();
   }
 
-  async getStock(id?:string): Promise<InvRawMaterial>{
-    if(!id) return {}
+  getStock(id?:string): Observable<InvRawMaterial> {
+    if(!id) return of<InvRawMaterial>({});
 
     var stock:InvRawMaterial = {};
 
-    return new Promise( async r => {
-      this.db.collection<InvRawMaterial>(this.dbPath, ref => ref.where('materialId', '==', id)).snapshotChanges().pipe(
-       map(ch => ch.map(c => ({ id: c.payload.doc.id, ...c.payload.doc.data() })))).subscribe(data => {
-        
-      stock = {
-        id:  data.at(0)?.id,
-        available:  data.at(0)?.available,
-        wating:  data.at(0)?.wating,
-        watingCommited:  data.at(0)?.watingCommited,
-        commited:  data.at(0)?.commited
-      }
-        r(stock)
-      });    
-    })
+  
+      return this.db.collection<InvRawMaterial>(this.dbPath, ref => ref.where('materialId', '==', id)).snapshotChanges().pipe(
+        map(ch => ch.map(c => ({ id: c.payload.doc.id, ...c.payload.doc.data() }))),
+        map(data => stock = {
+          id:  data.at(0)?.id,
+          available:  data.at(0)?.available,
+          wating:  data.at(0)?.wating,
+          watingCommited:  data.at(0)?.watingCommited,
+          commited:  data.at(0)?.commited
+        } as InvRawMaterial),
+        take(1)
+      )
   }
 
   filterByDateBatch(sDate: any, eDate:any, name:any,  batch:number, last:any):  AngularFirestoreCollection<InvRawMaterial> {

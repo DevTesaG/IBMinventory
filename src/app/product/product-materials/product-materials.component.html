@@ -27,11 +27,11 @@
     <hr>
     
     <div class="list row shadow-sm">
-      <div class="col-md-6">
+      <div *ngIf="userRole" class="col-md-6">
         <app-pagination [path]="'/materials'" [query]="queryChange"  (selectedElement)="getSelectedElement($event)"></app-pagination>    
       </div>
       
-      <div class="col-md-6">
+      <div ngClass="userRole ? ['col-md-6', 'col-md-12']" class="col-md-6">
       <div *ngIf="product" class="edit-form">
         <h4>Producto</h4>
         <h3 class="text-muted">{{product.name}} - {{product.code}}</h3>
@@ -57,7 +57,7 @@
           </li>
         </ul>
 
-          <button type="submit" class="btn btn-success mb-2 rounded-pill" (click)="editMaterials()">
+          <button *ngIf="userRole" type="submit" class="btn btn-success mb-2 rounded-pill" (click)="editMaterials()">
             Agregar Matriales
           </button>
         </div>

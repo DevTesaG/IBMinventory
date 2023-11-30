@@ -7,6 +7,7 @@ import { Timestamp } from 'firebase/firestore'
 import { OrderService } from 'src/app/services/order.service';
 import { AuditService } from 'src/app/services/audit.service';
 import { AuthService } from 'src/app/services/auth.service';
+import { concat, from, merge, switchMap, take, tap } from 'rxjs';
 
 @Component({
   selector: 'app-shop-list',
@@ -76,29 +77,28 @@ export class ShopListComponent implements OnInit {
   }
 
   completeOrder(cont:boolean){
-    if(!cont) return
+    if(! (cont && this.currentOrder && this.currentOrder.id )) return
 
-    if (this.currentOrder) {
-      this.OrderService.update(this.currentOrder.id, {fulfilled: true}).then(async () => {
-          
-          this.refreshList()
-          var stock = await this.invrmService.getStock(this.currentOrder?.materialId)
-          
-          if(this.currentOrder?.stockId &&  this.currentOrder?.requestedAmount != undefined && this.currentOrder?.requiredMaterial != undefined && stock.watingCommited !=undefined && stock.commited != undefined && stock.wating != undefined && stock.available != undefined){
-            var newStock = { 
-              available: stock.available + this.currentOrder.requestedAmount, 
-              waiting: stock.wating - this.currentOrder?.requestedAmount,
-              watingCommited: stock.watingCommited - this.currentOrder.requiredMaterial + this.currentOrder.requestedAmount, 
-              commited: stock.commited +  this.currentOrder?.requiredMaterial - this.currentOrder.requestedAmount
-            }
-            this.invrmService.update(this.currentOrder.stockId, newStock).then(()=>{
-              if(this.currentOrder?.orderId)
-              this.sellOrderService.update(this.currentOrder?.orderId, {state: 'EN PRODUCCIÓN'})
-              this.audit.create('Editar', `Stock de Material: ${this.currentOrder?.name}`, this.username, JSON.stringify(newStock), JSON.stringify(stock))
-            })
-          }
-        }).catch(err => console.log(err));
-    }
+    from(this.OrderService.update(this.currentOrder.id, {fulfilled: true})).pipe(
+      take(1),
+      switchMap( _ => this.invrmService.getStock(this.currentOrder?.materialId)),
+      switchMap(stock => {
+        
+        var newStock = { 
+          available: +(stock.available ?? 0) + (this.currentOrder?.requestedAmount ?? 0), 
+          waiting: +(stock.wating ?? 0) - (this.currentOrder?.requestedAmount ?? 0),
+          watingCommited: +(stock.watingCommited ?? 0) - +(this.currentOrder?.requiredMaterial ?? 0) + +(this.currentOrder?.requestedAmount ?? 0), 
+          commited: +(stock.commited ?? 0) +  +(this.currentOrder?.requiredMaterial ?? 0) - +(this.currentOrder?.requestedAmount ?? 0)
+        }
+
+        return merge(
+          this.invrmService.update(this.currentOrder?.stockId ?? 'id', newStock),
+          this.sellOrderService.update(this.currentOrder?.orderId ?? 'id', {state: 'EN PRODUCCIÓN'}),
+          this.audit.create('Editar', `Stock de Material: ${this.currentOrder?.name}`, this.username, JSON.stringify(newStock), JSON.stringify(stock))
+        )
+      }),
+      tap({error: e => alert(e), complete: ()=> alert('La orden ah sido completada')})
+    ).subscribe()
   }
 
 
@@ -108,11 +108,15 @@ export class ShopListComponent implements OnInit {
     if(this.currentOrder){
       const prior = this.currentOrder.emissionDate  
       this.currentOrder.emissionDate =  Timestamp.fromDate( new Date())
-      this.OrderService.update(this.currentOrder.id, {emissionDate: this.currentOrder.emissionDate }).then(()=>{
-        this.audit.create('Editar', `Orden de Compra: ${this.currentOrder?.name}`, this.username, this.currentOrder?.emissionDate, prior)
-      })
-    }
+
+      concat(
+        from(this.OrderService.update(this.currentOrder.id, {emissionDate: this.currentOrder.emissionDate })),
+        from(this.audit.create('Editar', `Orden de Compra: ${this.currentOrder?.name}`, this.username, this.currentOrder?.emissionDate,prior))
+      ).pipe(
+        tap({error: e => alert(e), complete: () => alert('La orden a sido activada')})
+      ).subscribe()
   }
+}
 
 
   filter(): void {

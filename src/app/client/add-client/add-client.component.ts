@@ -3,7 +3,6 @@ import { Client } from 'src/app/models/catalogue/client.model';
 import { FormProp } from 'src/app/models/form-prop.model';
 import { AuditService } from 'src/app/services/audit.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { ClientService } from 'src/app/services/client.service';
 import { FirestoreOperationService } from 'src/app/services/firestore-operation.service';
 
 @Component({
@@ -19,8 +18,10 @@ export class AddClientComponent {
   formObj: FormProp[][];
   submitted = false;
   username?:string = 'Anonimo';
+  userRole?:string;
+
   constructor(private auth: AuthService, private auditService: AuditService, private fos: FirestoreOperationService) { 
-    this.auth.user$.subscribe((data => this.username = data?.displayName))
+    this.auth.user$.subscribe((data => {this.username = data?.displayName; this.userRole=data?.userRole }))
 
     this.formObj = [
       [new FormProp('Nombre' ,'name', 'text'), new FormProp('Numero de Cliente' ,'code', 'text')],

@@ -65,7 +65,7 @@ export class FirestoreOperationService {
     }
     return this.db.collection(this.path, ref => ref.where('orderDeadline', '<=', date).orderBy('orderDeadline', 'asc').limit(batch))
   }
-  
+
   filterByKeyBatch<S>(key:string, value: string, batch:number, last:any, exact?:boolean):  AngularFirestoreCollection<S> {
     
     if(key == 'orderDeadline'){

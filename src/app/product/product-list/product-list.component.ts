@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Product } from 'src/app/models/catalogue/product.model';
+import { AuthService } from 'src/app/services/auth.service';
 import { FirestoreOperationService } from 'src/app/services/firestore-operation.service';
+import { Timestamp } from 'firebase/firestore'
+import { map } from 'rxjs';
 
 @Component({
   selector: 'app-product-list',
@@ -17,8 +20,11 @@ export class ProductListComponent implements OnInit {
   q:any = '';
   query = '';
   codeFilter = false;
-
-  constructor() { }
+  userRole?:string
+  constructor(private auth:AuthService) { 
+    // this.auth.user$.subscribe((data => this.userRole = data?.userRole))
+    this.userRole = 'a'
+  }
 
   ngOnInit(): void {
   }

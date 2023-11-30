@@ -1,45 +1,19 @@
 <div *ngIf="material" class="edit-form">
     <h4>Material</h4>
-    <form>
-      <div class="form-floating mb-2">
-        <input
-          type="text"
-          class="form-control"
-          id="name"
-          placeholder="name"
-          [(ngModel)]="currentMaterial.name"
-          name="name"
-        />
-        <label for="name">Nombre</label>
-      </div>
-  
+ 
+    <app-form [formObj]="formObj"  (formModel)="submit($event)" (reject)="deleteMaterial()" [placeHolder]="currentMaterial" btnMes="Crear Material" modalMessage="¿Desea continuar con la creacion del material?"></app-form>
 
-      <div class="form-floating mb-2">
-        <input
-          type="text"
-          class="form-control"
-          id="description"
-          placeholder="description"
-          [(ngModel)]="currentMaterial.description"
-          name="description"
-        />
-        <label for="description">Descripcion</label>
-      </div>
-
-
-    </form>
-  
-    <button class="btn btn-danger rounded-pill mx-1 mt-2" (click)="deleteMaterial()">
+    <!-- <button class="btn btn-danger rounded-pill mx-1 mt-2" (click)="deleteMaterial()">
       Eliminar
-    </button>
+    </button> -->
 
     <button class="btn btn-secondary rounded-pill mx-1 mt-2" routerLink="provider" [state]="{id: currentMaterial.id}">
       Añadir Provedor
     </button>
   
-    <button type="submit" class="btn btn-success rounded-pill mt-2" (click)="updateMaterial()">
+    <!-- <button type="submit" class="btn btn-success rounded-pill mt-2" (click)="updateMaterial()">
       Editar
-    </button>
+    </button> -->
     <p>{{ message }}</p>
   </div>
   

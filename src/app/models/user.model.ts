@@ -3,4 +3,5 @@ export class User {
     email?: string
     displayName?: string
     emailVerified?: boolean
+    userRole?: string
 }

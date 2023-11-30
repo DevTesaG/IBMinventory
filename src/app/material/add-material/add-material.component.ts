@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Material } from 'src/app/models/catalogue/material.model';
 import { MaterialService } from 'src/app/services/material.service';
 import { Timestamp } from 'firebase/firestore'
@@ -26,6 +26,7 @@ export class AddMaterialComponent {
   formObj: FormProp[][];
   submitted = false;
   username?:string = 'anonimo'
+  userRole?:string;
 
   Deps = [
     'Corte y Ensamble',
@@ -38,12 +39,12 @@ export class AddMaterialComponent {
   ]
 
   constructor(private fos: FirestoreOperationService ,private auditService: AuditService, private invRMService: InvRMService, private providerService: ProviderService, private auth: AuthService) { 
-    this.auth.user$.subscribe((data => this.username = data?.displayName))
+    this.auth.user$.subscribe((data => {this.username = data?.displayName; this.userRole=data?.userRole }))
 
     this.formObj = [
       [new FormProp('Nombre' ,'name', 'text'),new FormProp('Cantidad en Inventario' ,'available', 'number')],
       [new FormProp('Descripcion' ,'description', 'text')],
-      [new FormProp('Nombre del Proovedor' ,'providerName', 'text'), new FormProp('Precio' ,'price', 'number')],
+      [new FormProp('Nombre del Proveedor' ,'providerName', 'text'), new FormProp('Precio' ,'price', 'number')],
       [new FormProp('Lote Minimo' ,'minBatch', 'number'), new FormProp('Tiempo de Entrega', 'deliveryTime', 'number')],
       [new FormProp('Area', 'area', 'text'),new FormProp('Zona', 'zone', 'text'), new FormProp('Posicion', 'position', 'text') ]
     ] 

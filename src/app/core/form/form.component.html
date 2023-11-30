@@ -1,33 +1,47 @@
 
 
-<form  name="form" #f="ngForm" (ngSubmit)="f.form.valid && onContinue(true)" novalidate>
+<form  name="form" [formGroup]="_form" (ngSubmit)="onContinue(true)" >
     <div class="input-group mb-2" *ngFor="let props of formObj">
-            <div *ngFor="let prop of props" class="form-floating">                            
+            <div *ngFor="let prop of props" class="form-floating">
+            
+                <select class="form-select" [id]="prop.label" [name]="prop.label" *ngIf="prop.type == 'select'"  [ngClass]="{ 'is-invalid':  (f[prop.label].touched || submitted) && f[prop.label].errors }" [formControlName]="prop.label">
+                    <option [ngValue]="null" disabled>Seleccione una opcion</option>
+                    <option *ngFor="let option of prop.value" [ngValue]="option">
+                      {{ option }}
+                    </option>
+                </select>      
+
                 <input
-                #input = "ngModel"
+                *ngIf="prop.type != 'select'"
+                [formControlName]="prop.label"
                 [class]="'form-control' + prop.classlist"
                 [id]="prop.label"
                 [name]="prop.label"
                 [type]="prop.type" 
                 [placeholder]="prop.placeholder"
-                [(ngModel)]="prop.value"
                 [value] = "(prop.valueCallback ? prop.getValue() : prop.value  )"
-                [ngClass]="{ 'is-invalid': f.submitted && input.errors }"
+                [ngClass]="{ 'is-invalid':  (f[prop.label].touched || submitted) && f[prop.label].errors }"
                 [readonly] ="mode || prop.readonly"
-                required
                 />
-                <div *ngIf="f.submitted && input.errors" class="invalid-feedback">
-                    <div *ngIf="input.errors['required']">{{prop.placeholder}} es obligatorio</div>
-                    <!-- <div *ngIf="input.errors['email']">Email is invalid</div> -->
+                <label [for]="prop.label" class="">{{prop.placeholder}} </label>
+                
+                <div *ngIf="f[prop.label].errors" class="invalid-feedback">   
+                    <div *ngIf="f[prop.label].errors!['email']">El Email es invalido</div>
+                    <div *ngIf="f[prop.label].errors!['required']"> {{prop.placeholder}} es requerido </div>
+                    <div *ngIf="f[prop.label].errors!['requiredTrue']"> {{prop.placeholder}} debe estar seleccionado </div>
+                    <div *ngIf="f[prop.label].errors!['pattern']"> {{prop.placeholder}} no tiene el patron requerido </div>
+                    <div *ngIf="f[prop.label].errors!['minlength']"> {{prop.placeholder}} debe tener almenos {{f[prop.label].errors!['minlength'].requiredLength}} caracteres </div>
+                    <div *ngIf="f[prop.label].errors!['maxlength']"> {{prop.placeholder}} debe tener menos de {{f[prop.label].errors!['maxlength'].requiredLength}}  caracteres </div>
+                    <div *ngIf="f[prop.label].errors!['maxlength']"> {{prop.placeholder}} debe tener menos de {{f[prop.label].errors!['maxlength'].requiredLength}}  caracteres </div>
+                    <div *ngIf="f[prop.label].errors!['custom']"> {{prop.placeholder}} {{f[prop.label].errors!['custom']}}</div>
                 </div>
-                <label [for]="prop.label" class="">{{prop.placeholder}}</label>
                 <div class="mb-4" *ngIf="prop.type == 'radio'"></div>
             </div>
     </div>
 
-    <div *ngIf="!mode" class="form-group mt-3">
-        <app-warn-modal type="submit" (continue)="onSubmit($event)" [btnMessage]="btnMes" modalMessage="¿Seguro que desea crear una nueva orden?"></app-warn-modal>
-        <button type="button" (click)="onReset(f)" class="ms-2 btn btn-outline-danger rounded-pill "> Reset </button>
+    <div *ngIf="!mode && showBtns" class="form-group mt-3">
+        <app-warn-modal id="1" name="btn1" type="submit" (continue)="onSubmit($event)" [btnMessage]="btnMes" (modalMessage)="modalMessage"></app-warn-modal>
+        <button type="button" (click)="onReset()" class="ms-2 btn btn-outline-primary rounded-pill "> Resetear  </button>
     </div>
 </form>
         

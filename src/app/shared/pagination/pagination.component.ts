@@ -1,8 +1,8 @@
 import { Component, EventEmitter, Input, OnInit, Output, SimpleChanges } from '@angular/core';
 import { AngularFirestoreCollection } from '@angular/fire/compat/firestore';
-import { map } from 'rxjs';
+import { map, tap } from 'rxjs';
 import { FirestoreOperationService } from 'src/app/services/firestore-operation.service';
-import { InvRMService } from 'src/app/services/inv-rm.service';
+import { PaginationService } from 'src/app/services/pagination.service';
 
 @Component({
   selector: 'app-pagination',
@@ -33,12 +33,13 @@ export class PaginationComponent implements OnInit {
   updateProducts = false;
   elementArray:any[] = []
   lastInResponses:any[] = []
+  cached:any[] = []
   queryChange?:any = undefined;
   filterKey:string = 'name';
   exact:boolean = false;
   elementPerCall:number = 2
 
-
+  req?: AngularFirestoreCollection<Object>;
 
   constructor(private fos: FirestoreOperationService) {}
 
@@ -69,33 +70,34 @@ export class PaginationComponent implements OnInit {
       this.lastInResponses?.pop();
       anchor = this.lastInResponses?.at(-1);
     }
-    
-    var req: AngularFirestoreCollection<Object>;
+
     if(this.queryChange){
-      req = this.fos.filterByKeyBatch<Object>(this.key, this.queryChange, this.elementPerCall, anchor, this.exact)
+      this.req = this.fos.filterByKeyBatch<Object>(this.key, this.queryChange, this.elementPerCall, anchor, this.exact)
     } else{
-      req = this.fos.getNextBatch<Object>(this.elementPerCall, anchor) 
+      this.req = this.fos.getNextBatch<Object>(this.elementPerCall, anchor) 
     }
     
-    console.log(this.key, this.queryChange, this.path)
-
-    req.get().pipe(map(changes => changes.docs.map(c =>  ({ id: c.id,...c.data()})))
-      ).subscribe( (data:any) => {
-        console.log(data)
-        if(!data.length){
-          this.disableNext = true;
-          this.lastInResponses?.pop();
-          return;
-        }
-        this.elementArray = data;
-        this.disableNext = data.length < this.elementPerCall;
-        this.disablePrev = anchor ? false: true
-        this.isFetched = true;
+    this.req.get().pipe(
+      map(changes => changes.docs.map(c =>  ({ id: c.id,...c.data()})))).subscribe({ 
+        next: (data)=> {
         
-        if(this.mode){
-          this.fetchedArray.emit(this.elementArray)
-        }
-      });
+          if(!data.length){
+            this.disableNext = true;
+            this.lastInResponses?.pop();
+            return;
+          }
+          this.elementArray = data;
+          this.disableNext = data.length < this.elementPerCall;
+          this.disablePrev = anchor ? false: true
+          this.isFetched = true;
+          
+          if(this.mode){
+            this.fetchedArray.emit(this.elementArray)
+          }
+      },
+      error: (e)=> alert(e),
+      complete: ()=> console.log('SI completo')
+    })
   }
 
 
@@ -117,10 +119,14 @@ export class PaginationComponent implements OnInit {
       this.fos.pathSetter(changes['path'].currentValue)  
     }
 
+    if(changes['key']){
+      console.log('Key Changed')
+    }
+
     if(changes['query']){ 
       if(changes['query'].currentValue instanceof Object){
        this.queryChange = changes['query'].currentValue.value
-       this.key = changes['query'].currentValue.key
+       this.key = changes['query'].currentValue.key ? changes['query'].currentValue.key : this.filterKey 
        this.exact = changes['query'].currentValue.exact ? true:false
       }else{
         this.queryChange = changes['query'].currentValue
@@ -136,6 +142,5 @@ export class PaginationComponent implements OnInit {
     this.resetPagination()
     this.nextPage(true) 
   }
-
 
 }

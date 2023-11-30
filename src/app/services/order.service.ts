@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Orders } from '../models/inventory/orders.model';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
+import { Observable, from } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -39,8 +40,8 @@ export class OrderService {
     return this.db.collection(this.dbPath, ref => ref.where('product_id', '==', id))
   }
 
-  create(orders: Orders): any {
-    return this.ordersRef.add({ ...orders });
+  create(orders: Orders): Observable<Orders> {
+    return from(this.ordersRef.add({ ...orders }));
   }
 
   update(id: string, data: any): Promise<void> {

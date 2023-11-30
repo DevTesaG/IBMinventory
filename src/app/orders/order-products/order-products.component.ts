@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { FormProp } from 'src/app/models/form-prop.model';
 import { InvFPService } from 'src/app/services/inv-fp.service';
+import { OrdersBuisnessService } from 'src/app/services/orders-buisness.service';
 
 @Component({
   selector: 'app-order-products',
@@ -13,7 +15,8 @@ export class OrderProductsComponent implements OnInit {
 
   orderProducts:any[] = []
   materials:any[] = []
-  constructor(private router: Router, private invFP: InvFPService) { }
+  formObj!:FormProp[][]
+  constructor(private router: Router, private invFP: InvFPService, public orderBuisness: OrdersBuisnessService) { }
 
   ngOnInit(): void {
   }
@@ -29,21 +32,20 @@ export class OrderProductsComponent implements OnInit {
 
 
   createOrder(){
-    var mats = this.getTotalMaterials()
-    this.updateProductStock()
-    this.orderProducts.forEach(e=> {delete e.materials; delete e.available})
-    this.router.navigate(['orders/add/providers'], { state: {materials: mats, products: this.orderProducts} });
-  }
 
-  getTotalMaterials(){
-    if(!this.orderProducts) return []
+    if( this.orderBuisness.orderProducts.filter(p => !p.quantity || p.quantity < 0 || !Number.isInteger(p.quantity) ).length != 0){
+      alert('Hay productos sin cantidad asignada o menor a 0, porfavor rectifique.')
+      return
+    }
 
-    this.orderProducts.forEach(e => e.materials.forEach((el:any) => el.quantity *= e.quantity ))
+    console.log(this.orderBuisness.orderProducts)
 
-    return this.orderProducts.flatMap( e => e.materials).reduce((pv, e)=> {
-      pv[e.id] = pv[e.id] ? {name: e.name, quantity: pv[e.id].quantity + e.quantity} :  {name: e.name, quantity: e.quantity};
-      return pv;
-    }, {})
+    this.orderBuisness.getTotalMaterials()
+    this.orderBuisness.updateOrderProductStock()
+    this.orderBuisness.getTotalPrice()
+    this.orderBuisness.orderProducts.forEach(e=> {delete e.materials; delete e.available})
+
+    this.router.navigate(['orders/add/providers']);
   }
 
 
@@ -57,34 +59,13 @@ export class OrderProductsComponent implements OnInit {
     this.orderProducts[index].stock = stock
   }
 
-  updateProductStock(){
-    this.orderProducts.forEach(async (p)=>{
-      var stockUp;
-      if(p.available){
-        if(!(p.stock.available!=undefined && p.stock.commited!=undefined && p.stock.wating!=undefined)) return
-        if(p.quantity <= p.stock.available){
-          stockUp = {commited: (+p.stock.commited) + p.quantity, available: (+p.stock.available) - p.quantity}
-        }else{
-          stockUp = {wating: (+p.stock.wating) +  p.quantity - (+p.stock.available), commited: (+p.stock.commited) + (+p.stock.available), available: 0}
-        }
-      }else{
-        if(!p.stock){
-           p.stock = await this.invFP.getStock(p.id) || 0
-        }
-        stockUp = {wating: p.stock.wating + (+p.quantity)}
-      }
-      p.newStock = stockUp
-    })
-  }
-
-
-
   addProductToOrder(product: any){
     this.continueDisabled = false
-    var occurence = this.orderProducts.find(e => e.id == product.id)
+    var occurence = this.orderBuisness.orderProducts.find(e => e.id == product.id)
     if(occurence) return;
-    this.orderProducts.push({name: product.name, id: product.id, invId: product.invId,  leadTime: product.leadTime, materials:product.materials})
+    this.orderBuisness.orderProducts.push({name: product.name, id: product.id, invId: product.invId,  leadTime: product.leadTime, materials:product.materials, price: product.price, currency: product.currency})
  }
+
 
  validate(){
 
@@ -92,12 +73,13 @@ export class OrderProductsComponent implements OnInit {
 
 
  removeProductFromOrder(materialIndex:any){
-   this.orderProducts.splice(materialIndex, 1)
-   this.continueDisabled = this.orderProducts.length ? true: false;
+   this.orderBuisness.orderProducts.splice(materialIndex, 1)
+   this.continueDisabled = this.orderBuisness.orderProducts.length ? true: false;
 }
 
   getSelectedElement(element: any){
+    this.continueDisabled = this.orderBuisness.orderProducts.length ? true: false;
     this.addProductToOrder(element.element)
-  }
+   }
 
 }

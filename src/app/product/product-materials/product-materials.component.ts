@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Material } from 'src/app/models/catalogue/material.model';
 import { Product } from 'src/app/models/catalogue/product.model';
+import { AuthService } from 'src/app/services/auth.service';
 import { ProductService } from 'src/app/services/product.service';
 
 @Component({
@@ -21,10 +22,12 @@ export class ProductMaterialsComponent implements OnInit {
   queryChange?:string = undefined;
   areaFilter= '';
   productMaterials:any[] = []
-
+  userRole?:string
   
 
-  constructor(private productService:ProductService ,private router: Router) { }
+  constructor(private productService:ProductService ,private router: Router, private auth: AuthService) { 
+    this.auth.user$.subscribe((data => this.userRole = data?.userRole))
+  }
 
   ngOnInit(): void {
     

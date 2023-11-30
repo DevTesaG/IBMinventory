@@ -18,9 +18,10 @@ export class AddProviderComponent implements OnInit {
   formObj: FormProp[][];
   submitted = false;
   username?:string = 'anonimo'
+  userRole?:string;
 
   constructor(private fos: FirestoreOperationService, private auth:AuthService, private audit: AuditService) {
-    this.auth.user$.subscribe((data => this.username = data?.displayName))
+    this.auth.user$.subscribe((data => {this.username = data?.displayName; this.userRole=data?.userRole }))
     this.formObj = [
       [new FormProp('Nombre del Proovedor' ,'providerName', 'text'), new FormProp('Precio' ,'price', 'number')],
       [new FormProp('Lote Minimo' ,'minBatch', 'number'), new FormProp('Tiempo de Entrega', 'deliveryTime', 'number')],      
@@ -36,11 +37,12 @@ export class AddProviderComponent implements OnInit {
   
   saveProvider(): void {
     if(!history.state.id) return
+    this.provider.id = history.state.id
     this.provider.materialId = history.state.id
       this.fos.create<Provider>(this.provider).then(() => {
       this.audit.create(Provider.name, `Crear Provedor ${this.provider.name}`, this.username, JSON.stringify(this.provider))
 
-      console.log('Created new material successfully!');
+      alert('Proveedor creado correctamente!');
       this.submitted = true;
     });
   }

@@ -57,6 +57,7 @@
           <th scope="col">Comprometido</th>
           <th *ngIf="reportPath == '/RMreport'" scope="col">En espera Comprometido</th>
           <th scope="col">En espera</th>
+          <th scope="col">Total</th>
         </tr>
       </thead>
       <tbody>
@@ -66,6 +67,7 @@
             <td>{{ report.commited }}</td>
             <td *ngIf="reportPath == '/RMreport'">{{ report.watingCommited }}</td>
             <td> {{ report.wating}}</td>
+            <td> {{ invTotal(report) }}</td>
           </tr>
       </tbody>
     </table>

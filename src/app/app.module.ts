@@ -14,6 +14,10 @@ import { HomeComponent } from './core/home/home.component';
 import { LoginComponent } from './core/login/login.component';
 import { SharedModule } from './shared/shared.module';
 
+
+
+import { HttpClientModule } from '@angular/common/http';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -24,6 +28,8 @@ import { SharedModule } from './shared/shared.module';
     LoginComponent,
   ],
   imports: [
+    
+    HttpClientModule,
     BrowserModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebase),

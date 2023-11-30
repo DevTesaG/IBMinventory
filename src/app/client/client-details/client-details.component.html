@@ -11,6 +11,7 @@
         [(ngModel)]="currentClient.name"
         name="name"
         placeholder="Nombre"
+        readonly
         type="text"
         />
         <label for="name">Nombre</label>
@@ -58,11 +59,11 @@
 
     </form>
     
-    <button class="btn btn-danger rounded-pill mx-2" (click)="deleteClient()">
+    <button *ngIf="userRole" class="btn btn-danger rounded-pill mx-2" (click)="deleteClient()">
         Eliminar
       </button>
     
-      <button type="submit" class="btn btn-success rounded-pill" (click)="updateClient()">
+      <button *ngIf="userRole"  type="submit" class="btn btn-success rounded-pill" (click)="updateClient()">
         Editar
       </button>
 

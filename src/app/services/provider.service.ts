@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/compat/firestore';
 import { Provider } from '../models/catalogue/provider.model';
-import { map } from 'rxjs';
+import { Observable, concatAll, map, mergeMap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +28,10 @@ export class ProviderService {
   getAll(): AngularFirestoreCollection<Provider> {
     return this.ProvidersRef;
   }
+  
+  getById(matId:any): Observable<Provider | undefined> {
+    return this.ProvidersRef.doc(matId).valueChanges({idField: 'id'});
+  }
 
   create(Provider: Provider): any {
     return this.ProvidersRef.add({ ...Provider });
@@ -39,8 +43,12 @@ export class ProviderService {
     return this.ProvidersRef.doc(id).update(data);
   }
 
-  delete(id: string): Promise<void> {
-    return this.ProvidersRef.doc(id).delete();
+  delete(id: string): any {
+    return this.db.collection(this.dbPath, ref=> ref.where('materialId', '==', id)).get().pipe(
+      map(d => d.docs),
+      concatAll(),
+      mergeMap(d => d.ref.delete())
+    )
   }
 
   async getProvidersByMaterial(id?:string): Promise<Provider[]>{

@@ -1,0 +1,44 @@
+<div class="register-form mt-5">
+    <form [formGroup]="_form" (ngSubmit)="onSubmit()">
+        
+
+
+      <div class="input-group mb-2" *ngFor="let props of formArray">
+        <div *ngFor="let prop of props" class="form-floating">                            
+            <input
+            [formControlName]="prop.label"
+            [id]="prop.label"
+            [name]="prop.label"
+            [type]="prop.type" 
+            [placeholder]="prop.placeholder"
+            [class]="'form-control' + prop.classlist"
+            [ngClass]="{ 'is-invalid':  f[prop.label].touched && f[prop.label].errors }"
+            [readonly] ="prop.readonly"
+            />
+            <label for="prop.label">{{prop.placeholder}}</label>
+            <div *ngIf="f[prop.label].errors" class="invalid-feedback">   
+              <div *ngIf="f[prop.label].errors!['email']">El Email es invalido</div>
+              <div *ngIf="f[prop.label].errors!['required']"> {{prop.placeholder}} es requerido </div>
+              <div *ngIf="f[prop.label].errors!['requiredTrue']"> {{prop.placeholder}} debe estar seleccionado </div>
+              <div *ngIf="f[prop.label].errors!['pattern']"> {{prop.placeholder}} no tiene el patron requerido </div>
+              <div *ngIf="f[prop.label].errors!['minlength']"> {{prop.placeholder}} debe tener almenos {{f[prop.label].errors!['minlength'].requiredLength}} caracteres </div>
+              <div *ngIf="f[prop.label].errors!['maxlength']"> {{prop.placeholder}} debe tener menos de {{f[prop.label].errors!['maxlength'].requiredLength}}  caracteres </div>
+              <div *ngIf="f[prop.label].errors!['maxlength']"> {{prop.placeholder}} debe tener menos de {{f[prop.label].errors!['maxlength'].requiredLength}}  caracteres </div>
+              <div *ngIf="f[prop.label].errors!['custom']"> {{prop.placeholder}} {{f[prop.label].errors!['custom']}}</div>
+            </div>
+        </div>  
+      </div>
+
+        
+      <div class="form-group">
+        <button type="submit" [disabled]="_form.invalid" class="btn btn-primary">Register</button>
+        <button
+          type="button"
+          (click)="onReset()"
+          class="btn btn-warning float-right"
+        >
+          Reset
+        </button>
+      </div>
+    </form>
+</div>
