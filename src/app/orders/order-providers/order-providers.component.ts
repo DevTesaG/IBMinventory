@@ -90,7 +90,7 @@ export class OrderProvidersComponent implements OnInit {
 
   initMaterialOrder(){
     this.reqMaterials.forEach(mat => {
-      var amount = mat.requested < mat.minBatch ? mat[1].minBatch - mat.requested: 0;
+      var amount = mat.requested < mat.minBatch ? mat.minBatch - mat.requested: 0;
       mat.newStock.wating += amount
       mat.amount = amount
     })

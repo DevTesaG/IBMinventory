@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
 import { Orders } from '../models/inventory/orders.model';
-import { bufferCount, concat, concatAll, from, map, mergeMap, switchMap, tap } from 'rxjs';
+import { bufferCount, concat, concatAll, from, map, mergeMap, switchMap, take, tap } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
+import { Timestamp } from 'firebase/firestore'
 
 @Injectable({
   providedIn: 'root'
@@ -91,11 +92,11 @@ ConvertToCSV(objArray:any[], headerList:any[]) {
       map(a => {
         var batch = this.db.firestore.batch()
         a.map( (d:any) => {
-          const {id, data} = d;
-          return  batch.set( this.db.collection(this.dbPath).doc().ref, d);
+          const {id, ...data} = d;
+          batch.set( this.db.collection(this.dbPath).doc(id).ref, data);
+          return  batch.set( this.db.collection('/FPreport').doc(id).ref,{name: data.name,  available: 0, commited: 0, wating: 0, timestamp: Timestamp.fromDate(new Date())});
         })
         return batch.commit()
-        // return a
       }),
       tap({complete: ()=> alert('completo'), error: ()=> alert('error')})
     )

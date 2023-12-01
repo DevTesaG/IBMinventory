@@ -39,7 +39,10 @@ export class FirestoreOperationService {
     return this.db.collection(this.path, ref => ref.where(key, '==', value))
   }
 
-  create<S>(object: S):any{
+  create<S>(object: S, id?:string):any{
+
+    if(id) return this.objectRef.doc(id).set(object)
+
     return this.objectRef.add({ ...object });
   }
 

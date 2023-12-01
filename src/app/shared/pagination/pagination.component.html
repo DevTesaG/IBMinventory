@@ -22,6 +22,7 @@
       <span class="d-flex">
         <div *ngFor="let param of showParams">
           <div class="ms-2" *ngIf="param=='orderDeadline'">
+             <!-- {{   element[param] }}             -->
              {{   element[param].toDate().toLocaleDateString('es-MX', dateOptions) }}            
           </div>
           <div *ngIf="param!='orderDeadline'">

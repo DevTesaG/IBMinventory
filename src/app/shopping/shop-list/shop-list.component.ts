@@ -8,6 +8,7 @@ import { OrderService } from 'src/app/services/order.service';
 import { AuditService } from 'src/app/services/audit.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { concat, from, merge, switchMap, take, tap } from 'rxjs';
+import { AbstractControl } from '@angular/forms';
 
 @Component({
   selector: 'app-shop-list',
@@ -37,8 +38,11 @@ export class ShopListComponent implements OnInit {
       [new FormProp('Nombre del Material' ,'name', 'text')],
       [new FormProp('Fecha Limite del Material' ,'orderDeadline', 'date'), new FormProp('Fecha de Emision de Orden' ,'emissionDate', 'date')],
       [ 
-        new FormProp('Cantidad Solicitada' ,'requiredMaterial', 'number'),
-        new FormProp('Costo del Pedido' ,'cost', 'number'), 
+        new FormProp('Cantidad Solicitada' ,'requiredMaterial', 'number', [this.postivoEntero]),
+        new FormProp('Costo del Pedido' ,'cost', 'number', [this.postivo]), 
+      ],
+      [ 
+        new FormProp('Orden Asociada' ,'orderCode', 'text'), 
       ],
     ]
   }
@@ -55,8 +59,18 @@ export class ShopListComponent implements OnInit {
 
   }
 
+  
+  postivoEntero(control: AbstractControl){
+    return (control.value > 0 && Number.isInteger(+(control.value))) || !(!!control.value) ? null : { 'custom': 'debe ser positivo y entero' } 
+  }
+
+  postivo(control: AbstractControl){
+    return control.value > 0 || !(!!control.value) ? null : { 'custom': 'debe ser positivo' } 
+  }
+
 
   submit(order: any){
+    this.editOrder(order)
   }
 
   getSelectedElement(element:any){
@@ -68,13 +82,30 @@ export class ShopListComponent implements OnInit {
   editOrder(order:any){
   if(!(this.currentOrder && this.currentOrder.requestedAmount)) return
   
-  if(this.currentOrder.requestedAmount > order.requestedAmount){
+  if((this.currentOrder.requiredMaterial ?? 0) > order.requiredMaterial){
     alert('No puede pedir menos material del requerido para una orden activa')
     return
   }
-    this.OrderService.update(this.currentOrder?.id, {requiredMaterial: order.requiredMaterial})
-    this.audit.create('Editar', `Orden de Compra ${order.name}`, this.username, JSON.stringify(order), JSON.stringify(this.currentOrder), this.currentOrder.id)
-  }
+
+
+
+  from(this.sellOrderService.update(this.currentOrder.id, {requiredMaterial: order.requiredMaterial})).pipe(
+    take(1),
+    switchMap( _ => this.invrmService.getStock(this.currentOrder?.materialId)),
+    switchMap(stock => {
+      
+      var newStock = {  
+        waiting: +(stock.wating ?? 0) - (order.requiredMaterial - (this.currentOrder?.requiredMaterial ?? 0)),
+      }
+
+      return merge(
+        this.invrmService.update(this.currentOrder?.stockId ?? 'id', newStock),
+        this.audit.create('Editar', `Stock de Material: ${this.currentOrder?.name}`, this.username, JSON.stringify(newStock), JSON.stringify(stock))
+      )
+    }),
+    tap({error: e => alert(e), complete: ()=> alert('Orden editada corredtamente')})
+  ).subscribe()
+}
 
   completeOrder(cont:boolean){
     if(! (cont && this.currentOrder && this.currentOrder.id )) return
@@ -97,7 +128,7 @@ export class ShopListComponent implements OnInit {
           this.audit.create('Editar', `Stock de Material: ${this.currentOrder?.name}`, this.username, JSON.stringify(newStock), JSON.stringify(stock))
         )
       }),
-      tap({error: e => alert(e), complete: ()=> alert('La orden ah sido completada')})
+      tap({error: e => alert(e), complete: ()=> alert('La orden ha sido completada')})
     ).subscribe()
   }
 

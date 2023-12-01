@@ -53,8 +53,8 @@ export class OrdersBuisnessService {
   
   initMaterialOrder(){
     this.reqMaterials.forEach(mat => {
-      var amount = mat.requested < mat.minBatch ? mat[1].minBatch - mat.requested: 0;
-      mat.newStock.wating += +amount
+      var amount = mat.requested < mat.minBatch ? mat.minBatch - mat.requested: 0;
+      mat.newStock.wating += +(amount)
       mat.amount = amount
     })
   }
@@ -143,7 +143,7 @@ export class OrdersBuisnessService {
   }
 
 
-  updateMaterialStock(orderId:string):Observable<any>{
+  updateMaterialStock(orderId:string, orderCode:string):Observable<any>{
     console.log(orderId)
 
     var req$ =  from(this.reqMaterials).pipe(
@@ -189,10 +189,10 @@ export class OrdersBuisnessService {
       timestamp:  Timestamp.fromDate(new Date()), ...this.order
     }).pipe(
       take(1),
-      switchMap(order => merge(this.updateMaterialStock(order.id), this.updateProductStock())),
+      switchMap(order => merge(this.updateMaterialStock(order.id, order.name ?? ''), this.updateProductStock())),
       tap({
         error: e => {console.log(e); alert('Ha ocurrido un error intente de nuevo.')},
-        complete: () => {alert('Orden Creada satisfactoriamente'); console.log('ENDED');}
+        complete: () => {alert('Orden Creada correctamente'); console.log('ENDED');}
       })
     )
   }

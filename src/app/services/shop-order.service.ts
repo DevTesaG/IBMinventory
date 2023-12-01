@@ -24,7 +24,7 @@ export class ShopOrderService {
     return this.db.collection(this.dbPath, ref=> ref.orderBy('emissionDate', 'asc').limit(batch))
   }
 
-  create(id:string,name:string,required:number, requestedAmount: number, orderDeadline:any, stockId:any, price:number, orderId?:string){
+  create(id:string,name:string,required:number, requestedAmount: number, orderDeadline:any, stockId:any, price:number, orderId?:string, orderCode?:string){
     var data:any = { 
       materialId: id, 
       price: price,
@@ -36,7 +36,10 @@ export class ShopOrderService {
       emissionDate: new Date(), 
       timestamp: new Date(),
     }
-    if(orderId) data.orderId = orderId
+    if(orderId) {
+      data.orderId = orderId
+      data.orderCode = orderCode  
+    }
     return this.InvRawMaterialsRef.add(data);
   }
 

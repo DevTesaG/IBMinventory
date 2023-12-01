@@ -34,7 +34,7 @@ export class PaginationComponent implements OnInit {
   elementArray:any[] = []
   lastInResponses:any[] = []
   cached:any[] = []
-  queryChange?:any = undefined;
+  queryChange?:string = undefined;
   filterKey:string = 'name';
   exact:boolean = false;
   elementPerCall:number = 2
@@ -124,8 +124,9 @@ export class PaginationComponent implements OnInit {
     }
 
     if(changes['query']){ 
+      
       if(changes['query'].currentValue instanceof Object){
-       this.queryChange = changes['query'].currentValue.value
+       this.queryChange = changes['query'].currentValue.value 
        this.key = changes['query'].currentValue.key ? changes['query'].currentValue.key : this.filterKey 
        this.exact = changes['query'].currentValue.exact ? true:false
       }else{
@@ -133,6 +134,7 @@ export class PaginationComponent implements OnInit {
         this.key = this.filterKey
         this.exact = false
       }
+      
       console.log(this.key, this.queryChange)
     }
     this.filterProducts();

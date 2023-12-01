@@ -24,7 +24,7 @@
 
         <div *ngIf="reportPath == '/audit'" class="form-floating w-50">
           <select class="form-select" [(ngModel)]="query" name="Inventory" id="floatingSelect" aria-label="providers select">
-            <option [ngValue]="undefined" disabled>Todos</option>
+            <option [ngValue]="undefined">Todos</option>
             <option [ngValue]="'InvRawMaterial'">Materiales</option>
             <option [ngValue]="'invFinishedProduct'">Productos</option>
             <option [ngValue]="'Orders'">Ordenes</option>
@@ -42,7 +42,8 @@
         </div>
       </div> 
       <button class="btn btn-outline-success float-end ms-2" (click)="filter()" type="submit">Buscar</button>
-   
+      <button class="ms-2 btn btn-outline-danger float-end" (click)="deleteAudit()" type="button">Eliminar Audiciones</button>
+
     </form>
     <hr>
 
@@ -52,7 +53,7 @@
     <table *ngIf="reportPath != '/audit'" class="table">
       <thead>
         <tr>
-          <th scope="col">Material</th>
+          <th scope="col">{{reportPath == '/FPreport' ? 'Producto' : 'Material'}}</th>
           <th scope="col">Disponible</th>
           <th scope="col">Comprometido</th>
           <th *ngIf="reportPath == '/RMreport'" scope="col">En espera Comprometido</th>

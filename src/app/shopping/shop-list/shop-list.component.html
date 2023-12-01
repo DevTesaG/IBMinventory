@@ -12,7 +12,7 @@
         <input class="form-check-input" type="checkbox" [(ngModel)]="codeFilter" id="flexCheckDefault" name="codeFilter">
       </div>
 
-        <input *ngIf="!codeFilter" id="query" class="form-control mx-2 float-end" type="search" [(ngModel)]="query" name="query" placeholder="Buscar por Nombre o Codigo" aria-label="Search">
+        <input *ngIf="!codeFilter" id="query" class="form-control mx-2 float-end" type="search" oninput="this.value = this.value.toLowerCase()" [(ngModel)]="query" name="query" placeholder="Buscar por Nombre o Codigo" aria-label="Search">
 
 
         <select *ngIf="codeFilter" class="form-select mx-2" [(ngModel)]="orderStateFilter" name="state" aria-label="Default select example">

@@ -1,4 +1,5 @@
 import { Component, OnInit, SimpleChanges} from '@angular/core';
+import { AuditService } from 'src/app/services/audit.service';
 
 @Component({
   selector: 'app-history-list',
@@ -7,7 +8,7 @@ import { Component, OnInit, SimpleChanges} from '@angular/core';
 })
 export class HistoryListComponent implements OnInit {
 
-  constructor() { }
+  constructor(private audit: AuditService) { }
 
   reports?: any[];
   reportPath:string = '/FPreport'
@@ -26,6 +27,10 @@ export class HistoryListComponent implements OnInit {
 
   invTotal(stock:any){
     return stock.wating + stock.commited + stock.available + (stock.watingCommited ? stock.watingCommited : 0)
+  }
+
+  deleteAudit(){
+    this.audit.deleteAll()
   }
 
   rootChanged(e:any){

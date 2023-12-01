@@ -97,12 +97,10 @@ export class FormComponent implements OnInit{
 
   onSubmit(cont:any){
     this.submitted = true
-    console.log(this.f['clientName'].errors!['required'])
-    console.log(JSON.stringify(this._form.getRawValue(), null, 2));
     if (this._form.invalid) {
       return;
     }
-    // this.formModel.emit(this._form.getRawValue())
+    this.formModel.emit(this._form.getRawValue())
   }
 
   onReset(): void {

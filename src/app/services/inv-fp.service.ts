@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection, } from '@angular/fire/compat/firestore';
 import { invFinishedProduct } from '../models/inventory/invFinishedProduct.model';
-import { map } from 'rxjs';
+import { map, take } from 'rxjs';
 import { Timestamp } from 'firebase/firestore'
 
 @Injectable({
@@ -32,7 +32,7 @@ export class InvFPService {
     var stock:invFinishedProduct = {};
 
     return new Promise( async r => {
-      this.invFinishedProductsRef.doc(id).get().pipe(map((c:any) => ({id: c.id, prod: c.data()}))
+      this.invFinishedProductsRef.doc(id).get().pipe(take(1), map((c:any) => ({id: c.id, prod: c.data()}))
       ).subscribe((data:any) =>{
         if(!data) return
         stock = {

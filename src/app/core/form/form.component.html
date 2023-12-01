@@ -22,6 +22,9 @@
                 [value] = "(prop.valueCallback ? prop.getValue() : prop.value  )"
                 [ngClass]="{ 'is-invalid':  (f[prop.label].touched || submitted) && f[prop.label].errors }"
                 [readonly] ="mode || prop.readonly"
+                oninput="this.value = this.value.toLowerCase()"
+                min="1"
+                step="1"
                 />
                 <label [for]="prop.label" class="">{{prop.placeholder}} </label>
                 

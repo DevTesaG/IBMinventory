@@ -30,7 +30,9 @@ export class InvRMService {
     return this.InvRawMaterialsRef;
   }
 
-  create(InvRawMaterial: InvRawMaterial): any {
+  create(InvRawMaterial: InvRawMaterial, id?:string): any {
+    if(id) return this.InvRawMaterialsRef.doc(id).set(InvRawMaterial)
+
     return this.InvRawMaterialsRef.add({ ...InvRawMaterial });
   }
 
@@ -49,18 +51,16 @@ export class InvRMService {
 
     var stock:InvRawMaterial = {};
 
-  
-      return this.db.collection<InvRawMaterial>(this.dbPath, ref => ref.where('materialId', '==', id)).snapshotChanges().pipe(
-        map(ch => ch.map(c => ({ id: c.payload.doc.id, ...c.payload.doc.data() }))),
-        map(data => stock = {
-          id:  data.at(0)?.id,
-          available:  data.at(0)?.available,
-          wating:  data.at(0)?.wating,
-          watingCommited:  data.at(0)?.watingCommited,
-          commited:  data.at(0)?.commited
-        } as InvRawMaterial),
-        take(1)
-      )
+    return this.InvRawMaterialsRef.doc(id).get().pipe(
+      take(1),
+      map(mat => stock = {
+        id:  mat.id,
+        available:  mat.data() ? mat.data()?.available : 0,
+        wating:  mat.data() ? mat.data()?.wating : 0,
+        watingCommited:  mat.data() ? mat.data()?.watingCommited : 0,
+        commited:  mat.data() ? mat.data()?.commited: 0
+      } as InvRawMaterial),
+    )
   }
 
   filterByDateBatch(sDate: any, eDate:any, name:any,  batch:number, last:any):  AngularFirestoreCollection<InvRawMaterial> {
@@ -74,7 +74,7 @@ export class InvRMService {
     //   return this.db.collection(this.dbPath, ref => ref.where('timestampName', '>=', sDate).where('timestampName', '<=', eDate).orderBy('timestampName', 'desc').limit(batch))
     // }
     // return this.db.collection(this.dbPath, ref => ref.startAt('timestamp',sDate).endAt('timestamp', eDate).where('name','==', name).orderBy('timestamp', 'desc').limit(batch))
-    return this.db.collection(this.dbPath, ref => ref.where('timestamp', '>=', sDate).where('timestamp', '<=', eDate).where('name','==', name).orderBy('timestamp', 'desc').limit(batch))
+    return this.db.collection(this.dbPath, ref => ref.where('timestamp', '>=', sDate).where('timestamp', '<=', eDate).orderBy('timestamp', 'desc').limit(batch))
   }
 
   filterByNameBatch(name: string, batch:number, last:any):  AngularFirestoreCollection<InvRawMaterial> {

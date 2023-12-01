@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
 import { Timestamp } from 'firebase/firestore'
+import { bufferCount, concatAll, map, mergeMap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -47,6 +48,19 @@ export class AuditService {
 
   delete(id: string): Promise<void> {
     return this.objectsRef.doc(id).delete();
+  }
+
+  deleteAll(): any {
+    return this.objectsRef.get().pipe(
+      map(d => d.docs),
+      concatAll(),
+      bufferCount(500),
+      mergeMap(chunk => {
+        var batch = this.db.firestore.batch()
+        chunk.map(doc => batch.delete(doc.ref))
+        return batch.commit()
+      }),
+    )
   }
 
   filterByDateBatch(sDate: any, eDate:any, name:any,  batch:number, last:any):  AngularFirestoreCollection<object> {
