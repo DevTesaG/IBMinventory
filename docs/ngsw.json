@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1701462742224,
+  "timestamp": 1701489636667,
   "index": "/IBMinventory/index.html",
   "assetGroups": [
     {
@@ -13,18 +13,18 @@
       "urls": [
         "/IBMinventory/117.9c8fb7b4257356fa.js",
         "/IBMinventory/21.e108e5673d48f7d5.js",
-        "/IBMinventory/25.195da1ed41500e32.js",
+        "/IBMinventory/25.7ba478fe39470659.js",
         "/IBMinventory/434.b089e9195860a9a2.js",
         "/IBMinventory/596.5d22c44702015999.js",
-        "/IBMinventory/72.0b07ad4fcf356c3a.js",
+        "/IBMinventory/72.4844c7b695169856.js",
         "/IBMinventory/737.ccc89313aeb4d6d6.js",
         "/IBMinventory/common.4a912bb41780f733.js",
         "/IBMinventory/favicon.ico",
         "/IBMinventory/index.html",
-        "/IBMinventory/main.0744afa18f6e3e8e.js",
+        "/IBMinventory/main.689dff43b76f6ee9.js",
         "/IBMinventory/manifest.webmanifest",
         "/IBMinventory/polyfills.322208da5351bb72.js",
-        "/IBMinventory/runtime.1378ce0a439949ba.js",
+        "/IBMinventory/runtime.9346b68167911bc1.js",
         "/IBMinventory/styles.ef46db3751d8e999.css"
       ],
       "patterns": []
@@ -56,10 +56,10 @@
   "hashTable": {
     "/IBMinventory/117.9c8fb7b4257356fa.js": "387e8330539c6c92c743ae8c913edf5455c1f2c2",
     "/IBMinventory/21.e108e5673d48f7d5.js": "94787b3d3e1b69c63350864a405e44ef1c4d515f",
-    "/IBMinventory/25.195da1ed41500e32.js": "b8c87fd89b322eb57d3a9a87c93b25dbfad32b59",
+    "/IBMinventory/25.7ba478fe39470659.js": "a40a784ba5b63efd1066542ebfec63f31d59442e",
     "/IBMinventory/434.b089e9195860a9a2.js": "39f30710d595d7071008f4dd978c2918528fc72b",
     "/IBMinventory/596.5d22c44702015999.js": "17fb1ba36bfd7990a86fea0a6b7f5cfec7ae9fba",
-    "/IBMinventory/72.0b07ad4fcf356c3a.js": "884b7dde58678cd59f1a49782d181b045706200c",
+    "/IBMinventory/72.4844c7b695169856.js": "efeca14141d5f33bc45db652240b090573a40e08",
     "/IBMinventory/737.ccc89313aeb4d6d6.js": "bd1ec59fabaa993824493420666d8544e563f3bc",
     "/IBMinventory/assets/csvjson.json": "84b29c906da2a5e8ee4140b14f570f5ecb77503d",
     "/IBMinventory/assets/icons/icon-128x128.png": "dae3b6ed49bdaf4327b92531d4b5b4a5d30c7532",
@@ -74,11 +74,11 @@
     "/IBMinventory/assets/img/ibmFurniture_logo.png": "9d5bd88ec5100d772af74635b8189e7936674aa6",
     "/IBMinventory/common.4a912bb41780f733.js": "a852b7a0acee88d31d8683a545766a5b2f7b24b0",
     "/IBMinventory/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
-    "/IBMinventory/index.html": "86b6ec2f7ad82540e8645b17cac7aa1c2880c2d6",
-    "/IBMinventory/main.0744afa18f6e3e8e.js": "b73ac2d196933c91c4b9e183a39318f2eeba173d",
+    "/IBMinventory/index.html": "700c0cd7b1708ffd457dd5ec91d1460c8af3b6dd",
+    "/IBMinventory/main.689dff43b76f6ee9.js": "bc4011cba1b22d488ec8d73267735ba0bcad543b",
     "/IBMinventory/manifest.webmanifest": "dc4db620ddfce34a3d9ab01fba4971bfb4b3ef89",
     "/IBMinventory/polyfills.322208da5351bb72.js": "d4175b2904c6708cb5849bb7a31858255930e9cf",
-    "/IBMinventory/runtime.1378ce0a439949ba.js": "8bfa79552cc6d679c83f464d61bbdbbfc58c0240",
+    "/IBMinventory/runtime.9346b68167911bc1.js": "fdc89a887ca6b98654b90f0eb47dc738999a0650",
     "/IBMinventory/styles.ef46db3751d8e999.css": "da39a3ee5e6b4b0d3255bfef95601890afd80709"
   },
   "navigationUrls": [

@@ -75,7 +75,8 @@ export class OrdersListComponent implements OnInit {
 
   }
 
-  downloadFinishedOrders(){
+  downloadFinishedOrders(cont:boolean){
+    if(!cont) return 
     this.download = true;
     this.fo.deleteAll().subscribe({
       complete: ()=> {this.download =false; alert('Ordenes Terminadas Eliminadas correctamente');}, 

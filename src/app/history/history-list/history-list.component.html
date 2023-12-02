@@ -42,7 +42,10 @@
         </div>
       </div> 
       <button class="btn btn-outline-success float-end ms-2" (click)="filter()" type="submit">Buscar</button>
-      <button class="ms-2 btn btn-outline-danger float-end" (click)="deleteAudit()" type="button">Eliminar Audiciones</button>
+      
+      <app-warn-modal type="button" [classlist]="['btn-outline-danger', 'float-end', 'btn-sm']" (continue)="deleteAudit($event)" btnMessage="Eliminar Audiciones" modalMessage="Esta seguro de que desea descargar todas las ordenes terminadas?"></app-warn-modal>
+
+      <!-- <button class="ms-2 btn btn-outline-danger float-end" (click)="deleteAudit()" type="button">Eliminar Audiciones</button> -->
 
     </form>
     <hr>

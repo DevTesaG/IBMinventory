@@ -29,7 +29,8 @@ export class HistoryListComponent implements OnInit {
     return stock.wating + stock.commited + stock.available + (stock.watingCommited ? stock.watingCommited : 0)
   }
 
-  deleteAudit(){
+  deleteAudit(cont:boolean){
+    if(!cont) return
     this.audit.deleteAll()
   }
 

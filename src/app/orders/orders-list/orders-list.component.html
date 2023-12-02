@@ -28,8 +28,8 @@
           </div>
           
           <button class="btn btn-outline-success float-end" (click)="filter()" type="submit">Buscar</button>
-          <button class="ms-2 btn btn-outline-danger float-end" (click)="downloadFinishedOrders()" type="button">Descargar Ordenes Terminadas</button>
-        
+       
+          <app-warn-modal type="button" [classlist]="['btn-outline-danger', 'float-end']" (continue)="downloadFinishedOrders($event)" btnMessage="Descargar Ordenes Terminadas" modalMessage="Esta seguro de que desea descargar todas las ordenes terminadas?"></app-warn-modal>        
     </form>
     <hr>
   
