@@ -40,9 +40,6 @@ export class OrderProvidersComponent implements OnInit {
     this.stock$ = this.orderBusiness.updateProviderMaterialStock().subscribe(data => {
       this.reqMaterials = data.filter((m:any) => m.requestMaterial)
       this.materials = data.filter((m:any) => !m.requestMaterial)
-    
-      console.log(this.materials)
-      console.log(this.reqMaterials)
     })      
   }
 

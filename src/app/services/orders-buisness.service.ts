@@ -34,13 +34,12 @@ export class OrdersBuisnessService {
                 
                 if(!(stock.available!=undefined && stock.commited!=undefined && stock.wating!=undefined && stock.watingCommited!=undefined)) return {}
                 
-                var req = Math.max(0, (m[1].quantity - stock.available) - stock.wating)
+                var req = Math.max(0, (m[1].quantity - stock.available))
                 var request = !!(req > 0);                
                 var stockUp = {
                   commited: (+stock.commited) + Math.min(stock.available, m[1].quantity), //There is something Available take it 
                   available: Math.max(0, (+stock.available) - m[1].quantity),  // If there is spare save it in available otherwise available is 0
                   watingCommited: (+stock.watingCommited) + Math.max(0, m[1].quantity - stock.available), // The negative difference of available is on watting commited                   
-                  wating: Math.max(0, +stock.wating - (m[1].quantity - stock.available)) //Taking from wating for wating commited 
                 } 
 
                 return {matId:m[0], name:m[1].name, quantity: m[1].quantity, id: stock.id, oldStock: stock, newStock: stockUp, requestMaterial: request, requested: req}
@@ -112,9 +111,9 @@ export class OrdersBuisnessService {
   updateOrderProductStock(){
     this.orderProducts.forEach(async (p)=>{
       var stockUp;
-      if(p.useFP && p.quantity - p.stock.available > 0){
+      if(p.useFP){
         stockUp = {
-          available: +(p.stock.available) + Math.max(0, p.stock.available - p.quantity),
+          available: Math.max(0, p.stock.available - p.quantity),
           commited: +(p.stock.commited) + Math.min(p.quantity,p.stock.available),
           wating: +(p.stock.wating) + Math.max(0, p.quantity - p.stock.available)
         }

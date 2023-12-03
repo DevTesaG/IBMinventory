@@ -21,7 +21,7 @@ export class MaterialDetailsComponent implements OnInit {
 
   message = '';
 
-  constructor(private materialService: MaterialService, private provService: ProviderService) {
+  constructor(private materialService: MaterialService, private provService: ProviderService, private rmService: InvRMService) {
     this.formObj = [
       [new FormProp('Nombre' ,'name', 'text').setReadOnly(true)],
       [new FormProp('Descripcion' ,'description', 'text')],
@@ -56,12 +56,12 @@ export class MaterialDetailsComponent implements OnInit {
 
   deleteMaterial(): void {
     if (this.currentMaterial.id) {
-      merge(this.materialService.delete(this.currentMaterial.id), this.provService.delete(this.currentMaterial.id)).subscribe({
+      merge(this.materialService.delete(this.currentMaterial.id), this.provService.delete(this.currentMaterial.id), this.rmService.delete(this.currentMaterial.id)).subscribe({
         complete: () => {
           this.refreshList.emit();
           this.message = 'El material fue eliminado correctamente!';
         },
-        error: ()=> alert('Error inesperado; porfavor intente de nuevo')
+        error: ()=> alert('Error inesperado; por favor intente de nuevo')
       })
     }
   }
