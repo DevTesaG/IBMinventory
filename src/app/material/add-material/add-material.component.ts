@@ -40,16 +40,15 @@ export class AddMaterialComponent {
   ]
 
   constructor(private fos: FirestoreOperationService ,private auditService: AuditService, private invRMService: InvRMService, private providerService: ProviderService, private auth: AuthService) { 
-    // this.auth.user$.subscribe((data => {this.username = data?.displayName; this.userRole=data?.userRole }))
-
-    this.userRole = 'a'
+    this.auth.user$.subscribe((data => {this.username = data?.displayName; this.userRole=data?.userRole }))
 
     this.formObj = [
       [new FormProp('Nombre' ,'name', 'text'),new FormProp('Cantidad en Inventario' ,'available', 'number', [this.entero])],
       [new FormProp('Descripcion' ,'description', 'text')],
       [new FormProp('Nombre del Proveedor' ,'providerName', 'text'), new FormProp('Precio' ,'price', 'number',[this.positivo])],
       [new FormProp('Lote Minimo' ,'minBatch', 'number', [this.entero]), new FormProp('Tiempo de Entrega', 'deliveryTime', 'number', [this.entero])],
-      [new FormProp('Area', 'area', 'text'),new FormProp('Zona', 'zone', 'text'), new FormProp('Posicion', 'position', 'text') ]
+      [new FormProp('Area', 'area', 'select', [], 
+      ['corte y ensamble',"carpinteria","detallado y pintura","piel","almacen General","empaque"]),new FormProp('Zona', 'zone', 'text'), new FormProp('Posicion', 'position', 'text') ]
     ] 
     
   }
@@ -67,7 +66,6 @@ export class AddMaterialComponent {
 
   
   submit(material: any){
-    console.log(material)
     this.material ={
       name: material.name,
       description: material.description,
@@ -89,7 +87,7 @@ export class AddMaterialComponent {
       minBatch: material.minBatch
     }
     
-    // this.saveMaterial()
+    this.saveMaterial()
   }
 
   
@@ -101,9 +99,7 @@ export class AddMaterialComponent {
     this.fos.create<Material>(this.material).then((mat:any) => {
       this.invRMService.create(this.invMaterial, mat.id)
       this.providerService.create({materialId: mat.id, ...this.provider})
-      console.log('Created new material successfully!');
-      this.auditService.create(MaterialService.name, `Crear Material ${this.material.name}`, this.username, JSON.stringify(this.material))
-      // this.auditService.create(Provider.name, `Crear Provedor ${this.provider.name}`, this.username, JSON.stringify(this.provider))
+      this.auditService.create(MaterialService.name, `Crear Material ${this.material.name}`, this.username, JSON.stringify(this.invMaterial))
       this.submitted = true;
     });
   }
@@ -113,3 +109,4 @@ export class AddMaterialComponent {
     this.material = new Material();
   }
 }
+5

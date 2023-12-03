@@ -3,7 +3,6 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './core/home/home.component';
 import { AuthGuard } from './guards/auth.guard';
 import { LoginComponent } from './core/login/login.component';
-import { OrdersListComponent } from './orders/orders-list/orders-list.component';
 
 const routes: Routes = [
   {path: 'home',  component:HomeComponent, },
@@ -19,7 +18,7 @@ const routes: Routes = [
   {path: 'history',   loadChildren: () => import('./history/history.module').then(m => m.HistoryModule), canActivate: [AuthGuard]},
   {path: 'login',  component:LoginComponent},
   {path: '', redirectTo:'orders',pathMatch:'full'},
-  {path: '404', redirectTo:'orders'},
+  {path: '404', redirectTo: 'orders'},
   {path: '**', redirectTo:'/404'},
 ];
 

@@ -38,7 +38,7 @@
         </div>
 
         <button *ngIf="reqMaterials" class="btn-outline-primary btn rounded-pill" (click)="assignProvider()"> Asignar Provedores</button> 
-        <app-warn-modal type="submit" (continue)="submit($event)" [btnMessage]="'Continuar'" modalMessage="¿Seguro que desea continuar crear una nueva orden?"></app-warn-modal>
+        <app-warn-modal type="submit" (continue)="submit($event)" [btnMessage]="'Continuar'" modalMessage="¿Seguro que desea continuar a crear una nueva orden?"></app-warn-modal>
   
         
       <div *ngIf="!materials">

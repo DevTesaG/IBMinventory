@@ -25,7 +25,8 @@ export class MaterialDetailsComponent implements OnInit {
     this.formObj = [
       [new FormProp('Nombre' ,'name', 'text').setReadOnly(true)],
       [new FormProp('Descripcion' ,'description', 'text')],
-      [new FormProp('Area', 'area', 'text'),new FormProp('Zona', 'zone', 'text'), new FormProp('Posicion', 'position', 'text') ]
+      [new FormProp('Area', 'area', 'select', [], 
+      ['corte y ensamble',"carpinteria","detallado y pintura","piel","almacen General","empaque"]),new FormProp('Zona', 'zone', 'text'), new FormProp('Posicion', 'position', 'text') ]
     ]
   }
 

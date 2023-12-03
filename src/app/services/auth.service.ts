@@ -49,7 +49,6 @@ async googleSignin() {
   if(credential.user){
     this.router.navigate(['/home']);
   }
-  console.log('keeps executing')
   return this.updateUserData(credential.user);
 }
 

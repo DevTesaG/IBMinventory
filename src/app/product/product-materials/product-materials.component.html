@@ -21,7 +21,7 @@
         <label for="floatingSelect">Inventario</label>
       </div>
 
-        <input *ngIf="!areaFilter" class="form-control ms-2 me-2 float-end" type="search" name="query" placeholder="Buscar por Nombre" [(ngModel)]="q" aria-label="Search">
+        <input *ngIf="!areaFilter" class="form-control ms-2 me-2 float-end" type="search" name="query" oninput="this.value = this.value.toLowerCase()" placeholder="Buscar por Nombre" [(ngModel)]="q" aria-label="Search">
       <button class="btn btn-outline-success float-end" (click)="filter()" type="submit">Buscar</button>
     </form>
     <hr>
@@ -48,7 +48,7 @@
               </span>
               
               <div class="input-group mx-1">
-                  <input type="number" placeholder="Unidades por Producto" name="UP" [(ngModel)]="mat.quantity" class="form-control input-sm" aria-label="quantity">
+                  <input type="number" min="1" step="1" oninput="validity.valid||(value='') || Number.isInteger(value);" placeholder="Unidades por Producto" name="UP" [(ngModel)]="mat.quantity" class="form-control input-sm" aria-label="quantity">
                   <span class="input-group-text">U</span>
               </div>
           
