@@ -5,7 +5,7 @@ import { AuthGuard } from './guards/auth.guard';
 import { LoginComponent } from './core/login/login.component';
 
 const routes: Routes = [
-  {path: 'home',  component:HomeComponent, },
+  // {path: 'home',  component:HomeComponent, },
   {path: 'clients',   loadChildren: () => import('./client/client.module').then(m => m.ClientModule), canActivate: [AuthGuard]},
   // {path: 'materials',   loadChildren: () => import('./material/material.module').then(m => m.MaterialModule)},
   {path: 'materials',   loadChildren: () => import('./material/material.module').then(m => m.MaterialModule), canActivate: [AuthGuard]},

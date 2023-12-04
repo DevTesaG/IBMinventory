@@ -37,7 +37,7 @@ export class PaginationComponent implements OnInit {
   queryChange?:string = undefined;
   filterKey:string = 'name';
   exact:boolean = false;
-  elementPerCall:number = 2
+  elementPerCall:number = 10
 
   req?: AngularFirestoreCollection<Object>;
 
