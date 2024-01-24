@@ -106,7 +106,8 @@ export class AddOrderComponent{
     const rm = new Date(shipDate);
     rm.setDate(new Date(shipDate).getDate() - inputDays - prodDays)
     
-    return this.formatDateString( rm.toLocaleDateString())
+    // return this.formatDateString( rm.toLocaleDateString())
+    return  rm.toLocaleDateString()
   }
 
   getStartProductionDeadline = (shipDate: string, prodDays:number, inputDays:number) => {
@@ -115,7 +116,8 @@ export class AddOrderComponent{
     const pd = new Date(shipDate)
     pd.setDate(new Date(shipDate).getDate() - prodDays)
   
-    return this.formatDateString(pd.toLocaleDateString())  
+    return pd.toLocaleDateString()  
+    // return this.formatDateString(pd.toLocaleDateString())  
   }
 
   custom(control: AbstractControl){
@@ -123,7 +125,7 @@ export class AddOrderComponent{
   }
 
   submit(order: any){
-    this.orderBusiness.order = order;
+     this.orderBusiness.order = order;
     console.log(this.orderBusiness.order)
     this.create$ = this.orderBusiness.editProducts().subscribe() 
   }
@@ -132,9 +134,9 @@ export class AddOrderComponent{
     this.create$.unsubscribe()
   }
 
-  formatDateString(date: string){
-    return date.split('/').reverse().join('/').replace(/\//g,'-',)
-  } 
+  // formatDateString(date: string){
+  //   return date.split('/').reverse().join('/').replace(/\//g,'-',)
+  // } 
 
 
 

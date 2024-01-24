@@ -38,6 +38,8 @@ export class ShopOrderService {
     }
     if(orderId) {
       data.orderId = orderId
+    }
+    if(orderCode){
       data.orderCode = orderCode  
     }
     return this.InvRawMaterialsRef.add(data);

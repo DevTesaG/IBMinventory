@@ -25,16 +25,16 @@
 
       <div class="col-md-6">
 
-        <h4>Seleccione un Proovedor</h4>
+        <h4>Seleccione un Proveedor</h4>
   
         
         <div *ngIf="providers.length" class="form-floating">
 
           <select class="form-select" [(ngModel)]="currentProvider"  id="floatingSelect" aria-label="providers select">
-            <option [ngValue]="undefined" disabled>Seleccione Provedor</option>
+            <option [ngValue]="undefined" disabled>Seleccione Proveedor</option>
             <option *ngFor="let prov of providers" [ngValue]="prov">{{prov.name}}</option>
           </select>
-          <label for="floatingSelect">Provedores</label>
+          <label for="floatingSelect">Proveedores</label>
         </div>
 
         <button *ngIf="reqMaterials" class="btn-outline-primary btn rounded-pill" (click)="assignProvider()"> Asignar Provedores</button> 

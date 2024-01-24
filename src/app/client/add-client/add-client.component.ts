@@ -4,6 +4,7 @@ import { FormProp } from 'src/app/models/form-prop.model';
 import { AuditService } from 'src/app/services/audit.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { FirestoreOperationService } from 'src/app/services/firestore-operation.service';
+import { Timestamp } from 'firebase/firestore'
 
 @Component({
   selector: 'app-add-client',
@@ -34,6 +35,7 @@ export class AddClientComponent {
 
   submit(client: any){
     this.client = client;
+    this.client.timestamp = Timestamp.fromDate(new Date())
     this.saveClient()
   }
 

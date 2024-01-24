@@ -185,7 +185,7 @@ export class OrdersBuisnessService {
       orderProducts: products, 
       state: state, 
       orderMaterials: this.materials.concat(this.reqMaterials).map(e=> ({matId: e.matId, quantity: e.quantity})),
-      timestamp:  Timestamp.fromDate(new Date()), ...this.order
+      timestamp:  Timestamp.fromDate(new Date()), ...this.order 
     }).pipe(
       take(1),
       switchMap(order => merge(this.updateMaterialStock(order.id, order.name ?? ''), this.updateProductStock())),

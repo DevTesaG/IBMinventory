@@ -1,7 +1,7 @@
 <div *ngIf="currentProduct" class="edit-form">
 <h4>Producto</h4>
     
-    <app-form [formObj]="formObj" [mode]="!userRole" [placeHolder]="currentProduct" (formModel)="submit($event)" btnMes="Editar Material" modalMessage="¿Seguro que desea editar el producto?"></app-form>
+    <app-form [formObj]="formObj" [mode]="!userRole" [placeHolder]="currentProduct" (formModel)="submit($event)" btnMes="Editar Producto" modalMessage="¿Seguro que desea editar el producto?"></app-form>
 
 <button *ngIf="userRole" class="ms-2 btn btn-danger rounded-pill" (click)="deleteProduct()">
     Eliminar
