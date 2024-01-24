@@ -26,5 +26,32 @@
         ]
       }
     }
+  ],
+  "dataGroups": [
+    {
+      "name": "from-static",
+      "urls": [
+        "\\/products",
+        "\\/users"
+      ],
+      "cacheConfig": {
+        "maxAge": "1d",
+        "maxSize": 100,  
+        "strategy": "performance"
+      }
+    },
+    {
+      "name": "from-api",
+      "urls": [
+        "\\/RMreport",
+        "\\/FPreport"
+      ],
+      "cacheConfig": {
+      "strategy": "freshness",
+      "maxSize": 100,
+      "maxAge": "1h",
+      "timeout": "3s"
+      }
+    }
   ]
 }

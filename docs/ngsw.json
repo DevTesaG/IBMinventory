@@ -1,6 +1,6 @@
 {
   "configVersion": 1,
-  "timestamp": 1701671029233,
+  "timestamp": 1706124777503,
   "index": "/IBMinventory/index.html",
   "assetGroups": [
     {
@@ -22,7 +22,7 @@
         "/IBMinventory/common.4a912bb41780f733.js",
         "/IBMinventory/favicon.ico",
         "/IBMinventory/index.html",
-        "/IBMinventory/main.62ce5120215ecf9c.js",
+        "/IBMinventory/main.7709cbfc505a0934.js",
         "/IBMinventory/manifest.webmanifest",
         "/IBMinventory/polyfills.322208da5351bb72.js",
         "/IBMinventory/runtime.772e42bfae3c39ee.js",
@@ -53,7 +53,37 @@
       "patterns": []
     }
   ],
-  "dataGroups": [],
+  "dataGroups": [
+    {
+      "name": "from-static",
+      "patterns": [
+        "\\/IBMinventory\\/\\\\/products",
+        "\\/IBMinventory\\/\\\\/users"
+      ],
+      "strategy": "performance",
+      "maxSize": 100,
+      "maxAge": 86400000,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    },
+    {
+      "name": "from-api",
+      "patterns": [
+        "\\/IBMinventory\\/\\\\/RMreport",
+        "\\/IBMinventory\\/\\\\/FPreport"
+      ],
+      "strategy": "freshness",
+      "maxSize": 100,
+      "maxAge": 3600000,
+      "timeoutMs": 3000,
+      "cacheQueryOptions": {
+        "ignoreVary": true
+      },
+      "version": 1
+    }
+  ],
   "hashTable": {
     "/IBMinventory/117.9c8fb7b4257356fa.js": "387e8330539c6c92c743ae8c913edf5455c1f2c2",
     "/IBMinventory/227.52c8481388af0817.js": "e8e2d3c30c47fae5609422ffe07c737e8cde6615",
@@ -76,8 +106,8 @@
     "/IBMinventory/assets/img/ibmFurniture_logo.png": "9d5bd88ec5100d772af74635b8189e7936674aa6",
     "/IBMinventory/common.4a912bb41780f733.js": "a852b7a0acee88d31d8683a545766a5b2f7b24b0",
     "/IBMinventory/favicon.ico": "22f6a4a3bcaafafb0254e0f2fa4ceb89e505e8b2",
-    "/IBMinventory/index.html": "00b399f636ae03fc39a482944227e00c51edb7f1",
-    "/IBMinventory/main.62ce5120215ecf9c.js": "c672c1bdfba5297102b15315488b05de861d6384",
+    "/IBMinventory/index.html": "ce7db761a89b26559e523fcf77cfd9a14678a401",
+    "/IBMinventory/main.7709cbfc505a0934.js": "4b298b5a62a2edafaf5c175b59d1e64498d8e3ba",
     "/IBMinventory/manifest.webmanifest": "dc4db620ddfce34a3d9ab01fba4971bfb4b3ef89",
     "/IBMinventory/polyfills.322208da5351bb72.js": "d4175b2904c6708cb5849bb7a31858255930e9cf",
     "/IBMinventory/runtime.772e42bfae3c39ee.js": "3c110fa3b73ff628a7bce2694c442d3d28df4bfd",
