@@ -11,7 +11,8 @@ import { Observable, map, of, switchMap, take, tap } from 'rxjs';
 })
 export class AuthService {
   
-  user$: Observable<User | undefined|null>;
+  // user$: Observable<User | undefined|null>;
+  user$: Observable<any>;
   username?:string = "Anonimo";
 
   constructor(private afAuth: AngularFireAuth, private afs: AngularFirestore,  private router: Router,private ngZone: NgZone) {
@@ -24,7 +25,8 @@ export class AuthService {
           return of(null);
         }
       }),
-      take(1)
+      take(1),
+      map(u => true)
     )
 }
 

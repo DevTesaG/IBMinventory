@@ -20,7 +20,7 @@ import { ReactiveFormChildComponent } from './reactive-form-child/reactive-form-
   imports: [
     CommonModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
   ],
   exports:[
     WarnModalComponent,

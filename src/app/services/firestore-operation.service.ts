@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
+import { Observable, first, from, map, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -22,12 +23,11 @@ export class FirestoreOperationService {
     return this.path
   }
   
-  getNextBatch<S>(batch:number, last: any): AngularFirestoreCollection<S>{ 
-    if(last){
-      return this.db.collection(this.path, ref=> ref.orderBy('timestamp', 'desc').startAfter(last.timestamp).limit(batch))
-    }
-  
-    return this.db.collection(this.path, ref=> ref.orderBy('timestamp', 'desc').limit(batch))
+  getNextBatch<S>(): Observable<S[]>{ 
+    return this.db.collection(this.path, ref=> ref.orderBy('timestamp', 'desc')).get().pipe(
+      tap(()=>console.log('From Firestore')),
+      map(s => s.docs.map((e:any) => ({id:e.id, ...e.data()})))
+    )
   }
 
 
@@ -46,8 +46,8 @@ export class FirestoreOperationService {
     return this.objectRef.add({ ...object });
   }
 
-  update(id: string, data: any): Promise<void> {
-    return this.objectRef.doc(id).update(data);
+  update(id: string, data: any): Observable<void> {
+    return from(this.objectRef.doc(id).update(data)).pipe(first()) 
   }
 
   delete(id: string): Promise<void> {
@@ -56,35 +56,28 @@ export class FirestoreOperationService {
 
 
    filterByNameBatch<S>(name: string, batch:number, last:any):  AngularFirestoreCollection<S> {
-    if(last){
-      return this.db.collection(this.path, ref => ref.where('name', '>=', name).where('name', '<=',  name+ '\uf8ff').orderBy('name', 'desc').startAfter(last.name).limit(batch))
-    }
-    return this.db.collection(this.path, ref => ref.where('name', '>=', name).where('name', '<=',  name+ '\uf8ff').orderBy('name', 'desc').limit(batch))
+      return this.db.collection(this.path, ref => ref.where('name', '>=', name).where('name', '<=',  name+ '\uf8ff').orderBy('name', 'desc'))
   }
 
-  filterUrgent<S>(date:any, batch:number, last:any):  AngularFirestoreCollection<S> {
-    if(last){
-      return this.db.collection(this.path, ref => ref.where('orderDeadline', '<=', date).orderBy('orderDeadline', 'asc').startAfter(last.name).limit(batch))
-    }
-    return this.db.collection(this.path, ref => ref.where('orderDeadline', '<=', date).orderBy('orderDeadline', 'asc').limit(batch))
+  filterUrgent<S>(date:any):  Observable<S[]> {
+    return this.db.collection(this.path, ref => ref.where('orderDeadline', '<=', date).orderBy('orderDeadline', 'asc')).get().pipe(
+      map(s => s.docs.map((e:any) => ({id:e.id, ...e.data()})))
+    )
   }
 
-  filterByKeyBatch<S>(key:string, value: string, batch:number, last:any, exact?:boolean):  AngularFirestoreCollection<S> {
+  filterByKeyBatch<S>(key?:string, value?: string,exact?:boolean):  Observable<S[]> {
+    if(!(key && value)) return this.getNextBatch()
+
+    if(key == 'orderDeadline') return this.filterUrgent(value)
     
-    if(key == 'orderDeadline'){
-      return this.filterUrgent(value, batch, last)
-    }else{
-      if(last){
-        if(exact) 
-        return this.db.collection(this.path, ref => ref.where(key, '==', value).orderBy('timestamp', 'desc').startAfter(last['timestamp']).limit(batch))
+    if(exact)
+    return this.db.collection(this.path, ref => ref.where(key, '==', value).orderBy('timestamp', 'desc')).get().pipe(
+      map(s => s.docs.map((e:any) => ({id:e.id, ...e.data()}))) 
+    )
       
-        return this.db.collection(this.path, ref => ref.where(key, '>=', value).where(key, '<=',  value+ '\uf8ff').orderBy(key, 'desc').startAfter(last[key]).limit(batch))
-      }
-      if(exact)
-      return this.db.collection(this.path, ref => ref.where(key, '==', value).orderBy('timestamp', 'desc').limit(batch))
-      
-      return this.db.collection(this.path, ref => ref.where(key, '>=', value).where(key, '<=',  value+ '\uf8ff').orderBy(key, 'desc').limit(batch))
-    }
+    return this.db.collection(this.path, ref => ref.where(key, '>=', value).where(key, '<=',  value+ '\uf8ff').orderBy(key, 'desc')).get().pipe(
+      map(s => s.docs.map((e:any) => ({id:e.id, ...e.data()})))
+    )
   }
 }
 

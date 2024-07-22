@@ -43,8 +43,8 @@
     </div>
 
     <div *ngIf="!mode && showBtns" class="form-group mt-3">
-        <app-warn-modal id="1" name="btn1" type="submit" (continue)="onSubmit($event)" [btnMessage]="btnMes" (modalMessage)="modalMessage"></app-warn-modal>
-        <button type="button" (click)="onReset()" class="ms-2 btn btn-outline-primary rounded-pill "> Resetear  </button>
+        <app-warn-modal id="1" name="btn1" type="submit" class="mt-2 ms-2" (continue)="onSubmit($event)" [btnMessage]="btnMes" (modalMessage)="modalMessage"></app-warn-modal>
+        <button type="button" (click)="onReset()" class="ms-2 mt-2 btn btn-outline-primary rounded-pill "> Resetear  </button>
     </div>
 </form>
         

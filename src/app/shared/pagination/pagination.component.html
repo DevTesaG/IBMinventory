@@ -1,28 +1,8 @@
-
-<nav aria-label="Page navigation" class="my-3">
-  <ul class="pagination">
-    <li class="page-item">
-      <button class="page-link" aria-label="Previous" (click)="nextPage(false)">
-        <span aria-hidden="true">&laquo;</span>
-      </button>
-    </li>
-
-    <li class="page-item"> <span class="page-link text-black"> Anterior/Siguiente Registro</span></li>
-    <li class="page-item">
-      <button class="page-link" aria-label="Next" (click)="nextPage(true)">
-        <span aria-hidden="true">&raquo;</span>
-      </button>
-    </li>
-  </ul>
-</nav>
-
-
-<ul *ngIf="!mode && isFetched" class="list-group mt-3 mb-3">
-    <li class="list-group-item" *ngFor="let element of elementArray; let i = index" [class.active]="i == currentIndex" (click)="setActiveProduct(element, i)">
-      <span class="d-flex">
+<ul *ngIf="!mode" class="list-group overflow-auto mt-3 mb-1" style="max-height:70vh;">
+    <li class="list-group-item" *ngFor="let element of fetchedData$ | async; let i = index" [class.active]="i == currentIndex" (click)="setActiveProduct(element, i)">
+      <span *ngIf="isFetched" class="d-flex">
         <div *ngFor="let param of showParams">
           <div class="ms-2" *ngIf="param=='orderDeadline'">
-             <!-- {{   element[param] }}             -->
              {{   element[param].toDate().toLocaleDateString('es-MX', dateOptions) }}            
           </div>
           <div *ngIf="param!='orderDeadline'">
@@ -30,5 +10,8 @@
           </div>
         </div>
       </span>
+    </li>
+    <li *ngIf="!isFetched">
+      <span>No se encontraron resultados...</span>
     </li>
 </ul>

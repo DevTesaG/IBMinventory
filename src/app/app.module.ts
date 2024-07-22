@@ -13,11 +13,9 @@ import { CalendarComponent } from './core/calendar/calendar.component';
 import { HomeComponent } from './core/home/home.component';
 import { LoginComponent } from './core/login/login.component';
 import { SharedModule } from './shared/shared.module';
-
-
-
-import { HttpClientModule } from '@angular/common/http';
 import { ServiceWorkerModule } from '@angular/service-worker';
+import { CacheService } from './services/cache.service';
+import { FirestoreOperationService } from './services/firestore-operation.service';
 
 @NgModule({
   declarations: [
@@ -29,8 +27,6 @@ import { ServiceWorkerModule } from '@angular/service-worker';
     LoginComponent,
   ],
   imports: [
-    
-    HttpClientModule,
     BrowserModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebase),
@@ -43,7 +39,7 @@ import { ServiceWorkerModule } from '@angular/service-worker';
       registrationStrategy: 'registerWhenStable:30000'
     })
   ],
-  providers: [],
+  providers: [FirestoreOperationService,{provide: 'path', useValue: '/RMreport'}, CacheService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

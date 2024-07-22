@@ -16,11 +16,11 @@ export class AuthGuard implements CanActivate {
       take(1),
       map(user => !!user), // <-- map to boolean
       tap(loggedIn => {
-        if (!loggedIn) {
-          console.log('access denied')
-          this.router.navigate(['/login']);
-        }
-        this.router.navigate(['/orders'])
+        
+        // if (!loggedIn) {
+        //   console.log('access denied')
+        //   this.router.navigate(['login']);
+        // }
     })
     )
   }
