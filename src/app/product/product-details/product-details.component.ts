@@ -37,13 +37,12 @@ export class ProductDetailsComponent {
     this.auth.user$.subscribe(data => this.userRole = data?.userRole)
 
     this.formObj = [
-      [new FormProp('Nombre' ,'name', 'text').setReadOnly(true), new FormProp('Codigo' ,'code', 'text')],
+      [new FormProp('Nombre' ,'name', 'text')],
       [new FormProp('Descripcion' ,'description', 'text')],
-      [new FormProp('Volumen' ,'volume', 'number', [this.custom]), new FormProp('Peso' ,'weight', 'number', [this.custom]), new FormProp('Unidad de Medida' ,'units', 'text')],
-      [new FormProp('Precio' ,'price', 'number', [this.custom]), new FormProp('Tipo IVA' ,'iva', 'number', [this.custom]), new FormProp('Divisa' ,'currency', 'select')],
-      [new FormProp('Cantidad en Inventario' ,'stock', 'number'), new FormProp('Unidad de CFDI' ,'cfdiUnit', 'text'), new FormProp('Unidad de CFDI' ,'cfdiKey', 'text'), new FormProp('SKU' ,'sku', 'text')],
-      [new FormProp('No Producto' ,'noproduct', 'number'), new FormProp('Capacidad por turno' ,'capacityByTurn', 'number', [this.custom]), new FormProp('Tiempo de Produccion', 'leadTime', 'number').setReadOnly(true)] ,
-      ]
+      [new FormProp('Precio' ,'price', 'number', [this.custom]),new FormProp('Divisa' ,'currency', 'select', [], ['MXN', 'USD']),],
+      [new FormProp('Capacidad por turno' ,'capacityByTurn', 'number', [this.custom]),new FormProp('Tiempo de Fabricacion' ,'leadTime','number', undefined, 0, undefined, undefined, undefined, true),],
+      [new FormProp('Se puede Vender' ,'sellable', 'select', [], ['SI', 'NO']), new FormProp('Tipo' ,'type', 'text'), new FormProp('Unidad de medida' ,'units', 'text')],
+    ]
   }
 
   @ViewChild(FormComponent) formC!:FormComponent;
@@ -72,8 +71,8 @@ export class ProductDetailsComponent {
   }
 
   submit(product:Product){
-    this.currentProduct = product
-    this.updateProduct()
+    product.capacityByTurn = +(product.capacityByTurn ?? 0)
+    this.updateProduct(product)
   }
 
   onNgDestory(){
@@ -81,11 +80,11 @@ export class ProductDetailsComponent {
   }
 
 
-  updateProduct(): void {
-    const {stock, ...data} = this.currentProduct
+  updateProduct(product:any): void {
+    
 
     if (this.currentProduct.id) {
-      concat(this.productService.update(this.currentProduct.id, data), this.FpService.update(this.currentProduct.invId, {available: stock})).subscribe(
+      concat(this.productService.update(this.currentProduct.id, product)).subscribe(
         {
           complete: ()=> {
           this.refreshList.emit(); 

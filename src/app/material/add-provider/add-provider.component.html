@@ -2,12 +2,21 @@
 <div class="container vh-100">
     <h5 class="text-muted mt-5"> Registro del Material</h5>
     <hr>
-  
-    <div *ngIf="!submitted">
+
+    <div class="list row shadow-sm">
+    
+    <div class="col-md-3">
+      <app-pagination [path]="'/providers'" (selectedElement)="getSelectedProvider($event)"></app-pagination>  
+    </div>
+
+    <div class="col-md-9">
+    <div *ngIf="provider.id">
       <div class="card mt-4 bg-light shadow-lg border-0">
         <div class="card-body">  
   
-          <app-form [formObj]="formObj" [mode]="userRole ? false:true" (formModel)="submit($event)" btnMes="Crear Provedor" modalMessage="¿Desea continuar con la creacion del material?"></app-form>
+          <app-form [formObj]="formObj"  [placeHolder]="provider" (formModel)="submit($event)" btnMes="Asignar Provedor" modalMessage="¿Desea continuar con la creacion del material?"></app-form>
+          <button class="btn btn-outline-danger ms-4 mt-1" [disabled]="providerIndex == -1" (click)="deleteProvider()">Eliminar</button>
+
         </div>
       </div>
     </div>
@@ -16,4 +25,6 @@
       <h4>El Provedor a sido registrado Satisfactoriamente!</h4>
       <button class="btn btn-outline-success mt-2" (click)="newProvider()">Añadir Otro</button>
     </div> 
+  </div>
+</div>
 </div> 

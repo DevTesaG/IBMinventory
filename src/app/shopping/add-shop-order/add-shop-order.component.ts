@@ -106,7 +106,7 @@ export class AddShopOrderComponent {
       take(1), 
       switchMap( () => this.invrmService.getStock(this.currentMaterial?.id)),
       switchMap( (stock:any) => {
-        stock.wating =  (+stock.wating) + (this.ShopRM.requestedAmount ?? 0);
+        stock.waiting =  (+stock.waiting) + (this.ShopRM.requestedAmount ?? 0);
         return merge(
           this.invrmService.update(stock.id, stock),
           this.auditService.create(InvRawMaterial.name, `Actualizacion Stock Material: ${this.currentMaterial?.name ?? 'unkown'}`, this.username, JSON.stringify(stock) ,JSON.stringify(stock)),

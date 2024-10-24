@@ -26,7 +26,7 @@
     <div *ngIf="isMaterial()">
       <app-form [formObj]="formObj" [mode]="userRole ? false:true" [placeHolder]="currentMaterial" (formModel)="submit($event)" btnMes="Editar Material" modalMessage="¿Seguro que desea editar el material?"></app-form>
       <button *ngIf="userRole" type="button" class="ms-2 mb-2 btn btn-outline-danger rounded-pill" (click)="deleteMaterial()">Eliminar</button>
-      <button *ngIf="userRole" class="btn btn-outline-secondary rounded-pill ms-2 mb-2" routerLink="provider" [state]="{id: currentMaterial.id}">Añadir Provedor</button>
+      <button *ngIf="userRole" class="btn btn-outline-secondary rounded-pill ms-2 mb-2" routerLink="provider" [state]="{id: currentMaterial.id, providers: currentMaterial.providers ?? []}">Añadir Provedor</button>
     </div>
     
     <div *ngIf="!isMaterial()">

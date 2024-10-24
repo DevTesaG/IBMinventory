@@ -32,17 +32,18 @@ export class OrdersBuisnessService {
      return forkJoin(Array.from(Object.entries(this.materials)).map( m => this.invrmService.getStock(m[0]).pipe(
               map(stock => {
                 
-                if(!(stock.available!=undefined && stock.commited!=undefined && stock.wating!=undefined && stock.watingCommited!=undefined)) return {}
+                if(!(stock.available!=undefined && stock.commited!=undefined && stock.waiting!=undefined && stock.waitingCommited!=undefined)) return {}
                 
                 var req = Math.max(0, (m[1].quantity - stock.available))
                 var request = !!(req > 0);                
                 var stockUp = {
                   commited: (+stock.commited) + Math.min(stock.available, m[1].quantity), //There is something Available take it 
                   available: Math.max(0, (+stock.available) - m[1].quantity),  // If there is spare save it in available otherwise available is 0
-                  watingCommited: (+stock.watingCommited) + Math.max(0, m[1].quantity - stock.available), // The negative difference of available is on watting commited                   
+                  waiting: +(stock.waiting),
+                  waitingCommited: (+stock.waitingCommited) + Math.max(0, m[1].quantity - stock.available), // The negative difference of available is on watting commited                   
                 } 
 
-                return {matId:m[0], name:m[1].name, quantity: m[1].quantity, id: stock.id, oldStock: stock, newStock: stockUp, requestMaterial: request, requested: req}
+                return {id:m[0], name:m[1].name, quantity: m[1].quantity,providers:m[1].providers,oldStock: stock, newStock: stockUp, requestMaterial: request, requested: req}
               })
             )
         )
@@ -53,7 +54,7 @@ export class OrdersBuisnessService {
   initMaterialOrder(){
     this.reqMaterials.forEach(mat => {
       var amount = mat.requested < mat.minBatch ? mat.minBatch - mat.requested: 0;
-      mat.newStock.wating += +(amount)
+      mat.newStock.waiting += +(amount)
       mat.amount = amount
     })
   }
@@ -92,7 +93,7 @@ export class OrdersBuisnessService {
     this.orderProducts.forEach(e => e.materials.forEach((el:any) => el.quantity *= e.quantity ))
 
     this.materials =  this.orderProducts.flatMap( e => e.materials).reduce((pv, e)=> {
-      pv[e.id] = pv[e.id] ? {name: e.name, quantity: pv[e.id].quantity + e.quantity} :  {name: e.name, quantity: e.quantity};
+      pv[e.id] = pv[e.id] ? {name: e.name, quantity: pv[e.id].quantity + e.quantity, providers: e.providers} :  {name: e.name, quantity: e.quantity,  providers: e.providers};
       return pv;
     }, {})
   }
@@ -115,14 +116,15 @@ export class OrdersBuisnessService {
         stockUp = {
           available: Math.max(0, p.stock.available - p.quantity),
           commited: +(p.stock.commited) + Math.min(p.quantity,p.stock.available),
-          wating: +(p.stock.wating) + Math.max(0, p.quantity - p.stock.available)
+          waiting: +(p.stock.waiting) + Math.max(0, p.quantity - p.stock.available)
         }
       }else{
         if(!p.stock){
           p.stock = await this.invFP.getStock(p.id) || 0
         }
+        
         stockUp = {
-          wating: +(p.stock.wating ) + +(p.quantity)
+          waiting: +(p.stock.waiting ) + (+p.quantity)
         }
       }
       p.newStock = stockUp
@@ -134,7 +136,7 @@ export class OrdersBuisnessService {
     return from(this.orderProducts).pipe(
       mergeMap(p =>
         forkJoin([
-          this.invFP.update(p.stock.id, p.newStock),
+          this.invFP.update(p.id, p.newStock),
           this.makeProdStockReport(p.id, p.name, p.stock, p.newStock)
         ])
       )
@@ -148,9 +150,9 @@ export class OrdersBuisnessService {
     var req$ =  from(this.reqMaterials).pipe(
       mergeMap(m =>
         forkJoin([
-          this.shopService.create(m.matId,m.name,m.requested + m.amount, m.amount, Timestamp.fromDate(new Date(this.order?.rmOrderDeadline)),  m.id, (m.requested + m.amount)*m.price, orderId),
+          this.shopService.create(m.id,m.name,m.requested + m.amount, m.amount, Timestamp.fromDate(new Date(this.order?.rmOrderDeadline)),(m.requested + m.amount)*m.price, orderId),
           this.invrmService.update(m.id, m.newStock),
-          this.makeMatStockReport(m.matId, m.name, m.oldStock, m.newStock)     
+          // this.makeMatStockReport(m.id, m.name, m.oldStock, m.newStock)     
         ])
       )
     )
@@ -159,7 +161,7 @@ export class OrdersBuisnessService {
       mergeMap( m =>
         forkJoin([
             this.invrmService.update(m.id, m.newStock),
-            this.makeMatStockReport(m.matId, m.name, m.oldStock, m.newStock) //Tddo Report Service Create report
+            // this.makeMatStockReport(m.id, m.name, m.oldStock, m.newStock) //Tddo Report Service Create report
           ])  
       )
     )
@@ -175,25 +177,38 @@ export class OrdersBuisnessService {
     return this.auditService.create(InvRawMaterial.name, `Actualizacion Stock de Material: ${name}`, this.auth.username, JSON.stringify(newStock), JSON.stringify(oldStock), id)
   }
 
-  editProducts():Observable<any>{
+  // editProducts():Observable<any>{
+  editProducts(){
 
-    var products = this.orderProducts.map(e => ({id: e.id, invId: e.invId, name: e.name, quantity: e.quantity}))
+    var products = this.orderProducts.map(e => ({id: e.id,name: e.name, quantity: e.quantity}))
 
     var state = this.reqMaterials.length == 0 ? 'EN PRODUCCION': 'ESPERANDO MATERIAL' 
+    
+    console.log({
+      orderProducts: products, 
+      state: state, 
+      orderMaterials: this.materials.concat(this.reqMaterials).map(e=> ({matId: e.id, quantity: e.quantity})),
+      timestamp:  Timestamp.fromDate(new Date()), ...this.order 
+    })
 
     return this.orderService.create({
       orderProducts: products, 
       state: state, 
-      orderMaterials: this.materials.concat(this.reqMaterials).map(e=> ({matId: e.matId, quantity: e.quantity})),
+      orderMaterials: this.materials.concat(this.reqMaterials).map(e=> ({matId: e.id, quantity: e.quantity})),
       timestamp:  Timestamp.fromDate(new Date()), ...this.order 
-    }).pipe(
-      take(1),
-      switchMap(order => merge(this.updateMaterialStock(order.id, order.name ?? ''), this.updateProductStock())),
-      tap({
-        error: e => {console.log(e); alert('Ha ocurrido un error intente de nuevo.')},
-        complete: () => {alert('Orden Creada correctamente'); console.log('ENDED');}
-      })
-    )
-  }
+    }).then(order => {
 
+      merge(this.updateMaterialStock(order.id, this.order.name ?? ''), this.updateProductStock()).subscribe()
+    }).finally(()=> alert('Orden Creada correctamente'))
+
+
+  //   .pipe(
+  //     take(1),
+  //     switchMap(order => merge(this.updateMaterialStock(order.id, order.name ?? ''), this.updateProductStock())),
+  //     tap({
+  //       error: e => {console.log(e); alert('Ha ocurrido un error intente de nuevo.')},
+  //       complete: () => {alert('Orden Creada correctamente'); console.log('ENDED');}
+  //     })
+  //   )
+  }
 }

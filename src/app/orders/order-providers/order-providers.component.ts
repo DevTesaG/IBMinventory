@@ -60,18 +60,18 @@ export class OrderProvidersComponent implements OnInit {
   //     var request = false;
   //     var req = 0
       
-  //     if(!(stock.available!=undefined && stock.commited!=undefined && stock.wating!=undefined && stock.watingCommited!=undefined)) return
+  //     if(!(stock.available!=undefined && stock.commited!=undefined && stock.waiting!=undefined && stock.waitingCommited!=undefined)) return
 
   //     if(mat[1].quantity <= stock.available){
   //       stockUp = {commited: (+stock.commited) + mat[1].quantity, available: (+stock.available) - mat[1].quantity}
   //     }else {
         
-  //       stockUp = {watingCommited: (+stock.watingCommited) +  mat[1].quantity - (+stock.available), commited: (+stock.commited) + (+stock.available), available: 0}
+  //       stockUp = {waitingCommited: (+stock.waitingCommited) +  mat[1].quantity - (+stock.available), commited: (+stock.commited) + (+stock.available), available: 0}
 
-  //       if((mat[1].quantity - stock.available) <= stock.wating){
-  //           stockUp = {wating: (+stock.wating) + (+stock.available) - mat[1].quantity, ...stockUp}
+  //       if((mat[1].quantity - stock.available) <= stock.waiting){
+  //           stockUp = {waiting: (+stock.waiting) + (+stock.available) - mat[1].quantity, ...stockUp}
   //       }else{
-  //         req = mat[1].quantity - (+stock.available) - (+stock.wating);      
+  //         req = mat[1].quantity - (+stock.available) - (+stock.waiting);      
   //         request = true;
   //       }
   //     }
@@ -88,7 +88,7 @@ export class OrderProvidersComponent implements OnInit {
   initMaterialOrder(){
     this.reqMaterials.forEach(mat => {
       var amount = mat.requested < mat.minBatch ? mat.minBatch - mat.requested: 0;
-      mat.newStock.wating += amount
+      mat.newStock.waiting += amount
       mat.amount = amount
     })
   }
@@ -105,13 +105,15 @@ export class OrderProvidersComponent implements OnInit {
     this.currentMaterial = mat;
     this.currentIndex = i;
 
-    this.providers = await this.provService.getProvidersByMaterial(this.currentMaterial.matId)
+    this.providers = this.currentMaterial.providers
   }
 
   assignProvider(){
     this.reqMaterials[this.currentIndex].minBatch = this.currentProvider.minBatch
     this.reqMaterials[this.currentIndex].deliveryTime = this.currentProvider.deliveryTime
     this.reqMaterials[this.currentIndex].price = this.currentProvider.price
+    this.reqMaterials[this.currentIndex].providerId = this.currentProvider.id
+    this.reqMaterials[this.currentIndex].providerName = this.currentProvider.name
     alert('Provedor asignado satisfactoriamente')
   }
 
@@ -124,13 +126,25 @@ export class OrderProvidersComponent implements OnInit {
     this.currentMaterial = element.element
   }
 
+  getSelectedProvider(provider:any){
+    this.currentProvider = provider
+    this.assignProvider()
+    this.currentMaterial = undefined
+  }
+
   submit(prov:any){
     // if(!prov) return 
+
+
+
     var a:any[] = this.reqMaterials.filter((v:Object) => !(v.hasOwnProperty('minBatch') ))
     if(a.length != 0){
       alert('Aun hay materiales sin proveedor asignador, porfavor rectifique.')
       return
     }
+
+    this.reqMaterials.forEach(m => {delete m.providers; delete m.requestMaterial})
+    this.materials.forEach(m => {delete m.providers; delete m.requestMaterial})
 
     this.initMaterialOrder()
     
@@ -140,7 +154,6 @@ export class OrderProvidersComponent implements OnInit {
     this.orderBusiness.materials = this.materials
     this.orderBusiness.reqMaterials = this.reqMaterials
   
-
     this.router.navigate(['orders/add/create']);
   }
 

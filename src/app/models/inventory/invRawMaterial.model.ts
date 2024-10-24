@@ -6,7 +6,7 @@ export class InvRawMaterial {
     name?:string;
     available?:number
     commited?:number
-    watingCommited?:number
-    wating?:number
+    waitingCommited?:number
+    waiting?:number
     timestamp?:any
 }

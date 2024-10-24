@@ -55,6 +55,8 @@ export class ProviderService {
     if(!id) return []
 
     return new Promise( async r => {
+      
+     
       this.db.collection<Provider>(this.dbPath, ref => ref.where('materialId', '==', id)).snapshotChanges().pipe(
        map(ch => ch.map(c => ({ id: c.payload.doc.id, ...c.payload.doc.data() })))).subscribe(data => {    
         r(data)

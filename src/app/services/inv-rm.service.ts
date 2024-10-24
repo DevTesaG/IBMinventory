@@ -56,8 +56,8 @@ export class InvRMService {
       map(mat => stock = {
         id:  mat.id,
         available:  mat.data() ? mat.data()?.available : 0,
-        wating:  mat.data() ? mat.data()?.wating : 0,
-        watingCommited:  mat.data() ? mat.data()?.watingCommited : 0,
+        waiting:  mat.data() ? mat.data()?.waiting : 0,
+        waitingCommited:  mat.data() ? mat.data()?.waitingCommited : 0,
         commited:  mat.data() ? mat.data()?.commited: 0
       } as InvRawMaterial),
     )

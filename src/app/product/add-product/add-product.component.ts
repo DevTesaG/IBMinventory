@@ -29,13 +29,11 @@ export class AddProductComponent{
     this.auth.user$.subscribe((data => {this.username = data?.displayName; this.userRole=data?.userRole }))
 
     this.formObj = [
-      [new FormProp('Nombre' ,'name', 'text'), new FormProp('Codigo' ,'code', 'text')],
+      [new FormProp('Nombre' ,'name', 'text')],
       [new FormProp('Descripcion' ,'description', 'text')],
-      [new FormProp('Volumen' ,'volume', 'number', [this.custom]), new FormProp('Peso' ,'weight', 'number', [this.custom]), new FormProp('Unidad de Medida' ,'units', 'text')],
-      [new FormProp('Precio' ,'price', 'number', [this.custom]), new FormProp('Tipo IVA' ,'iva', 'number', [this.custom]), new FormProp('Divisa' ,'currency', 'select', [], ['MXN', 'USD'])],
-      [new FormProp('Cantidad en Inventario' ,'stock', 'number'), new FormProp('Unidad de CFDI' ,'cfdiUnit', 'text'), new FormProp('Unidad de CFDI' ,'cfdiKey', 'text'), new FormProp('SKU' ,'sku', 'text')],
-      [new FormProp('No Producto' ,'noproduct', 'number'), new FormProp('Capacidad por turno' ,'capacityByTurn', 'number', [this.custom]), new FormProp('Tiempo de Produccion', 'leadTime', 'number').setReadOnly(true)] ,
-      ]
+      [new FormProp('Precio' ,'price', 'number', [this.custom]),new FormProp('Divisa' ,'currency', 'select', [], ['MXN', 'USD']), new FormProp('Tiempo de Fabricacion' ,'leadTime', 'number'),],
+      [new FormProp('Se puede Vender' ,'sellable', 'select', [], ['SI', 'NO']), new FormProp('Tipo' ,'type', 'text'), new FormProp('Unidad de medida' ,'units', 'text')],
+    ]
   }
 
   @ViewChild(FormComponent) formC!:FormComponent;
@@ -61,11 +59,11 @@ export class AddProductComponent{
   saveProduct(): void {
     this.product.timestamp = Timestamp.fromDate(new Date());
     var {stock, ...p} = this.product
-    this.invFpService.create({available: +(stock ?? 0), name:p.name, commited: 0, wating: 0, timestamp: Timestamp.fromDate(new Date())}).then((inv:any) => {
-        p.invId = inv.id;
+    
+    
+    this.invFpService.create({available: +(stock ?? 0), name:p.name, commited: 0, waiting: 0, timestamp: Timestamp.fromDate(new Date())}).then((inv:any) => {
         this.fos.create(p, inv.id);
-        this.auditService.create(InvFPService.name, `Crear Producto: ${this.product.name}`, this.username ?? 'anonimo', JSON.stringify({available: +(stock ?? 0), name:p.name, commited: 0, wating: 0, timestamp: Timestamp.fromDate(new Date())}))
-        this.submitted = true;
+         this.submitted = true;
     });
   }
 

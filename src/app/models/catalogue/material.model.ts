@@ -4,6 +4,7 @@ export class Material {
     id?: any;
     name?: string;
     description?: string;
+    providers?:any[]
     area?: Departments;
     zone?: string;
     position?: string;

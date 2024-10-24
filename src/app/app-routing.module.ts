@@ -9,6 +9,7 @@ const routes: Routes = [
   // {path: 'materials',   loadChildren: () => import('./material/material.module').then(m => m.MaterialModule)},
   {path: 'materials',   loadChildren: () => import('./material/material.module').then(m => m.MaterialModule), canActivate: [AuthGuard]},
   // {path: 'products',   loadChildren: () => import('./product/product.module').then(m => m.ProductModule)},
+  {path: 'providers',   loadChildren: () => import('./providers/providers.module').then(m => m.ProvidersModule), canActivate: [AuthGuard]},
   {path: 'products',   loadChildren: () => import('./product/product.module').then(m => m.ProductModule), canActivate: [AuthGuard]},
   {path: 'orders',   loadChildren: () => import('./orders/orders.module').then(m => m.OrdersModule), canActivate: [AuthGuard]},
   // {path: 'shop',   loadChildren: () => import('./shopping/shopping.module').then(m => m.ShoppingModule)},

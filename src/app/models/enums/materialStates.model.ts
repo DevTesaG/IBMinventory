@@ -1,6 +1,6 @@
 export enum Departments {
-    wating  = "Material En Espera",
-    watingCommited = 'Material En Espera Comprometido',
+    waiting  = "Material En Espera",
+    waitingCommited = 'Material En Espera Comprometido',
     commited = "Comprometido",
     available = "Disponible",
 }

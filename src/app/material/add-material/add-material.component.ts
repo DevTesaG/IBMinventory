@@ -45,8 +45,6 @@ export class AddMaterialComponent {
     this.formObj = [
       [new FormProp('Nombre' ,'name', 'text'),new FormProp('Cantidad en Inventario' ,'available', 'number', [this.entero])],
       [new FormProp('Descripcion' ,'description', 'text')],
-      [new FormProp('Nombre del Proveedor' ,'providerName', 'text'), new FormProp('Precio' ,'price', 'number',[this.positivo])],
-      [new FormProp('Lote Minimo' ,'minBatch', 'number', [this.entero]), new FormProp('Tiempo de Entrega', 'deliveryTime', 'number', [this.entero])],
       [new FormProp('Area', 'area', 'select', [], 
       ['corte y ensamble',"carpinteria","detallado y pintura","piel","almacen General","empaque"]),new FormProp('Zona', 'zone', 'text'), new FormProp('Posicion', 'position', 'text') ]
     ] 
@@ -77,8 +75,8 @@ export class AddMaterialComponent {
       name: material.name,
       available: +(material.available),
       commited: 0,
-      watingCommited: 0,
-      wating: 0,
+      waitingCommited: 0,
+      waiting: 0,
     }
     this.provider = {
       price: material.price,
@@ -98,8 +96,7 @@ export class AddMaterialComponent {
 
     this.fos.create<Material>(this.material).then((mat:any) => {
       this.invRMService.create(this.invMaterial, mat.id)
-      this.providerService.create({materialId: mat.id, ...this.provider})
-      this.auditService.create(MaterialService.name, `Crear Material ${this.material.name}`, this.username, JSON.stringify(this.invMaterial))
+      // this.auditService.create(MaterialService.name, `Crear Material ${this.material.name}`, this.username, JSON.stringify(this.invMaterial))
       this.submitted = true;
     });
   }

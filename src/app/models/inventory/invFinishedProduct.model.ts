@@ -4,6 +4,6 @@ export class invFinishedProduct {
     productId?:string;
     available?:number
     commited?:number
-    wating?:number
+    waiting?:number
     timestamp?:any
 }

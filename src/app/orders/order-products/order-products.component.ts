@@ -45,11 +45,15 @@ export class OrderProductsComponent implements OnInit {
     this.orderBuisness.getTotalPrice()
     this.orderBuisness.orderProducts.forEach(e=> {delete e.materials; delete e.available})
 
+    // console.log(this.orderBuisness.materials)
+    // console.log(this.orderBuisness.orderProducts)
+
     this.router.navigate(['orders/add/providers']);
   }
 
 
   async useFP(pId:string, index:number){
+    console.log(pId)
     if(this.orderProducts[index].stock){
       this.orderProducts[index].available = this.orderProducts[index].available ? undefined : this.orderProducts[index].stock.available
       return
@@ -59,7 +63,7 @@ export class OrderProductsComponent implements OnInit {
     this.orderProducts[index].stock = stock
   }
 
-  addProductToOrder(product: any){
+ addProductToOrder(product: any){
     this.continueDisabled = false
     var occurence = this.orderBuisness.orderProducts.find(e => e.id == product.id)
     if(occurence) return;

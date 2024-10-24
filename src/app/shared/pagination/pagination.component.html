@@ -15,3 +15,7 @@
       <span>No se encontraron resultados...</span>
     </li>
 </ul>
+
+<div *ngIf="mode" class="d-none" >
+  <div *ngIf="fetchedData$ | async as data">pepe</div>
+</div>

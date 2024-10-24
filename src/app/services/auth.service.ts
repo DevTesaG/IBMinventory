@@ -26,7 +26,7 @@ export class AuthService {
         }
       }),
       take(1),
-      map(u => true)
+      map(u => true) //TODO: Remove this one production
     )
 }
 

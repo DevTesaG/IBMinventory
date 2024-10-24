@@ -28,6 +28,7 @@ export class InvFPService {
 
   async getStock(id?:string): Promise<invFinishedProduct>{
     if(!id) return {}
+    console.log(id)
 
     var stock:invFinishedProduct = {};
 
@@ -38,7 +39,7 @@ export class InvFPService {
         stock = {
           id:  data.id,
           available:  data.prod.available,
-          wating:  data.prod.wating,
+          waiting:  data.prod.waiting,
           commited:  data.prod.commited
         }
           r(stock)

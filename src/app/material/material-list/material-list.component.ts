@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { Material } from 'src/app/models/catalogue/material.model';
 import { FormProp } from 'src/app/models/form-prop.model';
 import { AuthService } from 'src/app/services/auth.service';
+import { FirestoreOperationService } from 'src/app/services/firestore-operation.service';
 import { MaterialService } from 'src/app/services/material.service';
 import { PaginationComponent } from 'src/app/shared/pagination/pagination.component';
 
@@ -19,10 +20,10 @@ export class MaterialListComponent implements OnInit {
   queryChange?:string
   formObj: FormProp[][];
   message = '';
-  userRole?:string;
+  userRole?:string = 'a';
 
   constructor(private materialService: MaterialService, private auth:AuthService) { 
-    this.auth.user$.subscribe((data => this.userRole = data?.userRole))
+    // this.auth.user$.subscribe((data => this.userRole = data?.userRole))
 
     this.formObj = [
       [new FormProp('Nombre' ,'name', 'text').setReadOnly(true)],

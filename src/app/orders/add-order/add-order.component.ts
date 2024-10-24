@@ -106,9 +106,19 @@ export class AddOrderComponent{
     const rm = new Date(shipDate);
     rm.setDate(new Date(shipDate).getDate() - inputDays - prodDays)
     
-    // return this.formatDateString( rm.toLocaleDateString())
-    return  rm.toLocaleDateString()
+    return this.formatDateString(rm)
+    // return  rm.toLocaleDateString()
   }
+
+
+  formatDateString(date:Date){
+    const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+  }
+
 
   getStartProductionDeadline = (shipDate: string, prodDays:number, inputDays:number) => {
     if(!(shipDate && prodDays && inputDays )) return
@@ -116,8 +126,8 @@ export class AddOrderComponent{
     const pd = new Date(shipDate)
     pd.setDate(new Date(shipDate).getDate() - prodDays)
   
-    return pd.toLocaleDateString()  
-    // return this.formatDateString(pd.toLocaleDateString())  
+    // return pd.toLocaleDateString()  
+    return this.formatDateString(pd)  
   }
 
   custom(control: AbstractControl){
@@ -127,7 +137,8 @@ export class AddOrderComponent{
   submit(order: any){
      this.orderBusiness.order = order;
     console.log(this.orderBusiness.order)
-    this.create$ = this.orderBusiness.editProducts().subscribe() 
+    // this.create$ = this.orderBusiness.editProducts().subscribe() 
+    this.orderBusiness.editProducts() 
   }
 
   ngOnDestroy(){

@@ -39,15 +39,17 @@ export class ShopListComponent implements OnInit {
       [new FormProp('Fecha Limite del Material' ,'orderDeadline', 'date'), new FormProp('Fecha de Emision de Orden' ,'emissionDate', 'date')],
       [ 
         new FormProp('Cantidad Solicitada' ,'requiredMaterial', 'number', [this.postivoEntero]),
-        new FormProp('Costo del Pedido' ,'cost', 'number', [this.postivo]), 
+        new FormProp('Costo del Pedido' ,'price', 'number', [this.postivo]), 
       ],
       [ 
-        new FormProp('Orden Asociada' ,'orderCode', 'text'), 
+        new FormProp('Orden Asociada' ,'orderId', 'text'), 
       ],
     ]
   }
 
   ngOnInit(): void {
+
+    console.log(this.username)
   }
 
   refreshList(): void {
@@ -74,9 +76,9 @@ export class ShopListComponent implements OnInit {
   }
 
   getSelectedElement(element:any){
-    console.log(this.currentOrder)
     this.currentOrder = element.element;
     this.currentIndex = element.index;
+    console.log(this.currentOrder)
   }
 
   editOrder(order:any){
@@ -95,7 +97,7 @@ export class ShopListComponent implements OnInit {
     switchMap(stock => {
       
       var newStock = {  
-        waiting: +(stock.wating ?? 0) - (order.requiredMaterial - (this.currentOrder?.requiredMaterial ?? 0)),
+        waiting: +(stock.waiting ?? 0) - (order.requiredMaterial - (this.currentOrder?.requiredMaterial ?? 0)),
       }
 
       return merge(
@@ -117,8 +119,8 @@ export class ShopListComponent implements OnInit {
         
         var newStock = { 
           available: +(stock.available ?? 0) + (this.currentOrder?.requestedAmount ?? 0), 
-          waiting: +(stock.wating ?? 0) - (this.currentOrder?.requestedAmount ?? 0),
-          watingCommited: +(stock.watingCommited ?? 0) - +(this.currentOrder?.requiredMaterial ?? 0) + +(this.currentOrder?.requestedAmount ?? 0), 
+          waiting: +(stock.waiting ?? 0) - (this.currentOrder?.requestedAmount ?? 0),
+          waitingCommited: +(stock.waitingCommited ?? 0) - +(this.currentOrder?.requiredMaterial ?? 0) + +(this.currentOrder?.requestedAmount ?? 0), 
           commited: +(stock.commited ?? 0) +  +(this.currentOrder?.requiredMaterial ?? 0) - +(this.currentOrder?.requestedAmount ?? 0)
         }
 

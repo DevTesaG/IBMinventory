@@ -15,7 +15,8 @@ export class FinishedOrdersService {
 
   productsRef: AngularFirestoreCollection<Orders>;
 
-  constructor(private db: AngularFirestore, private ht: HttpClient) {
+  constructor(private db: AngularFirestore) {
+  // constructor(private db: AngularFirestore, private ht: HttpClient) {
     this.productsRef = db.collection(this.dbPath);
   }
   
@@ -84,23 +85,23 @@ ConvertToCSV(objArray:any[], headerList:any[]) {
 
 
 
-  uploadAll():any {
-    return this.ht.get("../../../assets/csvjson.json").pipe(
-      tap(console.log),
-      concatAll(),
-      bufferCount(50),
-      map(a => {
-        var batch = this.db.firestore.batch()
-        a.map( (d:any) => {
-          const {id, ...data} = d;
-          batch.set( this.db.collection(this.dbPath).doc(id).ref, data);
-          return  batch.set( this.db.collection('/FPreport').doc(id).ref,{name: data.name,  available: 0, commited: 0, wating: 0, timestamp: Timestamp.fromDate(new Date())});
-        })
-        return batch.commit()
-      }),
-      tap({complete: ()=> alert('completo'), error: ()=> alert('error')})
-    )
-  }
+  // uploadAll():any {
+  //   return this.ht.get("../../../assets/csvjson.json").pipe(
+  //     tap(console.log),
+  //     concatAll(),
+  //     bufferCount(50),
+  //     map(a => {
+  //       var batch = this.db.firestore.batch()
+  //       a.map( (d:any) => {
+  //         const {id, ...data} = d;
+  //         batch.set( this.db.collection(this.dbPath).doc(id).ref, data);
+  //         return  batch.set( this.db.collection('/FPreport').doc(id).ref,{name: data.name,  available: 0, commited: 0, waiting: 0, timestamp: Timestamp.fromDate(new Date())});
+  //       })
+  //       return batch.commit()
+  //     }),
+  //     tap({complete: ()=> alert('completo'), error: ()=> alert('error')})
+  //   )
+  // }
 
   deleteAll(): any {
     return this.productsRef.get().pipe(

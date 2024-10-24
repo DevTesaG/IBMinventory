@@ -58,7 +58,7 @@ export class ProductMaterialsComponent implements OnInit {
   addMaterialToProduct(material: any){
      var occurence = this.productMaterials.find(e => e.id == material.id)
      if(occurence) return;
-     this.productMaterials.push({name: material.name, id: material.id})
+     this.productMaterials.push({name: material.name, id: material.id, providers: material.providers})
   }
 
   removeMaterialToProduct(materialIndex:any){

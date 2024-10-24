@@ -26,7 +26,7 @@ export class HistoryListComponent implements OnInit {
   }
 
   invTotal(stock:any){
-    return stock.wating + stock.commited + stock.available + (stock.watingCommited ? stock.watingCommited : 0)
+    return (+stock.waiting) + (+stock.commited) + (+stock.available) + (+stock.waitingCommited ? +stock.waitingCommited : 0)
   }
 
   deleteAudit(cont:boolean){

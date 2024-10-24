@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
 import { ShopRM } from '../models/shopping/shopRM.model';
+import { from } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -24,12 +25,11 @@ export class ShopOrderService {
     return this.db.collection(this.dbPath, ref=> ref.orderBy('emissionDate', 'asc').limit(batch))
   }
 
-  create(id:string,name:string,required:number, requestedAmount: number, orderDeadline:any, stockId:any, price:number, orderId?:string, orderCode?:string){
+  create(id:string,name:string,required:number, requestedAmount: number, orderDeadline:any, price:number, orderId?:string, orderCode?:string){
     var data:any = { 
       materialId: id, 
       price: price,
       name:name, 
-      stockId: stockId ,
       requiredMaterial: required, 
       requestedAmount: requestedAmount, 
       orderDeadline: orderDeadline, 
@@ -42,7 +42,7 @@ export class ShopOrderService {
     if(orderCode){
       data.orderCode = orderCode  
     }
-    return this.InvRawMaterialsRef.add(data);
+    return from(this.InvRawMaterialsRef.add(data));
   }
 
   update(id: string, data: any): Promise<void> {

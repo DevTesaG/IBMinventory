@@ -97,14 +97,14 @@ export class OrdersListComponent implements OnInit {
       mergeMap(prod => from(this.invFpService.getStock(prod.invId)).pipe(
         take(1),
         switchMap(stock => this.invFpService.update(prod.invId, 
-          {wating: Math.max(0, +(stock.wating ?? 0) - prod.quantity), commited: Math.max(0, +(stock.commited ?? 0) + prod.quantity)}
+          {waiting: Math.max(0, +(stock.waiting ?? 0) - prod.quantity), commited: Math.max(0, +(stock.commited ?? 0) + prod.quantity)}
           )        
         )
       ))
     ),
     this.OrderService.update(this.currentOrder?.id, {state: 'TERMINADA'})
     ).subscribe(
-      {error: e => alert(e), complete: () => alert('La orden fue establecida como terminada satisfactoriamente')}
+      {error: e => alert('Error de conexion.'), complete: () => alert('La orden fue establecida como terminada satisfactoriamente')}
     )
   }
 

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core';
 import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/compat/firestore';
-import { Observable, first, from, map, tap } from 'rxjs';
+import { Observable, first, from, map, take, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -24,8 +24,8 @@ export class FirestoreOperationService {
   }
   
   getNextBatch<S>(): Observable<S[]>{ 
-    return this.db.collection(this.path, ref=> ref.orderBy('timestamp', 'desc')).get().pipe(
-      tap(()=>console.log('From Firestore')),
+    return this.db.collection(this.path).get().pipe(
+      tap((a)=>console.log('From Firestore: ', a)),
       map(s => s.docs.map((e:any) => ({id:e.id, ...e.data()})))
     )
   }
@@ -47,7 +47,7 @@ export class FirestoreOperationService {
   }
 
   update(id: string, data: any): Observable<void> {
-    return from(this.objectRef.doc(id).update(data)).pipe(first()) 
+    return from(this.objectRef.doc(id).update(data))
   }
 
   delete(id: string): Promise<void> {

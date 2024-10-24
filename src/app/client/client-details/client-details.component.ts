@@ -22,13 +22,10 @@ export class ClientDetailsComponent implements OnInit {
   userRole?:string;
   
   constructor(private ClientService: ClientService, private auth: AuthService) { 
-    this.auth.user$.subscribe((data => this.userRole = data?.userRole))
   }
-
+  
   ngOnInit(): void {
-    
-    
-    
+    this.auth.user$.subscribe((data => this.userRole = data?.userRole))
     this.message = '';
   }
 

@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AngularFireModule } from '@angular/fire/compat';
-import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
+import { AngularFirestoreModule, ENABLE_PERSISTENCE, PERSISTENCE_SETTINGS } from '@angular/fire/compat/firestore';
 
 import { AppComponent } from './app.component';
 import { environment } from 'src/environments/environment';
@@ -30,7 +30,7 @@ import { FirestoreOperationService } from './services/firestore-operation.servic
     BrowserModule,
     AppRoutingModule,
     AngularFireModule.initializeApp(environment.firebase),
-    AngularFirestoreModule,
+    // AngularFirestoreModule.enablePersistence(),
     SharedModule,
     ServiceWorkerModule.register('./ngsw-worker.js', {
       enabled: environment.production,

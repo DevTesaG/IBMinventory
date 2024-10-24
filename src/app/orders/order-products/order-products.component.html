@@ -11,20 +11,21 @@
     <hr>
     
     <div class="list row shadow-sm">
-      <div class="col-md-6">
+      <div class="col-md-3">
         <h5 class="text-muted mt-1">Productos disponibles:</h5>
         
         <app-pagination [path]="'/products'" [query]="q"  (selectedElement)="getSelectedElement($event)"></app-pagination>
           
       </div>
 
-      <div class="col-md-6">
+      <div class="col-md-9">
 
       <div class="edit-form">
 
-        <button class="mt-4 rounded-pill btn btn-outline-success" (click)="createOrder()">Continuar</button>
-
-        <p>productos de la Orden: </p>
+        <div>
+          <p>productos de la Orden: </p>
+          <button class="mt-4 rounded-pill btn btn-outline-success float-end" (click)="createOrder()">Continuar</button>
+        </div>
 
         <ul class="list-group mt-3 mb-3">
           <li class="list-group-item" *ngFor="let product of orderBuisness.orderProducts; let j = index">

@@ -69,8 +69,8 @@
             <th scope="row">{{ report.name }}</th>
             <td>{{ report.available }} </td>
             <td>{{ report.commited }}</td>
-            <td *ngIf="reportPath == '/RMreport'">{{ report.watingCommited }}</td>
-            <td> {{ report.wating}}</td>
+            <td *ngIf="reportPath == '/RMreport'">{{ report.waitingCommited }}</td>
+            <td> {{ report.waiting}}</td>
             <td> {{ invTotal(report) }}</td>
           </tr>
       </tbody>
