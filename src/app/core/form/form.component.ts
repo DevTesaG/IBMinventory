@@ -44,7 +44,7 @@ export class FormComponent implements OnInit{
       if(this.placeHolder){
         var val:any = this.placeHolder[f.getLabel() as keyof Object] 
         if(val instanceof Timestamp){
-          val =  this.formatDateString( val.toDate().toLocaleDateString())
+          val =  this.formatDateString(val.toDate())
         }
         f.control?.patchValue(val);
       } 
@@ -70,7 +70,7 @@ export class FormComponent implements OnInit{
         if(this.placeHolder){
           var val:any = this.placeHolder[form.getLabel() as keyof Object] 
           if(val instanceof Timestamp){
-            val =  this.formatDateString( val.toDate().toLocaleDateString())
+            val =  this.formatDateString(val.toDate())
           }
           this.f[form.getLabel()].patchValue(val);
         } 
@@ -87,8 +87,12 @@ export class FormComponent implements OnInit{
   }
 
 
-  formatDateString(date: string){
-    return date.split('/').reverse().join('/').replace(/\//g,'-',)
+  formatDateString(date: Date){
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   } 
 
   ngAfterContentChecked() {

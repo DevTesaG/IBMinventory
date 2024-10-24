@@ -50,8 +50,9 @@
             <app-form [formObj]="formObj" [mode]="true" [placeHolder]="currentOrder" (formModel)="submit($event)" btnMes="Registar Orden" modalMessage="¿Desea continuar con el registro de la orden?"></app-form>
             
 
-            <app-warn-modal type="submit" (continue)="activateOrder($event)" [classlist]="['btn-outline-success']" btnMessage="Activar Orden" modalMessage="¿Seguro que desea activar la orden como lista?"></app-warn-modal>
-            <app-warn-modal type="submit" (continue)="completeOrder($event)" [classlist]="['btn-outline-primary']" btnMessage="Completar Orden" modalMessage="¿Seguro que desea completar la orden?"></app-warn-modal>
+            <button (click)="activateOrder(true)" class="btn btn-outline-success mx-auto mb-3">Activar Orden</button>
+            <app-warn-modal (continue)="completeOrder($event)" [classlist]="['btn-outline-primary']" btnMessage="Completar Orden" modalMessage="¿Seguro que desea completar la orden?"></app-warn-modal>
+            <!-- <app-warn-modal (continue)="activateOrder($event)" [classlist]="['btn-outline-success']" btnMessage="Activar Orden" modalMessage="¿Seguro que desea activar la orden como lista?"></app-warn-modal> -->
          
 
             <!-- <button (click)="activateOrder()" class="btn btn-outline-success mx-auto mb-3">Activar Orden</button> -->

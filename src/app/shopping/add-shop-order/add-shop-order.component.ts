@@ -43,25 +43,25 @@ export class AddShopOrderComponent {
     this.auth.user$.subscribe((data => this.username = data?.displayName ?? 'anonimo'))
 
     this.formObj = [
-      [new FormProp('Nombre del Material' ,'MatName', 'text').setReadOnly(true)],
+      [new FormProp('Nombre del Material' ,'name', 'text').setReadOnly(true)],
       [new FormProp('Fecha Limite del Material' ,'orderDeadline', 'date',[this.limitAfterToday]), new FormProp('Fecha de Emision de Orden' ,'emissionDate', 'date')],
       [ 
         new FormProp('Cantidad Solicitada' ,'requestedAmount', 'number', [this.mustBePostive]),
-        new FormProp('Costo del Pedido' ,'cost', 'number', [this.selectProvider]).setReadOnly(true), 
+        new FormProp('Costo del Pedido' ,'price', 'number', [this.selectProvider]).setReadOnly(true), 
       ],
     ]
   }
 
   @ViewChild(FormComponent) set form(formC: FormComponent) {
     if(formC) {  
-      this.currentMaterial$.subscribe(n => formC.f['MatName'].patchValue(n))
+      this.currentMaterial$.subscribe(n => formC.f['name'].patchValue(n))
 
       
       this.requestedAmount$ = merge(this.currentProvider$,formC.f['requestedAmount'].valueChanges.pipe(
         tap(v => {
           console.log(v)
-          formC.f['cost'].patchValue(this.currentProvider?.price && v ? this.currentProvider?.price * v: 0)
-          formC.f['cost'].markAsTouched()          
+          formC.f['price'].patchValue(this.currentProvider?.price && v ? this.currentProvider?.price * v: 0)
+          formC.f['price'].markAsTouched()          
         }),
       )).subscribe()
     }
@@ -87,11 +87,12 @@ export class AddShopOrderComponent {
     this.currentProvider$.next(this.currentProvider?.price)
   }
 
-  async getSelectedElement(element:any){
+  getSelectedElement(element:any){
     this.currentMaterial = element.element
+    console.log(this.currentMaterial)
     this.currentMaterial$.next(this.currentMaterial?.name)
     if(this.currentMaterial)
-    this.providers = await this.provider.getProvidersByMaterial(this.currentMaterial.id)
+    this.providers = this.currentMaterial.providers ?? []
   }
 
   submit(ShopRM: any){
@@ -102,19 +103,25 @@ export class AddShopOrderComponent {
   
   saveShopRM(): void {
     this.ShopRM.timestamp = Timestamp.fromDate(new Date());
+    this.ShopRM.orderDeadline = Timestamp.fromDate(new Date(this.ShopRM.orderDeadline));
+    this.ShopRM.emissionDate = Timestamp.fromDate(new Date(this.ShopRM.emissionDate));
+    this.ShopRM.requestedAmount = +(this.ShopRM?.requestedAmount ?? 0)
+    this.ShopRM.requiredMaterial = 0
+    this.ShopRM.materialId= this.currentMaterial?.id
+
     this.createShopOrder$ = from(this.fos.create<ShopRM>(this.ShopRM)).pipe(
       take(1), 
       switchMap( () => this.invrmService.getStock(this.currentMaterial?.id)),
       switchMap( (stock:any) => {
-        stock.waiting =  (+stock.waiting) + (this.ShopRM.requestedAmount ?? 0);
+        stock.waiting =  (+stock.waiting) + +(this.ShopRM.requestedAmount ?? 0);
         return merge(
           this.invrmService.update(stock.id, stock),
-          this.auditService.create(InvRawMaterial.name, `Actualizacion Stock Material: ${this.currentMaterial?.name ?? 'unkown'}`, this.username, JSON.stringify(stock) ,JSON.stringify(stock)),
-          this.auditService.create(ShopRM.name, `Crear Orden de Compra: ${this.ShopRM.name}`, this.username, JSON.stringify(this.ShopRM))
-        )
+        //   this.auditService.create(InvRawMaterial.name, `Actualizacion Stock Material: ${this.currentMaterial?.name ?? 'unkown'}`, this.username, JSON.stringify(stock) ,JSON.stringify(stock)),
+        //   this.auditService.create(ShopRM.name, `Crear Orden de Compra: ${this.ShopRM.name}`, this.username, JSON.stringify(this.ShopRM))
+       )
       }
     ),
-    tap({complete: () => this.submitted = true})
+    tap({complete: () => {this.submitted = true; alert('Orden Creada')}})
     ).subscribe()
   }
 

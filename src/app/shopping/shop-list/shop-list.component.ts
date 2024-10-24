@@ -7,7 +7,7 @@ import { Timestamp } from 'firebase/firestore'
 import { OrderService } from 'src/app/services/order.service';
 import { AuditService } from 'src/app/services/audit.service';
 import { AuthService } from 'src/app/services/auth.service';
-import { concat, from, merge, switchMap, take, tap } from 'rxjs';
+import { concat, from, merge, of, switchMap, take, tap } from 'rxjs';
 import { AbstractControl } from '@angular/forms';
 
 @Component({
@@ -38,7 +38,9 @@ export class ShopListComponent implements OnInit {
       [new FormProp('Nombre del Material' ,'name', 'text')],
       [new FormProp('Fecha Limite del Material' ,'orderDeadline', 'date'), new FormProp('Fecha de Emision de Orden' ,'emissionDate', 'date')],
       [ 
-        new FormProp('Cantidad Solicitada' ,'requiredMaterial', 'number', [this.postivoEntero]),
+        new FormProp('Cantidad Comprometida' ,'requiredMaterial', 'number', [this.postivoEntero]),
+        new FormProp('Cantidad Adicional' ,'requestedAmount', 'number', [this.postivoEntero]),
+      ],[
         new FormProp('Costo del Pedido' ,'price', 'number', [this.postivo]), 
       ],
       [ 
@@ -120,15 +122,19 @@ export class ShopListComponent implements OnInit {
         var newStock = { 
           available: +(stock.available ?? 0) + (this.currentOrder?.requestedAmount ?? 0), 
           waiting: +(stock.waiting ?? 0) - (this.currentOrder?.requestedAmount ?? 0),
-          waitingCommited: +(stock.waitingCommited ?? 0) - +(this.currentOrder?.requiredMaterial ?? 0) + +(this.currentOrder?.requestedAmount ?? 0), 
-          commited: +(stock.commited ?? 0) +  +(this.currentOrder?.requiredMaterial ?? 0) - +(this.currentOrder?.requestedAmount ?? 0)
+          waitingCommited: +(stock.waitingCommited ?? 0) - +(this.currentOrder?.requiredMaterial ?? 0),
+          commited: +(stock.commited ?? 0) +  +(this.currentOrder?.requiredMaterial ?? 0) 
         }
 
-        return merge(
-          this.invrmService.update(this.currentOrder?.stockId ?? 'id', newStock),
-          this.sellOrderService.update(this.currentOrder?.orderId ?? 'id', {state: 'EN PRODUCCIÓN'}),
-          this.audit.create('Editar', `Stock de Material: ${this.currentOrder?.name}`, this.username, JSON.stringify(newStock), JSON.stringify(stock))
-        )
+        if(this.currentOrder?.orderId){
+          return merge(
+            this.invrmService.update(this.currentOrder?.materialId ?? 'id', newStock),
+            this.sellOrderService.update(this.currentOrder?.orderId ?? 'id', {state: 'EN PRODUCCIÓN'}),
+            // this.audit.create('Editar', `Stock de Material: ${this.currentOrder?.name}`, this.username, JSON.stringify(newStock), JSON.stringify(stock))
+          )
+        }else{
+          return from(this.invrmService.update(this.currentOrder?.materialId ?? 'id', newStock))
+        }
       }),
       tap({error: e => alert(e), complete: ()=> alert('La orden ha sido completada')})
     ).subscribe()
@@ -144,7 +150,7 @@ export class ShopListComponent implements OnInit {
 
       concat(
         from(this.OrderService.update(this.currentOrder.id, {emissionDate: this.currentOrder.emissionDate })),
-        from(this.audit.create('Editar', `Orden de Compra: ${this.currentOrder?.name}`, this.username, this.currentOrder?.emissionDate,prior))
+        // from(this.audit.create('Editar', `Orden de Compra: ${this.currentOrder?.name}`, this.username, this.currentOrder?.emissionDate,prior))
       ).pipe(
         tap({error: e => alert(e), complete: () => alert('La orden a sido activada')})
       ).subscribe()
